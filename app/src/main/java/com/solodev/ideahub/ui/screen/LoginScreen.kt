@@ -1,18 +1,30 @@
 package com.solodev.ideahub.ui.screen
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -22,13 +34,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.solodev.ideahub.R
-
+import com.solodev.ideahub.ui.theme.IdeaHubTheme
+@ExperimentalMaterial3Api
 @Composable
 fun LoginScreen() {
     var emailOrPhone by remember { mutableStateOf("") }
@@ -38,90 +54,171 @@ fun LoginScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(dimensionResource(id = R.dimen.padding_medium)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = stringResource(id = R.string.login_welcome),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 32.dp)
+            style = MaterialTheme.typography.displayLarge,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.spacing_large))
         )
 
+        InputContainer(
+            inputValue = emailOrPhone,
+            leadingIconValue = {Icon(imageVector = Icons.Default.Phone, contentDescription = null)},
+            labelValue = R.string.login_phone_email,
+            )
 
-        InputContainer(emailOrPhone = emailOrPhone, password = password, passwordVisible = passwordVisible)
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
 
-        Text(
-            text = stringResource(id = R.string.login_forgot_password),
+        InputContainer(inputValue = password,
+            leadingIconValue = {Icon(imageVector = Icons.Default.Lock, contentDescription = null)},
+             labelValue = R.string.login_password,
+        )
+
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+
+
+        TextButton(
+            onClick = { },
             modifier = Modifier.align(Alignment.End),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = { /* Handle login action */ },
-            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = stringResource(id = R.string.login_button))
+            Text(
+                text = stringResource(id = R.string.login_forgot_password),
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_large)))
+
+
+        ElevatedButton(onClick = { /*TODO*/ },
+            Modifier
+                .wrapContentWidth(align = Alignment.CenterHorizontally)
+                .width(dimensionResource(id = R.dimen.button_width_large))
+            ) {
+            Text(
+                text = stringResource(id = R.string.login_button),
+                style = MaterialTheme.typography.labelMedium,
+                fontSize = 20.sp
+            )
+        }
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_large)))
+
+        Text(
+            text = stringResource(id = R.string.login_with_social_media),
+            style = MaterialTheme.typography.bodySmall,
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_large)))
+
+        SocialMediaSection()
+
+
+        Spacer(modifier = Modifier
+            .height(dimensionResource(id = R.dimen.spacing_large))
+        )
 
         TextButton(
             onClick = { /* Handle sign up action */ },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text(text = stringResource(id = R.string.login_sign_up))
+            Text(
+                text = stringResource(id = R.string.login_sign_up,
+                ),
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
+
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputContainer(
     modifier: Modifier = Modifier,
-    emailOrPhone: String,
-    password: String,
-    passwordVisible: Boolean,
-)
+    inputValue: String,
+    onInputValueChange: () -> Unit = {},
+    @StringRes labelValue: Int = R.string.default_label,
+    leadingIconValue: @Composable (() -> Unit)? = null,
+    trailingIconValue: @Composable (() -> Unit)? = null,
+
+    )
 {
-    var emailOrPhoneValue = "";
-    var passwordVisibleValue = passwordVisible
-    OutlinedTextField(
-        value = emailOrPhone,
-        onValueChange = { newValue -> emailOrPhoneValue = newValue},
-        label = { Text(text = stringResource(id = R.string.login_phone_email)) },
-        modifier = Modifier.fillMaxWidth(),
-        singleLine = true
-    )
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(dimensionResource(id = R.dimen.card_height_large)),
+        shape = MaterialTheme.shapes.extraLarge,
 
-    Spacer(modifier = Modifier.height(16.dp))
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_small))
+        ){
+            OutlinedTextField(
+                value = inputValue,
+                onValueChange = { onInputValueChange() },
+                label = { Text(text = stringResource(labelValue)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                leadingIcon = {leadingIconValue?.invoke()},
+                trailingIcon = {trailingIconValue?.invoke()},
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedLeadingIconColor = MaterialTheme.colorScheme.onSurface,
+                )
+            )
+        }
 
-    OutlinedTextField(
-        value = password,
-        onValueChange = { newValue -> var passwordValue = newValue},
-        label = { Text(text = stringResource(id = R.string.login_password)) },
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
-            val image = if (passwordVisible)
-                Icons.Filled.Close
-            else Icons.Filled.Close
 
-            IconButton(onClick = { passwordVisibleValue = !passwordVisible }) {
-                Icon(imageVector = image, contentDescription = null)
-            }
-        },
-        modifier = Modifier.fillMaxWidth(),
-        singleLine = true
-    )
+    }
 
 }
+@ExperimentalMaterial3Api
+@Composable
+fun SocialMediaSection(modifier: Modifier = Modifier)
+{
+    Row(modifier.wrapContentWidth(),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.spacing_medium)),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SocialMediaIcon(icon = R.drawable.gmail)
+        SocialMediaIcon(icon = R.drawable.facebook)
+        SocialMediaIcon(icon = R.drawable.twitter__1_)
+    }
+
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun SocialMediaIcon(
+    modifier: Modifier = Modifier,
+    @DrawableRes icon: Int
+){
+    ElevatedCard(
+        onClick = {  },
+        modifier = modifier
+            .size(dimensionResource(id = R.dimen.icon_size_medium))
+    ) {
+
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small))
+        )
+    }
+
+
+}
+
+@ExperimentalMaterial3Api
 @Preview(showBackground = true)
 @Composable
 fun PreviewLogin() {
-
+    IdeaHubTheme {
         LoginScreen()
-
+    }
 }
