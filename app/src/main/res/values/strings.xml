@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">IdeaHub</string>
+
+    <!-- Login Screen -->
+    <string name="login_welcome">Welcome to IdeaHub</string>
+    <string name="login_phone_email">Phone or email</string>
+    <string name="login_password">Password</string>
+    <string name="login_forgot_password">Forgot Password?</string>
+    <string name="login_button">Login</string>
+    <string name="login_sign_up">Don\'t have an account? Sign up</string>
+
+    <!-- Home Screen -->
+    <string name="home_search_group">Search group</string>
+    <string name="home_welcome">Welcome to IdeaHub!</string>
+    <string name="home_no_objectives">You don\'t have any objectives yet. Would you like to create a new one?</string>
+    <string name="home_create_objective_button">Let\'s Go</string>
+    <string name="home_idea_hub">IdeaHub</string>
+    <string name="home_your_group">Your Group</string>
+    <string name="home_explore">Explore</string>
+    <string name="home_active_discussion">Active Discussion</string>
+
+    <!-- Community Screen -->
+    <string name="community_categories">Categories</string>
+    <string name="community_alimentation">Alimentation and Nutrition</string>
+    <string name="community_personal_development">Personal Development</string>
+    <string name="community_technology_innovation">Technology and Innovation</string>
+    <string name="community_personal_finance">Personal Finance</string>
+    <string name="community_finance">Finance</string>
+    <string name="community_science">Science</string>
+    <string name="community_it">IT</string>
+    <string name="community_open">Open</string>
+
+    <!-- IdeaHub Section -->
+    <string name="ideahub_name">Name</string>
+    <string name="ideahub_title">Title</string>
+    <string name="ideahub_content">It seems like you’ve entered the classic placeholder text known as “Lorem Ipsum.” This text is commonly used in design and typesetting to fill space when the actual content isn’t available yet. The phrase “Lorem Ipsum” itself doesn’t have any specific meaning; it’s just a jumble of Latin-like words.</string>
+    <string name="ideahub_contribute">Contribute</string>
+    <string name="ideahub_contributions_count">20 contributions</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_community">Community</string>
+    <string name="nav_explore">Explore</string>
+    <string name="nav_discussion">Discussion</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Objectives -->
+    <string name="objectives">Objectives</string>
+    <string name="objectives_overview">Objectives Overview</string>
+    <string name="objectives_create">Create New Objective</string>
+    <string name="objectives_title">Title</string>
+    <string name="objectives_description">Description</string>
+    <string name="objectives_due_date">Due Date</string>
+    <string name="objectives_priority">Priority</string>
+    <string name="objectives_save">Save</string>
+
+    <!-- General -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+</resources>
