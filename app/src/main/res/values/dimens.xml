@@ -41,6 +41,7 @@
     <dimen name="card_height_small">36dp</dimen>"
     <dimen name="card_height_medium">48dp</dimen>
     <dimen name="card_height_large">64dp</dimen>
+    <dimen name="textfield_width">200</dimen>
 
 
 

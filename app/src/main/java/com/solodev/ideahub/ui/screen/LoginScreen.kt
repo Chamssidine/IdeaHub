@@ -2,6 +2,7 @@ package com.solodev.ideahub.ui.screen
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -66,6 +68,7 @@ fun LoginScreen() {
             inputValue = emailOrPhone,
             leadingIconValue = {Icon(imageVector = Icons.Default.Phone, contentDescription = null)},
             labelValue = R.string.login_phone_email,
+            onInputValueChange = {emailOrPhone = it}
             )
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
@@ -73,6 +76,7 @@ fun LoginScreen() {
         InputContainer(inputValue = password,
             leadingIconValue = {Icon(imageVector = Icons.Default.Lock, contentDescription = null)},
              labelValue = R.string.login_password,
+            onInputValueChange = {password = it}
         )
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
@@ -136,7 +140,7 @@ fun LoginScreen() {
 fun InputContainer(
     modifier: Modifier = Modifier,
     inputValue: String,
-    onInputValueChange: () -> Unit = {},
+    onInputValueChange: (String) -> Unit = {},
     @StringRes labelValue: Int = R.string.default_label,
     leadingIconValue: @Composable (() -> Unit)? = null,
     trailingIconValue: @Composable (() -> Unit)? = null,
@@ -152,13 +156,15 @@ fun InputContainer(
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_small))
+            modifier = Modifier.fillMaxSize()
+            //modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_small))
         ){
             OutlinedTextField(
                 value = inputValue,
-                onValueChange = { onInputValueChange() },
+                onValueChange = {newText -> onInputValueChange(newText)},
                 label = { Text(text = stringResource(labelValue)) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .wrapContentHeight().fillMaxWidth(),
                 singleLine = true,
                 leadingIcon = {leadingIconValue?.invoke()},
                 trailingIcon = {trailingIconValue?.invoke()},
