@@ -80,4 +80,5 @@
     <string name="mail_confirmation_text">We have sent a confirmation code to your email</string>
     <string name="type_the_confirmation_code">Enter the confirmation code </string>
     <string name="send">Send\n</string>
+    <string name="modify_email">Change email</string>
 </resources>

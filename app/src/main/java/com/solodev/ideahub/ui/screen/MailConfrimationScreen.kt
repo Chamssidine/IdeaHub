@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,7 +38,7 @@ import com.solodev.ideahub.ui.theme.IdeaHubTheme
 fun MailConfirmationScreen() {
     var code by rememberSaveable { mutableStateOf("") }
     Column (
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.padding(dimensionResource(id = R.dimen.spacing_medium)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -77,13 +79,7 @@ fun MailConfirmationScreen() {
                     Text("Resend")
                 }
             }
-
-
-
         }
-
-
-
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
 
@@ -98,6 +94,19 @@ fun MailConfirmationScreen() {
                 text = stringResource(id = R.string.send),
                 style = MaterialTheme.typography.labelMedium,
                 fontSize = 20.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
+
+        TextButton(
+            onClick = { /* Handle sign up action */ },
+            modifier = Modifier.wrapContentSize()
+
+        ) {
+            Text(
+                text = stringResource(id = R.string.modify_email),
+                style = MaterialTheme.typography.labelMedium,
             )
         }
     }
