@@ -42,6 +42,10 @@
     <dimen name="card_height_medium">48dp</dimen>
     <dimen name="card_height_large">64dp</dimen>
     <dimen name="textfield_width">200</dimen>
+    <!-- Evelevation -->
+    <dimen name="elevation_small">2dp</dimen>
+    <dimen name="elevation_medium">4dp</dimen>
+    <dimen name="elevation_large">8dp</dimen>
 
 
 

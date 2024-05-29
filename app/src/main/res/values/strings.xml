@@ -11,6 +11,16 @@
     <string name="login_with_social_media">Login with Social Media</string>
     <string name="login_button">Login</string>
     <string name="login_sign_up">Don\'t have an account? Sign up</string>
+    <!-- Account Creation Screen -->
+    <string name="create_your_account">Create Your Account</string>
+    <string name="full_name">Full name</string>
+    <string name="telephone">Telephone</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="create">Create</string>
+    <string name="already_have_account">Already have an Account?</string>
+    <string name="sign_in">Sign in</string>
+    <string name="or_create_using">Or create using</string>
 
     <!-- Home Screen -->
     <string name="home_search_group">Search group</string>
@@ -66,4 +76,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="default_label">Label</string>
+    <string name="mail_confirmation_title">Confirm your email</string>
+    <string name="mail_confirmation_text">We have sent a confirmation code to your email</string>
+    <string name="type_the_confirmation_code">Enter the confirmation code </string>
+    <string name="send">Send\n</string>
 </resources>
