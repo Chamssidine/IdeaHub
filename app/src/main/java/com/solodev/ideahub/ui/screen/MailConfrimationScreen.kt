@@ -29,13 +29,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.solodev.ideahub.R
+import com.solodev.ideahub.ui.ViewModels.ConnectionViewModel
 import com.solodev.ideahub.ui.screen.InputContainer
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 
 
 @Composable
-fun MailConfirmationScreen() {
+fun MailConfirmationScreen(
+    modifier: Modifier = Modifier,
+    connectionViewModel: ConnectionViewModel = viewModel(),
+    onConfirmButtonClicked: ()->Unit = {},
+    onChangeEmailClicked: ()->Unit = {},
+    onResendClicked: ()->Unit = {}
+) {
     var code by rememberSaveable { mutableStateOf("") }
     Column (
         modifier = Modifier.padding(dimensionResource(id = R.dimen.spacing_medium)),
@@ -73,7 +81,7 @@ fun MailConfirmationScreen() {
                     .padding(top = 16.dp, bottom = 8.dp,end = 16.dp)
             ) {
                 Button(
-                    onClick = { /* Handle resend action */ },
+                    onClick = { onConfirmButtonClicked()},
                     contentPadding = PaddingValues(0.dp)
                 ) {
                     Text("Resend")
@@ -83,7 +91,7 @@ fun MailConfirmationScreen() {
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
 
-        ElevatedButton(onClick = { /*TODO*/ },
+        ElevatedButton(onClick = { onConfirmButtonClicked() },
             Modifier
                 .wrapContentWidth(align = Alignment.CenterHorizontally)
                 .width(dimensionResource(id = R.dimen.button_width_large))
@@ -91,7 +99,7 @@ fun MailConfirmationScreen() {
             elevation =  ButtonDefaults.buttonElevation (dimensionResource(id = R.dimen.elevation_small))
         ) {
             Text(
-                text = stringResource(id = R.string.send),
+                text = stringResource(id = R.string.confirm),
                 style = MaterialTheme.typography.labelMedium,
                 fontSize = 20.sp
             )
@@ -100,7 +108,7 @@ fun MailConfirmationScreen() {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
 
         TextButton(
-            onClick = { /* Handle sign up action */ },
+            onClick = { onChangeEmailClicked() },
             modifier = Modifier.wrapContentSize()
 
         ) {

@@ -2,8 +2,6 @@
 
 package com.solodev.ideahub.ui.screen
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,9 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,17 +30,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.solodev.ideahub.R
+import com.solodev.ideahub.ui.ViewModels.ConnectionViewModel
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 
+@ExperimentalMaterial3Api
 @Composable
-fun AccountCreationScreen() {
+fun SignUpScreen(
+    modifier: Modifier = Modifier,
+    connectionViewModel: ConnectionViewModel = viewModel(),
+    onSignUpButtonClicked: () -> Unit = {},
+    onLoginButtonClicked: () -> Unit = {},
+    onShowPasswordClicked: () -> Unit = {},
+    onSignUpWithSocialMediaClicked: () -> Unit = {},
+) {
 
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -95,7 +100,7 @@ fun AccountCreationScreen() {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_large)))
 
 
-        ElevatedButton(onClick = { /*TODO*/ },
+        ElevatedButton(onClick = { onSignUpButtonClicked() },
             Modifier
                 .wrapContentWidth(align = Alignment.CenterHorizontally)
                 .width(dimensionResource(id = R.dimen.button_width_large))
@@ -116,7 +121,7 @@ fun AccountCreationScreen() {
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_large)))
 
-        SocialMediaSection()
+        SocialMediaSection(onSocialMediaButtonClicked = onSignUpWithSocialMediaClicked)
         Spacer(modifier = Modifier
             .height(dimensionResource(id = R.dimen.spacing_large))
         )
@@ -130,7 +135,7 @@ fun AccountCreationScreen() {
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
             TextButton(
-                onClick = { /* Handle sign up action */ },
+                onClick = onLoginButtonClicked,
                 modifier = Modifier.wrapContentSize()
 
             ) {
@@ -149,7 +154,7 @@ fun AccountCreationScreen() {
 @Composable
 fun Preview() {
     IdeaHubTheme {
-        AccountCreationScreen()
+        SignUpScreen()
     }
 }
 
