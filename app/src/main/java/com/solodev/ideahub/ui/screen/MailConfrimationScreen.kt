@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -46,7 +47,8 @@ fun MailConfirmationScreen(
 ) {
     var code by rememberSaveable { mutableStateOf("") }
     Column (
-        modifier = Modifier.padding(dimensionResource(id = R.dimen.spacing_medium)),
+        modifier = Modifier
+            .fillMaxSize().padding(dimensionResource(id = R.dimen.spacing_medium)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
