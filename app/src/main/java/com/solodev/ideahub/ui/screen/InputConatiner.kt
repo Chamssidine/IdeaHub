@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -33,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -44,10 +47,12 @@ import com.solodev.ideahub.ui.theme.IdeaHubTheme
 fun InputContainer(
     modifier: Modifier = Modifier,
     inputValue: String,
-    onInputValueChange: (String) -> Unit = {},
-    @StringRes labelValue: Int = R.string.default_label,
+    onInputValueChange: (String) -> Unit,
+    labelValue: String = stringResource(R.string.default_label),
     leadingIconValue: @Composable (() -> Unit)? = null,
     trailingIconValue: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    onKeyboardDone: () -> Unit = {},
 
     ){
         Box(
@@ -57,8 +62,8 @@ fun InputContainer(
             ){
             OutlinedTextField(
                 value = inputValue,
-                onValueChange = {newText -> onInputValueChange(newText)},
-                label = { Text(text = stringResource(id = labelValue)) },
+                onValueChange = onInputValueChange,
+                label = { Text(text = labelValue) },
                 singleLine = true,
                 leadingIcon = {leadingIconValue?.invoke()},
                 trailingIcon = {trailingIconValue?.invoke()},
@@ -68,15 +73,14 @@ fun InputContainer(
 //                    unfocusedBorderColor = Color.Transparent,
                     focusedLeadingIconColor = MaterialTheme.colorScheme.onSurface,
                 ),
-                shape = MaterialTheme.shapes.extraLarge
+                shape = MaterialTheme.shapes.extraLarge,
+                isError = isError,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                ),
+
             )
         }
-
-
-
-
-
-
 }
 
 
@@ -91,7 +95,7 @@ fun TestInput() {
         InputContainer(
             inputValue = "value",
             onInputValueChange = {newText -> println(newText)},
-            labelValue = R.string.default_label,
+            labelValue = stringResource(R.string.default_label),
             leadingIconValue = {Icon(imageVector = Icons.Default.Lock, contentDescription = null)},
             trailingIconValue = {Icon(imageVector = Icons.Default.Email, contentDescription = null)}
             )

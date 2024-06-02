@@ -1,4 +1,3 @@
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +23,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,15 +30,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.solodev.ideahub.R
-import com.solodev.ideahub.ui.ViewModels.ConnectionViewModel
 import com.solodev.ideahub.ui.screen.InputContainer
+import com.solodev.ideahub.ui.screen.login.LoginViewModel
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 
 
 @Composable
 fun MailConfirmationScreen(
     modifier: Modifier = Modifier,
-    connectionViewModel: ConnectionViewModel = viewModel(),
+    loginViewModel: LoginViewModel = viewModel(),
     onConfirmButtonClicked: ()->Unit = {},
     onChangeEmailClicked: ()->Unit = {},
     onResendClicked: ()->Unit = {}
@@ -73,7 +71,7 @@ fun MailConfirmationScreen(
             ) {
                 InputContainer(
                     inputValue = code,
-                    labelValue = R.string.type_the_confirmation_code,
+                    labelValue = stringResource(R.string.type_the_confirmation_code),
                     onInputValueChange = {code = it}
                 )
             }

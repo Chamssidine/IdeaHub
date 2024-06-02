@@ -2,6 +2,7 @@
 
 package com.solodev.ideahub.ui.screen
 
+import com.solodev.ideahub.ui.screen.login.LoginViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,14 +38,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.solodev.ideahub.R
-import com.solodev.ideahub.ui.ViewModels.ConnectionViewModel
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 
 @ExperimentalMaterial3Api
 @Composable
 fun SignUpScreen(
     modifier: Modifier = Modifier,
-    connectionViewModel: ConnectionViewModel = viewModel(),
+    loginViewModel: LoginViewModel = viewModel(),
     onSignUpButtonClicked: () -> Unit = {},
     onLoginButtonClicked: () -> Unit = {},
     onShowPasswordClicked: () -> Unit = {},
@@ -73,7 +73,7 @@ fun SignUpScreen(
         InputContainer(
             inputValue = fullName,
             leadingIconValue = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null) },
-            labelValue = R.string.full_name,
+            labelValue = stringResource(R.string.full_name),
             onInputValueChange = {fullName = it}
         )
 
@@ -81,7 +81,7 @@ fun SignUpScreen(
 
         InputContainer(inputValue = email,
                 leadingIconValue = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
-            labelValue = R.string.email,
+            labelValue = stringResource(R.string.email),
             onInputValueChange = {email  = it}
         )
 
@@ -91,7 +91,7 @@ fun SignUpScreen(
         InputContainer(inputValue = password,
             leadingIconValue = { Icon(imageVector = Icons.Default.Lock, contentDescription = null) },
             trailingIconValue = { Icon(painterResource(id = R.drawable.baseline_visibility_black_24), contentDescription = null) },
-            labelValue = R.string.password,
+            labelValue = stringResource(R.string.password),
             onInputValueChange = {password  = it}
         )
 

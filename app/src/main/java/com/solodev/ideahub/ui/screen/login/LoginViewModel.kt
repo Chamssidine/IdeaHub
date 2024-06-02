@@ -1,0 +1,90 @@
+package com.solodev.ideahub.ui.screen.login
+
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import com.solodev.ideahub.util.network.ResponseState
+import com.solodev.ideahub.util.network.ServerResponse
+import com.solodev.ideahub.util.network.ServerStatus
+import com.solodev.ideahub.util.service.AccountService
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import javax.inject.Inject
+
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val accountService: AccountService
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(LoginUIState())
+    val uiState: StateFlow<LoginUIState> = _uiState.asStateFlow()
+
+    var userEmail by mutableStateOf("")
+    var password by mutableStateOf("")
+
+    private fun processUserInput(email: String, password: String): ServerResponse {
+        val serverResponse = ServerResponse()
+
+        if (email.isEmpty()) {
+            Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "email is empty")
+            serverResponse.status = ResponseState(ServerStatus.ERROR)
+            serverResponse.message = "Email cannot be empty"
+            _uiState.update { currentState ->
+                currentState.copy(
+                    emailError = true,
+                    emailErrorMessage = serverResponse.message.toString()
+                )
+            }
+        }
+        if (password.isEmpty()) {
+            Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "password is empty")
+            serverResponse.message = "Password cannot be empty"
+            _uiState.update { currentState ->
+                currentState.copy(
+                    passwordError = true,
+                    passwordErrorMessage = serverResponse.message.toString()
+                )
+            }
+        }
+        return serverResponse
+    }
+
+
+    fun updateEmail(email: String) {
+        userEmail = email
+        _uiState.update { state -> state.copy(emailError = false) }
+        Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Updated Email: $userEmail")
+    }
+
+    fun updatePassword(password: String) {
+        this.password = password
+        _uiState.update { state -> state.copy(passwordError = false) }
+        Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Updated Password: $password")
+    }
+    fun login() {
+        Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "UserEmail: $userEmail")
+        Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Password: $password")
+        processUserInput(userEmail, password)
+    }
+
+    init {
+        clearError()
+    }
+
+    private fun clearError() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                emailError = false,
+                passwordError = false,
+                emailErrorMessage = "",
+                passwordErrorMessage = ""
+            )
+        }
+    }
+}
+

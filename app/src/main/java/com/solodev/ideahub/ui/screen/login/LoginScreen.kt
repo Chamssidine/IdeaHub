@@ -1,4 +1,4 @@
-package com.solodev.ideahub.ui.screen
+package com.solodev.ideahub.ui.screen.login
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,20 +28,22 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.solodev.ideahub.R
-import com.solodev.ideahub.ui.ViewModels.ConnectionViewModel
+import com.solodev.ideahub.ui.screen.InputContainer
+import com.solodev.ideahub.ui.screen.SocialMediaSection
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
+
 @ExperimentalMaterial3Api
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    connectionViewModel: ConnectionViewModel = viewModel(),
-    onLoginButtonClicked: () -> Unit = {},
+    loginViewModel: LoginViewModel = hiltViewModel(),
     onForgotPasswordButtonClicked: () -> Unit = {},
     onSignUpButtonClicked: () -> Unit = {},
     onSocialMediaButtonClicked: () -> Unit = {},
 ) {
+    val uiState by loginViewModel.uiState.collectAsState()
     var emailOrPhone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Column(
@@ -57,18 +60,21 @@ fun LoginScreen(
         )
 
         InputContainer(
-            inputValue = emailOrPhone,
+            inputValue = loginViewModel.userEmail,
             leadingIconValue = {Icon(imageVector = Icons.Default.Phone, contentDescription = null)},
-            labelValue = R.string.login_phone_email,
-            onInputValueChange = {emailOrPhone = it}
+            labelValue = if(uiState.emailError) uiState.emailErrorMessage else stringResource(R.string.login_phone_email),
+            onInputValueChange = {loginViewModel.updateEmail(it)},
+            isError = uiState.emailError
             )
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
 
-        InputContainer(inputValue = password,
+        InputContainer(
+            inputValue = loginViewModel.password,
             leadingIconValue = {Icon(imageVector = Icons.Default.Lock, contentDescription = null)},
-             labelValue = R.string.login_password,
-            onInputValueChange = {password = it}
+            labelValue = if(uiState.passwordError) uiState.passwordErrorMessage else stringResource(R.string.login_password),
+            onInputValueChange = {loginViewModel.updatePassword(it)},
+            isError = uiState.passwordError
         )
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
@@ -87,7 +93,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_large)))
 
 
-        ElevatedButton(onClick = { onLoginButtonClicked()},
+        ElevatedButton(onClick = { loginViewModel.login()},
             Modifier
                 .wrapContentWidth(align = Alignment.CenterHorizontally)
                 .width(dimensionResource(id = R.dimen.button_width_large))

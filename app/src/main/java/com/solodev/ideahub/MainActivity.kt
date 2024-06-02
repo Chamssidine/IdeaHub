@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.solodev.ideahub.ui.screen.IdeaHubScreen
-import com.solodev.ideahub.ui.screen.LoginScreen
+import com.solodev.ideahub.ui.screen.login.LoginScreen
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 
 @ExperimentalMaterial3Api

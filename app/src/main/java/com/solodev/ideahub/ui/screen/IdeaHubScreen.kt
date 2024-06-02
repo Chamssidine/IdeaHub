@@ -1,5 +1,6 @@
 package com.solodev.ideahub.ui.screen
 
+import com.solodev.ideahub.ui.screen.login.LoginViewModel
 import MailConfirmationScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -11,13 +12,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.solodev.ideahub.ui.ViewModels.ConnectionViewModel
+import com.solodev.ideahub.ui.screen.login.LoginScreen
+
 
 @ExperimentalMaterial3Api
 @Composable
 fun IdeaHubScreen(
     modifier: Modifier = Modifier,
-    connectionViewModel: ConnectionViewModel = viewModel(),
+    loginViewModel: LoginViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
 
@@ -32,8 +34,7 @@ fun IdeaHubScreen(
         ) {
             composable(Routes.Login.name) {
                 LoginScreen(
-                    onLoginButtonClicked = {navController.navigate(Routes.mail_Confirmation.name)},
-                    onSignUpButtonClicked = {navController.navigate(Routes.SignUp.name)}
+                    onSignUpButtonClicked = {navController.navigate(Routes.SignUp.name)},
                 )
             }
             composable(Routes.SignUp.name) {
