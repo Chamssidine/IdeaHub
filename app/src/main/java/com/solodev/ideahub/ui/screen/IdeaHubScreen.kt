@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.solodev.ideahub.ui.screen.login.LoginScreen
+import com.solodev.ideahub.ui.screen.sign_up.SignUpScreen
 
 
 @ExperimentalMaterial3Api
@@ -39,7 +40,7 @@ fun IdeaHubScreen(
             }
             composable(Routes.SignUp.name) {
                 SignUpScreen(
-                    onSignUpButtonClicked = {navController.navigate(Routes.mail_Confirmation.name)},
+                    onSignUpButtonClicked = {},
                     onLoginButtonClicked = {navController.navigate(Routes.Login.name)}
                 )
 

@@ -1,8 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.solodev.ideahub.ui.screen
+package com.solodev.ideahub.ui.screen.sign_up
 
-import com.solodev.ideahub.ui.screen.login.LoginViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,22 +36,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.solodev.ideahub.R
+import com.solodev.ideahub.ui.screen.InputContainer
+import com.solodev.ideahub.ui.screen.SocialMediaSection
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 
 @ExperimentalMaterial3Api
 @Composable
 fun SignUpScreen(
     modifier: Modifier = Modifier,
-    loginViewModel: LoginViewModel = viewModel(),
+    signUpViewModel: SignUpViewModel = hiltViewModel(),
     onSignUpButtonClicked: () -> Unit = {},
     onLoginButtonClicked: () -> Unit = {},
     onShowPasswordClicked: () -> Unit = {},
     onSignUpWithSocialMediaClicked: () -> Unit = {},
 ) {
 
-    var phone by remember { mutableStateOf("") }
+    val uiState by signUpViewModel.uiState.collectAsState()
     var password by remember { mutableStateOf("") }
     var fullName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -74,7 +76,8 @@ fun SignUpScreen(
             inputValue = fullName,
             leadingIconValue = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null) },
             labelValue = stringResource(R.string.full_name),
-            onInputValueChange = {fullName = it}
+            onInputValueChange = {signUpViewModel.updateName(it)},
+            isError = uiState.hasError
         )
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
@@ -82,7 +85,8 @@ fun SignUpScreen(
         InputContainer(inputValue = email,
                 leadingIconValue = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
             labelValue = stringResource(R.string.email),
-            onInputValueChange = {email  = it}
+            onInputValueChange = {signUpViewModel.updateEmail(it)},
+            isError = uiState.hasError
         )
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
@@ -92,7 +96,8 @@ fun SignUpScreen(
             leadingIconValue = { Icon(imageVector = Icons.Default.Lock, contentDescription = null) },
             trailingIconValue = { Icon(painterResource(id = R.drawable.baseline_visibility_black_24), contentDescription = null) },
             labelValue = stringResource(R.string.password),
-            onInputValueChange = {password  = it}
+            onInputValueChange = {signUpViewModel.updatePassword(it) },
+            isError = uiState.hasError
         )
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
@@ -100,7 +105,7 @@ fun SignUpScreen(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_large)))
 
 
-        ElevatedButton(onClick = { onSignUpButtonClicked() },
+        ElevatedButton(onClick = { signUpViewModel.onSignUpClick() },
             Modifier
                 .wrapContentWidth(align = Alignment.CenterHorizontally)
                 .width(dimensionResource(id = R.dimen.button_width_large))

@@ -3,11 +3,13 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("com.google.gms.google-services")
     kotlin("kapt") version "2.0.0"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
     id("kotlin-android")
     id("com.google.devtools.ksp")
     id("com.google.firebase.crashlytics")
     id("com.google.firebase.firebase-perf")
     id("dagger.hilt.android.plugin")
+
 }
 
 android {
@@ -71,6 +73,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.1")
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

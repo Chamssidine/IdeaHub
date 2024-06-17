@@ -7,4 +7,6 @@ interface AccountService {
     suspend fun createAnonymousAccount()
     suspend fun deleteAccount()
     suspend fun signOut()
+
+    suspend fun register(email: String, password: String, name: String)
 }

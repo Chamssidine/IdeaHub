@@ -4,7 +4,11 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.solodev.ideahub.util.network.ResponseState
 import com.solodev.ideahub.util.network.ServerResponse
 import com.solodev.ideahub.util.network.ServerStatus
@@ -14,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,6 +31,9 @@ class LoginViewModel @Inject constructor(
 
     var userEmail by mutableStateOf("")
     var password by mutableStateOf("")
+
+    private val _loginState = MutableLiveData<Result<Boolean>>()
+    val loginState: LiveData<Result<Boolean>> = _loginState
 
     private fun processUserInput(email: String, password: String): ServerResponse {
         val serverResponse = ServerResponse()
@@ -44,6 +52,7 @@ class LoginViewModel @Inject constructor(
         if (password.isEmpty()) {
             Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "password is empty")
             serverResponse.message = "Password cannot be empty"
+            serverResponse.status = ResponseState(ServerStatus.ERROR)
             _uiState.update { currentState ->
                 currentState.copy(
                     passwordError = true,
@@ -51,10 +60,26 @@ class LoginViewModel @Inject constructor(
                 )
             }
         }
+        if(serverResponse.status != ResponseState(ServerStatus.ERROR))
+        {
+            onSignInClick(email,password)
+        }
+
         return serverResponse
     }
 
+    private fun onSignInClick(email: String, password: String){
+        Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "onSignInClick")
+        viewModelScope.launch {
+            try {
+                accountService.authenticate(email, password)
+                _loginState.value = Result.success(true)
+            } catch (e: Exception) {
+                _loginState.value = Result.failure(e)
+            }
+        }
 
+    }
     fun updateEmail(email: String) {
         userEmail = email
         _uiState.update { state -> state.copy(emailError = false) }
