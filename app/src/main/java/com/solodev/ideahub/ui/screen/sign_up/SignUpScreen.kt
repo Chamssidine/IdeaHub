@@ -46,7 +46,7 @@ import com.solodev.ideahub.ui.theme.IdeaHubTheme
 @Composable
 fun SignUpScreen(
     modifier: Modifier = Modifier,
-    signUpViewModel: SignUpViewModel = hiltViewModel(),
+    signUpViewModel: SignUpViewModel = hiltViewModel<SignUpViewModel>(),
     onSignUpButtonClicked: () -> Unit = {},
     onLoginButtonClicked: () -> Unit = {},
     onShowPasswordClicked: () -> Unit = {},

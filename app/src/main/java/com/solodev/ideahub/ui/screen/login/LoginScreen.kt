@@ -38,7 +38,7 @@ import com.solodev.ideahub.ui.theme.IdeaHubTheme
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    loginViewModel: LoginViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel<LoginViewModel>(),
     onForgotPasswordButtonClicked: () -> Unit = {},
     onSignUpButtonClicked: () -> Unit = {},
     onSocialMediaButtonClicked: () -> Unit = {},
