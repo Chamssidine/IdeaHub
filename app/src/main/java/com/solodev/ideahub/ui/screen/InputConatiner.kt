@@ -19,15 +19,20 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,12 +52,13 @@ import com.solodev.ideahub.ui.theme.IdeaHubTheme
 fun InputContainer(
     modifier: Modifier = Modifier,
     inputValue: String,
-    onInputValueChange: (String) -> Unit,
+    onInputValueChange: (String) -> Unit = {},
     labelValue: String = stringResource(R.string.default_label),
     leadingIconValue: @Composable (() -> Unit)? = null,
     trailingIconValue: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
     onKeyboardDone: () -> Unit = {},
+    showLabel: Boolean = true,
 
     ){
         Box(
@@ -83,6 +89,22 @@ fun InputContainer(
         }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomSearchBar(
+    modifier:Modifier = Modifier,
+) {
+    SearchBar(
+        leadingIcon = {Icon(imageVector = Icons.Default.Search, contentDescription = null)},
+       query = "Search",
+       onQueryChange = {},
+       onSearch = {},
+       active = false,
+       onActiveChange = {}
+   ) {
+
+   }
+}
 
 @Composable
 fun TestInput() {

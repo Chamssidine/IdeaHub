@@ -71,7 +71,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
@@ -91,4 +91,6 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     // Declare the dependency for the Firebase Authentication library
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation ("com.google.android.material:material:1.12.0") // Or the latest version
+
 }

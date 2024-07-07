@@ -1,5 +1,6 @@
 package com.solodev.ideahub
 
+import UserThreadHistoryScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,7 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.solodev.ideahub.ui.screen.IdeaHubScreen
+import com.solodev.ideahub.ui.screen.ThreadScreen.ThreadScreen
 import com.solodev.ideahub.ui.screen.login.LoginScreen
+import com.solodev.ideahub.ui.screen.userThreadScreen.UserThreadScreen
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 
 @ExperimentalMaterial3Api
@@ -26,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    IdeaHubScreen()
+                    UserThreadScreen()
                 }
             }
         }

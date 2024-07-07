@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- App Name -->
     <string name="app_name">IdeaHub</string>
 
@@ -82,4 +82,21 @@
     <string name="send">Send\n</string>
     <string name="confirm">confirm\n</string>
     <string name="modify_email">Change email</string>
+
+
+    <!-- ThreadHistory -->
+
+    <string name="search_placeholder">Search...</string>
+    <string name="my_threads">MyThreads</string>
+    <string name="contributed_threads">Contributed Threads</string>
+    <string name="total_contributions">Total Contributions</string>
+    <string name="total_contributions_message">You have contributed to more than 10 Thread</string>
+    <string name="points">Points: 270 pts</string>
+    <string name="last_contribution">Last contribution: 3 days ago</string>
+
+    <string name="contribution_rate">Your contribution Rate: 30 %</string>
+    <string name="name">Name</string>
+    <string name="title">Title</string>
+    <string name="contributions">20 Contributions</string>
+    <string name="see_all">See All..</string>
 </resources>
