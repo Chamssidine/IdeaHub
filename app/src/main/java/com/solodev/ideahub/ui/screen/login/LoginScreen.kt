@@ -41,6 +41,7 @@ fun LoginScreen(
     loginViewModel: LoginViewModel = hiltViewModel<LoginViewModel>(),
     onForgotPasswordButtonClicked: () -> Unit = {},
     onSignUpButtonClicked: () -> Unit = {},
+
     onSocialMediaButtonClicked: () -> Unit = {},
 ) {
     val uiState by loginViewModel.uiState.collectAsState()

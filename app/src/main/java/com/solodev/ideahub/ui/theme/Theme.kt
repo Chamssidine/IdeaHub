@@ -206,7 +206,27 @@ private val highContrastDarkColorScheme = darkColorScheme(
     inversePrimary = inversePrimaryDarkHighContrast,
 
 )
+private val LightColors = lightColorScheme(
+    primary = BluePrimary,
+    secondary = BlueSecondary,
+    background = BlueBackground,
+    surface = White,
+    onPrimary = White,
+    onSecondary = White,
+    onBackground = GreyDark,
+    onSurface = GreyDark
+)
 
+private val DarkColors = darkColorScheme(
+    primary = BluePrimary,
+    secondary = BlueSecondary,
+    background = GreyDark,
+    surface = GreyLight,
+    onPrimary = GreyDark,
+    onSecondary = GreyLight,
+    onBackground = White,
+    onSurface = White
+)
 @Immutable
 data class ColorFamily(
     val color: Color,
@@ -232,8 +252,8 @@ fun IdeaHubTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> darkScheme
-        else -> lightScheme
+        darkTheme -> DarkColors
+        else -> LightColors
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
