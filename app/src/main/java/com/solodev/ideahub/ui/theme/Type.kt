@@ -14,10 +14,21 @@ val montserrat = FontFamily(
     Font(R.font.montserrat_regular),
     Font(R.font.montserrat_bold, FontWeight.Bold)
 )
-val roboto =  FontFamily(
-    Font(R.font.roboto_regular),
-    Font(R.font.roboto_bold, FontWeight.Bold),
-    Font(R.font.roboto_medium, FontWeight.Medium)
+val museo =  FontFamily(
+    Font(R.font.museo_sans_rounded_900),
+    Font(R.font.museo_sans_rounded_filled_900, FontWeight.Bold),
+
+)
+val monograf = FontFamily(
+    Font(R.font.monograf_regular),
+)
+
+val tenten = FontFamily(
+    Font(R.font.tenten_rounded_regular),
+    Font(R.font.tenten_rounded_bold, FontWeight.Bold),
+    Font(R.font.tenten_rounded_semibold, FontWeight.SemiBold),
+    Font(R.font.tenten_rounded_medium, FontWeight.Medium)
+
 )
 
 val Typography = Typography(
@@ -43,21 +54,21 @@ val Typography = Typography(
         letterSpacing = 0.sp
     ),
     labelMedium = TextStyle(
-        fontFamily = roboto,
+        fontFamily = museo,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
     bodySmall = TextStyle(
-        fontFamily = roboto,
+        fontFamily = tenten,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.1.sp
     ),
     bodyMedium = TextStyle(
-        fontFamily = roboto,
+        fontFamily = tenten,
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
         lineHeight = 24.sp,

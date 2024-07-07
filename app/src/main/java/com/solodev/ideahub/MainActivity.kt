@@ -14,8 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.solodev.ideahub.ui.screen.IdeaHubScreen
 import com.solodev.ideahub.ui.screen.ThreadScreen.ThreadScreen
+import com.solodev.ideahub.ui.screen.goalCreationScreen.CreateGoalButton
+import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationScreen
 import com.solodev.ideahub.ui.screen.login.LoginScreen
 import com.solodev.ideahub.ui.screen.userThreadScreen.UserThreadScreen
+import com.solodev.ideahub.ui.screen.welcomeScreen.WelcomeScreen
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 
 @ExperimentalMaterial3Api
@@ -29,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    UserThreadScreen()
+                    GoalCreationScreen()
                 }
             }
         }

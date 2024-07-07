@@ -24,6 +24,8 @@
 
     <!-- Home Screen -->
     <string name="home_search_group">Search group</string>
+    <string name="home_begin_tour">Welcome,
+        \nlet\'s Begin with a tour!</string>
     <string name="home_welcome">Welcome to IdeaHub!</string>
     <string name="home_no_objectives">You don\'t have any objectives yet. Would you like to create a new one?</string>
     <string name="home_create_objective_button">Let\'s Go</string>
@@ -31,6 +33,9 @@
     <string name="home_your_group">Your Group</string>
     <string name="home_explore">Explore</string>
     <string name="home_active_discussion">Active Discussion</string>
+
+    <!-- First Goal Creation -->
+    <string name="first_goal_creation">Let\'s start by creating your First Goal </string>
 
     <!-- Community Screen -->
     <string name="community_categories">Categories</string>
@@ -99,4 +104,6 @@
     <string name="title">Title</string>
     <string name="contributions">20 Contributions</string>
     <string name="see_all">See All..</string>
+    <string name="getstarted">Let\'s Go</string>
+
 </resources>

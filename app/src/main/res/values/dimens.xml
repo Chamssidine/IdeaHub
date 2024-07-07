@@ -19,6 +19,7 @@
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">16dp</dimen>
     <dimen name="padding_large">32dp</dimen>
+    <dimen name="padding_extra_large">48dp</dimen>
 
     <!-- Buttons -->
     <dimen name="button_height_small">36dp</dimen>
@@ -36,6 +37,7 @@
     <dimen name="button_width_small">50dp</dimen>
     <dimen name="button_width_medium">100dp</dimen>
     <dimen name="button_width_large">150dp</dimen>
+    <dimen name="button_width_full_width">300dp</dimen>
 
     <!-- card -->
     <dimen name="card_height_small">36dp</dimen>"
