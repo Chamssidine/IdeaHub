@@ -99,23 +99,32 @@ fun GoalCreationScreen(
 }
 
 @Composable
-fun GoalCReationDialog(
-    modfier: Modifier = Modifier,
+fun GoalCreationDialog(
+    modifier: Modifier = Modifier,
     onCreateButtonClicked: () -> Unit = {},
     onDismissButtonClicked: () -> Unit = {}
 ){
-    DialogContent()
+    Column(
+        modifier = modifier
+            .padding(dimensionResource(id = R.dimen.padding_medium))
+    ) {
+        DialogContent(
+            modifier = modifier
+        )
+        ElevatedButton(onClick = { }) {
+            Text(text = stringResource(id = R.string.create))
+        }
+    }
+
 }
 
 @Composable
 fun DialogContent(
     modifier: Modifier = Modifier,
-    onCreateButtonClicked: () -> Unit = {},
-    onDismissButtonClicked: () -> Unit = {},
     onValueChange: (String) -> Unit = {}
 ){
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.wrapContentSize(),
         contentAlignment = Alignment.Center
     ) {
         ElevatedCard(
@@ -137,25 +146,31 @@ fun DialogContent(
                     Text(text = stringResource(id = R.string.description),modifier = modifier.wrapContentSize(align = Alignment.Center))
                 }
                 TextArea(text = "", onTextChange = onValueChange)
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_extra_large)))
                 HeaderTitle(title = stringResource(id = R.string.deadline))
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 Box()
                 {
                     Text(text = stringResource(id = R.string.objectives_due_date),modifier = modifier.wrapContentSize(align = Alignment.Center))
                 }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_extra_large)))
                 HeaderTitle(title = stringResource(id = R.string.reminder_frequency))
-                Row(modifier = Modifier.fillMaxWidth().padding(dimensionResource(id = R.dimen.padding_medium)),) {
-                    Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(id = R.dimen.padding_medium)),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier) {
                         Text(text = stringResource(id = R.string.daily))
                         Checkbox(checked = false, onCheckedChange = {})
                     }
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(modifier = Modifier) {
                         Text(text = stringResource(id = R.string.weekly))
                         Checkbox(checked = false, onCheckedChange = {})
                     }
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(modifier = Modifier) {
                         Text(text = stringResource(id = R.string.monthly))
                         Checkbox(checked = false, onCheckedChange = {})
                     }
@@ -284,5 +299,5 @@ fun TextArea(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun WelcomeScreenPreview(){
-    DialogContent()
+    GoalCreationDialog()
 }
