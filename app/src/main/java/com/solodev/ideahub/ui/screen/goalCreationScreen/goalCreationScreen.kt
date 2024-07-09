@@ -3,11 +3,20 @@ package com.solodev.ideahub.ui.screen.goalCreationScreen
 
 import android.widget.Space
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -97,8 +108,9 @@ fun GoalCreationScreen(
                     }
                 )
             }
-            if(showDialog) {
+           if (showDialog){
                 GoalCreationDialog(
+                    showDialog = showDialog,
                     onCreateButtonClicked = {showDialog = false},
                     onDismissButtonClicked = {showDialog = true}
                 )
@@ -111,31 +123,49 @@ fun GoalCreationScreen(
 @Composable
 fun GoalCreationDialog(
     modifier: Modifier = Modifier,
+    showDialog: Boolean = false,
     onCreateButtonClicked: () -> Unit = {},
     onDismissButtonClicked: () -> Unit = {}
-){
-    Dialog(onDismissRequest = onDismissButtonClicked ) {
-        Column(
-            modifier = modifier
-                .padding(dimensionResource(id = R.dimen.padding_medium)),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            DialogContent(
-                modifier = modifier
-            )
-            ElevatedButton(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                    //.padding(dimensionResource(id = R.dimen.padding_medium)),
-                onClick = onCreateButtonClicked
+) {
+    var animateIn by remember { mutableStateOf(false) }
+
+    LaunchedEffect(showDialog) {
+        animateIn = showDialog
+    }
+
+    if (showDialog) {
+        Dialog(onDismissRequest = onDismissButtonClicked) {
+            AnimatedVisibility(
+                visible = animateIn,
+                enter = fadeIn(spring(stiffness = Spring.StiffnessHigh)) + scaleIn(
+                    initialScale = .8f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMediumLow
+                    )
+                ),
+                exit = slideOutVertically { it / 8 } + fadeOut() + scaleOut(targetScale = .95f)
             ) {
-                Text(text = stringResource(id = R.string.create))
+                Column(
+                    modifier = modifier
+                        .padding(dimensionResource(id = R.dimen.padding_medium)),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    DialogContent(
+                        modifier = modifier
+                    )
+                    ElevatedButton(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        onClick = onCreateButtonClicked
+                    ) {
+                        Text(text = stringResource(id = R.string.create))
+                    }
+                }
             }
         }
     }
-
-
 }
 
 @Composable
@@ -159,21 +189,25 @@ fun DialogContent(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                HeaderTitle(title = stringResource(id = R.string.title))
+                HeaderTitle(title = stringResource(id = R.string.title_and_description))
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 Box()
                 {
-                    Text(text = stringResource(id = R.string.description),modifier = modifier.wrapContentSize(align = Alignment.Center))
+                    TextArea(text = "", onTextChange = {}, label = stringResource(id = R.string.title))
                 }
-                TextArea(text = "", onTextChange = onValueChange)
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_extra_large)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                Box()
+                {
+                    TextArea(text = "", onTextChange = {},)
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 HeaderTitle(title = stringResource(id = R.string.deadline))
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 Box()
                 {
                     Text(text = stringResource(id = R.string.objectives_due_date),modifier = modifier.wrapContentSize(align = Alignment.Center))
                 }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_extra_large)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 HeaderTitle(title = stringResource(id = R.string.reminder_frequency))
                 Row(
                     modifier = Modifier
@@ -281,7 +315,7 @@ fun HeaderTitle(
         ) {
             Text(
                 text = title,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
             )
         }
     }
@@ -291,7 +325,9 @@ fun HeaderTitle(
 fun TextArea(
     modifier: Modifier = Modifier,
     text: String,
-    onTextChange: (String) -> Unit
+    onTextChange: (String) -> Unit,
+    singleLine: Boolean = true,
+    label: String = stringResource(id = R.string.description_example)
 ) {
     Box(
         modifier = modifier.wrapContentSize(),
@@ -300,12 +336,20 @@ fun TextArea(
         Card (
             shape = MaterialTheme.shapes.small,
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                containerColor = Color.Transparent,
+            ),
+            modifier = modifier.border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline,
+                shape = MaterialTheme.shapes.small
             )
         ){
             TextField(
                 value = text, onValueChange = onTextChange,
+                singleLine = singleLine,
+                label = {Text(text = label)},
                 //placeholder = {Text(text = stringResource(id = R.string.description_example))},
+
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,

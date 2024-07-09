@@ -101,6 +101,7 @@
 
     <string name="contribution_rate">Your contribution Rate: 30 %</string>
     <string name="name">Name</string>
+    <string name="title_and_description">Title and Description</string>
     <string name="title">Title</string>
     <string name="contributions">20 Contributions</string>
     <string name="see_all">See All..</string>
