@@ -114,7 +114,7 @@ fun GoalCreationDialog(
     onCreateButtonClicked: () -> Unit = {},
     onDismissButtonClicked: () -> Unit = {}
 ){
-    Dialog(onDismissRequest = { onDismissButtonClicked }) {
+    Dialog(onDismissRequest = onDismissButtonClicked ) {
         Column(
             modifier = modifier
                 .padding(dimensionResource(id = R.dimen.padding_medium)),
@@ -128,7 +128,7 @@ fun GoalCreationDialog(
                 modifier = Modifier
                     .fillMaxWidth(),
                     //.padding(dimensionResource(id = R.dimen.padding_medium)),
-                onClick = { }
+                onClick = onCreateButtonClicked
             ) {
                 Text(text = stringResource(id = R.string.create))
             }
