@@ -117,15 +117,17 @@ fun GoalCreationDialog(
     Dialog(onDismissRequest = { onDismissButtonClicked }) {
         Column(
             modifier = modifier
-                .padding(dimensionResource(id = R.dimen.padding_medium))
+                .padding(dimensionResource(id = R.dimen.padding_medium)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             DialogContent(
                 modifier = modifier
             )
             ElevatedButton(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.padding_medium)),
+                    .fillMaxWidth(),
+                    //.padding(dimensionResource(id = R.dimen.padding_medium)),
                 onClick = { }
             ) {
                 Text(text = stringResource(id = R.string.create))
@@ -147,7 +149,7 @@ fun DialogContent(
     ) {
         ElevatedCard(
             modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.padding_medium))
+               // .padding(dimensionResource(id = R.dimen.padding_medium))
                 .wrapContentSize(),
         ) {
             Column(
