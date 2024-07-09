@@ -111,7 +111,12 @@ fun GoalCreationDialog(
         DialogContent(
             modifier = modifier
         )
-        ElevatedButton(onClick = { }) {
+        ElevatedButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.padding_medium)),
+            onClick = { }
+        ) {
             Text(text = stringResource(id = R.string.create))
         }
     }
@@ -130,7 +135,7 @@ fun DialogContent(
         ElevatedCard(
             modifier = Modifier
                 .padding(dimensionResource(id = R.dimen.padding_medium))
-                .fillMaxSize()
+                .wrapContentSize(),
         ) {
             Column(
                 modifier = Modifier
