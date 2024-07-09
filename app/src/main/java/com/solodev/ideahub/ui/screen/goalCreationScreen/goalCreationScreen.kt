@@ -46,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.solodev.ideahub.R
 import kotlinx.coroutines.delay
 
@@ -53,6 +54,7 @@ import kotlinx.coroutines.delay
 fun GoalCreationScreen(
     modifier: Modifier = Modifier
 ){
+    var showDialog by remember { mutableStateOf(false)}
     Box(modifier = modifier
         .fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -83,14 +85,22 @@ fun GoalCreationScreen(
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_large)))
-            Box(
+            Box (
                 modifier = modifier
                     .padding(top = dimensionResource(id = R.dimen.padding_extra_large))
             ) {
-                CreateGoalButton(
+                CreateGoalButton (
                     width = dimensionResource(id = R.dimen.button_height_large),
                     height = dimensionResource(id = R.dimen.button_height_large),
-                    onCreateGoalClicked = {}
+                    onCreateGoalClicked = {
+                        showDialog = true
+                    }
+                )
+            }
+            if(showDialog) {
+                GoalCreationDialog(
+                    onCreateButtonClicked = {showDialog = false},
+                    onDismissButtonClicked = {showDialog = true}
                 )
             }
 
@@ -104,22 +114,25 @@ fun GoalCreationDialog(
     onCreateButtonClicked: () -> Unit = {},
     onDismissButtonClicked: () -> Unit = {}
 ){
-    Column(
-        modifier = modifier
-            .padding(dimensionResource(id = R.dimen.padding_medium))
-    ) {
-        DialogContent(
+    Dialog(onDismissRequest = { onDismissButtonClicked }) {
+        Column(
             modifier = modifier
-        )
-        ElevatedButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.padding_medium)),
-            onClick = { }
+                .padding(dimensionResource(id = R.dimen.padding_medium))
         ) {
-            Text(text = stringResource(id = R.string.create))
+            DialogContent(
+                modifier = modifier
+            )
+            ElevatedButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.padding_medium)),
+                onClick = { }
+            ) {
+                Text(text = stringResource(id = R.string.create))
+            }
         }
     }
+
 
 }
 
