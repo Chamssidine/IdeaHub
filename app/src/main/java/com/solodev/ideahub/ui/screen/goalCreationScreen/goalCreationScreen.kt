@@ -1,26 +1,37 @@
 package com.solodev.ideahub.ui.screen.goalCreationScreen
 
 
+import android.widget.Space
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -78,7 +90,7 @@ fun GoalCreationScreen(
                 CreateGoalButton(
                     width = dimensionResource(id = R.dimen.button_height_large),
                     height = dimensionResource(id = R.dimen.button_height_large),
-                    onLetsGoClicked = {}
+                    onCreateGoalClicked = {}
                 )
             }
 
@@ -86,13 +98,82 @@ fun GoalCreationScreen(
     }
 }
 
+@Composable
+fun GoalCReationDialog(
+    modfier: Modifier = Modifier,
+    onCreateButtonClicked: () -> Unit = {},
+    onDismissButtonClicked: () -> Unit = {}
+){
+    DialogContent()
+}
+
+@Composable
+fun DialogContent(
+    modifier: Modifier = Modifier,
+    onCreateButtonClicked: () -> Unit = {},
+    onDismissButtonClicked: () -> Unit = {},
+    onValueChange: (String) -> Unit = {}
+){
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        ElevatedCard(
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.padding_medium))
+                .fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.padding_medium)),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                HeaderTitle(title = stringResource(id = R.string.title))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                Box()
+                {
+                    Text(text = stringResource(id = R.string.description),modifier = modifier.wrapContentSize(align = Alignment.Center))
+                }
+                TextArea(text = "", onTextChange = onValueChange)
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                HeaderTitle(title = stringResource(id = R.string.deadline))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                Box()
+                {
+                    Text(text = stringResource(id = R.string.objectives_due_date),modifier = modifier.wrapContentSize(align = Alignment.Center))
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                HeaderTitle(title = stringResource(id = R.string.reminder_frequency))
+                Row(modifier = Modifier.fillMaxWidth().padding(dimensionResource(id = R.dimen.padding_medium)),) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = stringResource(id = R.string.daily))
+                        Checkbox(checked = false, onCheckedChange = {})
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = stringResource(id = R.string.weekly))
+                        Checkbox(checked = false, onCheckedChange = {})
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = stringResource(id = R.string.monthly))
+                        Checkbox(checked = false, onCheckedChange = {})
+                    }
+
+                }
+           }
+       }
+   }
+
+
+}
 
 @Composable
 fun CreateGoalButton(
     modifier: Modifier = Modifier,
     width: Dp,
     height: Dp,
-    onLetsGoClicked: () -> Unit
+    onCreateGoalClicked: () -> Unit
 ) {
     var targetWidth by remember { mutableStateOf(width) }
     var targetHeight by remember { mutableStateOf(height) }
@@ -130,7 +211,7 @@ fun CreateGoalButton(
     }
 
     ElevatedButton(
-        onClick = onLetsGoClicked,
+        onClick = onCreateGoalClicked,
         modifier = modifier.wrapContentSize(),
         shape = MaterialTheme.shapes.extraLarge
     ) {
@@ -142,8 +223,66 @@ fun CreateGoalButton(
         )
     }
 }
+
+
+@Composable
+fun HeaderTitle(
+    modifier: Modifier = Modifier,
+    title: String
+){
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        ElevatedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+            ,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+            ),
+            shape = MaterialTheme.shapes.extraLarge,
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Text(
+                text = title,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            )
+        }
+    }
+}
+
+@Composable
+fun TextArea(
+    modifier: Modifier = Modifier,
+    text: String,
+    onTextChange: (String) -> Unit
+) {
+    Box(
+        modifier = modifier.wrapContentSize(),
+        contentAlignment = Alignment.Center
+    ){
+        Card (
+            shape = MaterialTheme.shapes.small,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+            )
+        ){
+            TextField(
+                value = text, onValueChange = onTextChange,
+                //placeholder = {Text(text = stringResource(id = R.string.description_example))},
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                )
+            )
+        }
+    }
+}
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun WelcomeScreenPreview(){
-    GoalCreationScreen()
+    DialogContent()
 }

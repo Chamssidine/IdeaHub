@@ -105,5 +105,12 @@
     <string name="contributions">20 Contributions</string>
     <string name="see_all">See All..</string>
     <string name="getstarted">Let\'s Go</string>
+    <string name="description">Description\n</string>
+    <string name="description_example">write your goal description here\n</string>
+    <string name="deadline">Deadline</string>
+    <string name="reminder_frequency">Reminder frequency</string>
+    <string name="daily">Daily</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
 
 </resources>
