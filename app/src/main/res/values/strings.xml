@@ -114,4 +114,22 @@
     <string name="weekly">Weekly</string>
     <string name="monthly">Monthly</string>
 
+    <!--Goal Screen-->
+    <string name="search_group">Search group</string>
+    <string name="congratulations_message">Great Job, you have just created a new Goal. Your created Goal is now available in the tab Goal and Task. Let's move on.</string>
+    <string name="tab_goal_and_task">Goal and Task</string>
+    <string name="tab_plan_of_the_day">Plan of the Day</string>
+    <string name="tab_popular_groups">Popular Groups</string>
+    <string name="tab_active_discussions">Active Discussions</string>
+    <string name="your_goal">Your Goal</string>
+    <string name="achieved">Achieved</string>
+    <string name="goal_name">MyGoal</string>
+    <string name="created_at">Created at:</string>
+    <string name="open_button">Open</string>
+    <string name="current">Current</string>
+    <string name="priority">Priority:</string>
+    <string name="priority_high">High</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_low">Low</string>
+
 </resources>

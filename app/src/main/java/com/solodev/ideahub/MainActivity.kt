@@ -18,6 +18,7 @@ import com.solodev.ideahub.ui.screen.goalCreationScreen.CreateGoalButton
 import com.solodev.ideahub.ui.screen.goalCreationScreen.DialogContent
 import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationDialog
 import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationScreen
+import com.solodev.ideahub.ui.screen.goalScreen.GoalScreen
 import com.solodev.ideahub.ui.screen.login.LoginScreen
 import com.solodev.ideahub.ui.screen.userThreadScreen.UserThreadScreen
 import com.solodev.ideahub.ui.screen.welcomeScreen.WelcomeScreen
@@ -34,7 +35,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GoalCreationScreen()
+                    GoalScreen()
                 }
             }
         }
