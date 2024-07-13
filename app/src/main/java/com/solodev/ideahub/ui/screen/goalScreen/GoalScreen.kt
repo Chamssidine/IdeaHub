@@ -1,7 +1,12 @@
 package com.solodev.ideahub.ui.screen.goalScreen
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
@@ -10,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,7 +36,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,67 +52,144 @@ fun GoalScreen(
   modifier: Modifier = Modifier,
   selectedIndex: Int = 0
 ) {
-    var customIndex by remember { mutableStateOf(selectedIndex) }
+    var customIndex = selectedIndex
     val items = listOf("Item 1", "Item 2", "Item 3", "Item 4")
-    var defaultItemCount by rememberSaveable { mutableStateOf(3) }
 
-    LazyColumn(
+    Column(
         modifier = modifier
+            .fillMaxSize()
             .padding(dimensionResource(id = R.dimen.padding_medium))
     ) {
-        item {
-            CustomSearchBar()
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-
+        CustomSearchBar()
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+        Column (
+            modifier = Modifier
+                .animateContentSize(
+                    animationSpec = spring(
+                        stiffness = Spring.StiffnessMediumLow
+                    )
+                )
+                .scrollable(
+                    rememberScrollState(),
+                    Orientation.Vertical,
+                    true
+                )
+        ){
             Text(
                 text = stringResource(id = R.string.congratulations_message),
                 style = MaterialTheme.typography.headlineSmall
             )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-        }
-
-        item {
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
+            Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+            LazyRow (
+                modifier = modifier,
                 horizontalArrangement = Arrangement.SpaceAround
-            ) {
+            ){
                 itemsIndexed(items) { index, item ->
-                    GoalScreenTab(
-                        modifier = Modifier,
-                        tabTitle = if (index == customIndex) "Selected Tab" else item,
-                        onSelected = { customIndex = index },
-                        selected = index == customIndex
-                    )
+                    if (index == customIndex) {
+                        GoalScreenTab(
+                            modifier = modifier,
+                            tabTitle = "Selected Tab",
+                            onSelected = { customIndex = index },
+                            selected = true
+                        )
+                    } else {
+                        GoalScreenTab(
+                            modifier = modifier,
+                            tabTitle = item,
+                            onSelected = { customIndex = index },
+                            selected = false
+                        )
+                    }
                 }
             }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
-        }
-
-        item {
+            Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
             Text(
                 text = stringResource(id = R.string.your_goal),
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelMedium,
             )
+            AchievedGoal()
+            UnAchievedGoal()
         }
 
-        items(defaultItemCount) {
-            GoalItem(Modifier)
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-        }
+    }
 
-        item {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                TextButton(onClick = { defaultItemCount = if (defaultItemCount == 3) 6 else 3 }) {
-                    Text(text = if (defaultItemCount == 3) stringResource(id = R.string.see_all) else stringResource(id = R.string.see_less))
-                }
+}
+
+@Composable
+fun AchievedGoal(
+    modifier: Modifier = Modifier
+
+) {
+
+    var defaultItemCount by rememberSaveable { mutableStateOf(3)}
+    Column(
+        modifier = modifier
+            .wrapContentHeight()
+            .animateContentSize(
+                animationSpec = spring(
+                    stiffness = Spring.StiffnessMediumLow
+                )
+            )
+    ) {
+        Text(text = stringResource(id = R.string.achieved))
+        LazyColumn {
+            items(defaultItemCount) {
+                GoalItem(modifier, hasCompleted = true)
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
             }
         }
+        Box(
+            modifier = modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            TextButton(onClick = { defaultItemCount = if (defaultItemCount == 3) 6 else 3 }) {
+
+                Text(text = if(defaultItemCount == 3)stringResource(id = R.string.see_all) else stringResource(
+                    id = R.string.see_less
+                ))
+            }
+        }
+
     }
 }
 
+@Composable
+fun UnAchievedGoal(
+    modifier: Modifier = Modifier
+) {
+    var defaultItemCount by rememberSaveable { mutableStateOf(3)}
+    Column(
+        modifier = modifier
+            .wrapContentHeight()
+            .animateContentSize(
+                animationSpec = spring(
+                    stiffness = Spring.StiffnessMediumLow
+                )
+            )
+    ) {
+        Text(text = stringResource(id = R.string.achieved))
+        LazyColumn {
+            items(defaultItemCount) {
+                GoalItem(modifier, hasCompleted = false)
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+            }
+        }
+        Box(
+            modifier = modifier
+                .fillMaxWidth(),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            TextButton(onClick = { defaultItemCount = if (defaultItemCount == 3) 6 else 3 }) {
+
+                Text(text = if(defaultItemCount == 3)stringResource(id = R.string.see_all) else stringResource(
+                    id = R.string.see_less
+                ))
+            }
+        }
+
+    }
+}
 @Composable
 fun GoalItem(
     modifier: Modifier,
@@ -117,9 +199,10 @@ fun GoalItem(
     onCompleted: () -> Unit = {},
     onDelete: () -> Unit = {},
     onOpen: () -> Unit = {},
+    deadLine: String = "19-05-2024",
+    priority: String = "High",
 
 ){
-
     ElevatedCard(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -142,9 +225,33 @@ fun GoalItem(
                         .align(Alignment.End)
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
             if (hasCompleted) {
+                Spacer(modifier = Modifier.weight(1f))
                 Text(text = "Completed",style = MaterialTheme.typography.labelSmall)
+            }
+            else {
+                Column() {
+                    Text(
+                        text = stringResource(id = R.string.deadline),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                    Text(
+                        text = stringResource(id = R.string.priority),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Column() {
+                    Text(
+                        text = deadLine,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                    Text(
+                        text = priority,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
             }
             ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
             {
