@@ -36,6 +36,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,70 +50,63 @@ import com.solodev.ideahub.ui.screen.CustomSearchBar
 
 @Composable
 fun GoalScreen(
-  modifier: Modifier = Modifier,
-  selectedIndex: Int = 0
+    modifier: Modifier = Modifier,
+    selectedIndex: Int = 0
 ) {
-    var customIndex = selectedIndex
+    var customIndex by remember { mutableStateOf(selectedIndex) }
     val items = listOf("Item 1", "Item 2", "Item 3", "Item 4")
 
-    Column(
+    LazyColumn(
         modifier = modifier
             .fillMaxSize()
             .padding(dimensionResource(id = R.dimen.padding_medium))
     ) {
-        CustomSearchBar()
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-        Column (
-            modifier = Modifier
-                .animateContentSize(
-                    animationSpec = spring(
-                        stiffness = Spring.StiffnessMediumLow
-                    )
-                )
-                .scrollable(
-                    rememberScrollState(),
-                    Orientation.Vertical,
-                    true
-                )
-        ){
+        item {
+            CustomSearchBar()
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+        }
+
+        item {
             Text(
                 text = stringResource(id = R.string.congratulations_message),
                 style = MaterialTheme.typography.headlineSmall
             )
-            Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-            LazyRow (
-                modifier = modifier,
-                horizontalArrangement = Arrangement.SpaceAround
-            ){
-                itemsIndexed(items) { index, item ->
-                    if (index == customIndex) {
-                        GoalScreenTab(
-                            modifier = modifier,
-                            tabTitle = "Selected Tab",
-                            onSelected = { customIndex = index },
-                            selected = true
-                        )
-                    } else {
-                        GoalScreenTab(
-                            modifier = modifier,
-                            tabTitle = item,
-                            onSelected = { customIndex = index },
-                            selected = false
-                        )
-                    }
-                }
-            }
-            Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
-            Text(
-                text = stringResource(id = R.string.your_goal),
-                style = MaterialTheme.typography.labelMedium,
-            )
-            AchievedGoal()
-            UnAchievedGoal()
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         }
 
-    }
+        item {
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                itemsIndexed(items) { index, item ->
+                    GoalScreenTab(
+                        modifier = Modifier,
+                        tabTitle = if (index == customIndex) "Selected Tab" else item,
+                        onSelected = { customIndex = index },
+                        selected = index == customIndex
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
+        }
 
+        item {
+            Text(
+                text = stringResource(id = R.string.your_goal),
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+
+        item {
+            AchievedGoal()
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
+        }
+
+        item {
+            UnAchievedGoal()
+        }
+    }
 }
 
 @Composable
@@ -168,7 +162,7 @@ fun UnAchievedGoal(
                 )
             )
     ) {
-        Text(text = stringResource(id = R.string.achieved))
+        Text(text = stringResource(id = R.string.current))
         LazyColumn {
             items(defaultItemCount) {
                 GoalItem(modifier, hasCompleted = false)
