@@ -91,7 +91,7 @@
 
     <!-- ThreadHistory -->
 
-    <string name="search_placeholder">Search...</string>
+    <string name="search_placeholder">Search</string>
     <string name="my_threads">MyThreads</string>
     <string name="contributed_threads">Contributed Threads</string>
     <string name="total_contributions">Total Contributions</string>
@@ -116,7 +116,7 @@
 
     <!--Goal Screen-->
     <string name="search_group">Search group</string>
-    <string name="congratulations_message">Great Job, you have just created a new Goal. Your created Goal is now available in the tab Goal and Task. Let's move on.</string>
+    <string name="congratulations_message">Great Job, you have just created a new Goal. Your created Goal is now available in the tab Goal and Task. Let\'s move on.</string>
     <string name="tab_goal_and_task">Goal and Task</string>
     <string name="tab_plan_of_the_day">Plan of the Day</string>
     <string name="tab_popular_groups">Popular Groups</string>
@@ -131,5 +131,6 @@
     <string name="priority_high">High</string>
     <string name="priority_medium">Medium</string>
     <string name="priority_low">Low</string>
+    <string name="see_less">See less\n</string>
 
 </resources>
