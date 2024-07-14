@@ -97,19 +97,29 @@ fun GoalScreen(
         }
 
         item {
-            Text(
-                text = stringResource(id = R.string.your_goal),
-                style = MaterialTheme.typography.labelMedium
+            MainTabScreen(
+                selecTedTabIndex = selectedIndex,
+                tabTitle = "MyGoal"
             )
         }
-        item {
-            AchievedGoal()
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
-        }
-        item {
-            UnAchievedGoal()
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
-        }
+
+    }
+}
+
+@Composable
+fun MainTabScreen(
+    modifier: Modifier = Modifier,
+    selecTedTabIndex: Int = 0,
+    tabTitle: String
+){
+    Column {
+        Text(
+            text = tabTitle,
+            style = MaterialTheme.typography.labelMedium
+        )
+        AchievedGoal()
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
+        UnAchievedGoal()
     }
 }
 
@@ -298,6 +308,7 @@ fun DayPlan(modifier: Modifier = Modifier
         LazyColumn {
             items(count = defaultIcount){
                 DayPlanItem()
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
 
             }
         }
