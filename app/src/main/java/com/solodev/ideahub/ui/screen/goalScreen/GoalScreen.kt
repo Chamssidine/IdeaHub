@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -100,7 +101,7 @@ fun GoalScreen(
         item {
             Log.d("GoalScreen", "$customIndex")
             MainTabScreen(
-                selecTedTabIndex = customIndex,
+                selectedTabIndex = customIndex,
                 tabTitle = "MyGoal"
             )
         }
@@ -111,12 +112,17 @@ fun GoalScreen(
 @Composable
 fun MainTabScreen(
     modifier: Modifier = Modifier,
-    selecTedTabIndex: Int = 0,
+    selectedTabIndex: Int = 0,
     tabTitle: String
-){
-    when(selecTedTabIndex){
-        0-> {
-            Column {
+) {
+    Log.d("MainTabScreen", "selectedTabIndex: $selectedTabIndex, tabTitle: $tabTitle")
+    when (selectedTabIndex) {
+        0 -> {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(dimensionResource(id = R.dimen.padding_medium))
+            ) {
                 Text(
                     text = tabTitle,
                     style = MaterialTheme.typography.labelMedium
@@ -126,14 +132,14 @@ fun MainTabScreen(
                 UnAchievedGoal()
             }
         }
-        1-> {
-            DayPlan()
+        1 -> {
+            Box(modifier = modifier.wrapContentSize())
+            {
+                DayPlan(modifier =modifier)
+            }
         }
-
     }
-
 }
-
 @Composable
 fun AchievedGoal(
     modifier: Modifier = Modifier
