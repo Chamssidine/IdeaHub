@@ -26,7 +26,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -212,6 +216,7 @@ fun GoalItem(
                 Text(text = "Completed",style = MaterialTheme.typography.labelSmall)
             }
             else {
+                Spacer(modifier = Modifier.weight(1f))
                 Column() {
                     Text(
                         text = stringResource(id = R.string.deadline),
@@ -223,6 +228,7 @@ fun GoalItem(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
+                Spacer(modifier = Modifier.weight(1f))
                 Column() {
                     Text(
                         text = deadLine,
@@ -279,6 +285,63 @@ fun GoalScreenTab(
     }
 
 }
+
+
+@Composable
+fun DayPlan(modifier: Modifier = Modifier
+) {
+    val defaultIcount by remember{mutableStateOf(3)}
+    Column(
+        modifier = modifier
+    ) {
+        LazyColumn {
+            items(count = defaultIcount){
+
+            }
+        }
+    }
+
+}
+
+@Composable
+fun DayPlanItem(
+    modifier: Modifier = Modifier,
+    hasFinished: Boolean = false,
+    onChecked: () -> Unit = {},
+    deadLine: String = "DeadLine",
+    deadLineValue: String = "Today",
+    priority: String = "Priority",
+    priorityValue: String = "Low",
+) {
+
+    ElevatedCard {
+        Row(
+            horizontalArrangement =  Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(text = deadLine)
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                Text(text = priority)
+            }
+            Spacer(modifier = Modifier.weight(1f))
+
+            Column {
+                Text(text = deadLineValue)
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                Text(text = priorityValue)
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            ElevatedButton(onClick = onChecked) {
+                Icon(Icons.Filled.Done, contentDescription = "checkBox")
+            }
+
+        }
+    }
+
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun GoalItemPreview() {
