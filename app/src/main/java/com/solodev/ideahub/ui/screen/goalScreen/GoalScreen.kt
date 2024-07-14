@@ -49,6 +49,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.CustomSearchBar
 
@@ -296,6 +297,7 @@ fun DayPlan(modifier: Modifier = Modifier
     ) {
         LazyColumn {
             items(count = defaultIcount){
+                DayPlanItem()
 
             }
         }
@@ -312,38 +314,75 @@ fun DayPlanItem(
     deadLineValue: String = "Today",
     priority: String = "Priority",
     priorityValue: String = "Low",
+    title: String = "My Goal",
+    creationDate: String ="19-05-2024"
 ) {
 
-    ElevatedCard {
+    ElevatedCard(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+    )  {
         Row(
-            horizontalArrangement =  Arrangement.Center,
+            modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small)),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(text = deadLine)
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                Text(text = priority)
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                Text(
+                    text = creationDate,
+                    style = MaterialTheme
+                        .typography.labelSmall,
+                    modifier = Modifier
+                        .align(Alignment.End)
+                )
             }
             Spacer(modifier = Modifier.weight(1f))
-
-            Column {
-                Text(text = deadLineValue)
+            Column() {
+                    Text(
+                        text = stringResource(id = R.string.deadline),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                    Text(
+                        text = stringResource(id = R.string.priority),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+            Column() {
+                Text(
+                    text = deadLine,
+                    style = MaterialTheme.typography.labelSmall
+                )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                Text(text = priorityValue)
+                Text(
+                    text = priority,
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
-            Spacer(modifier = Modifier.weight(1f))
-            ElevatedButton(onClick = onChecked) {
-                Icon(Icons.Filled.Done, contentDescription = "checkBox")
+            ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
+            {
+                IconButton(onClick = onChecked) {
+                    Icon(painter = painterResource(
+                        id = R.drawable.open_in_new_24px),
+                        contentDescription = "icon_share",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
             }
 
         }
-    }
-
 }
+
 
 
 @Preview(showBackground = true)
 @Composable
 fun GoalItemPreview() {
-    GoalScreen(modifier = Modifier)
+    DayPlan(modifier = Modifier.padding(16.dp))
 }
