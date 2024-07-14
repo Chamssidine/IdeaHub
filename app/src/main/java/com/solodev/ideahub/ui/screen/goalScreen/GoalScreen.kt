@@ -97,14 +97,13 @@ fun GoalScreen(
                 style = MaterialTheme.typography.labelMedium
             )
         }
-
         item {
             AchievedGoal()
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
         }
-
         item {
             UnAchievedGoal()
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
         }
     }
 }
@@ -145,7 +144,7 @@ fun AchievedGoal(
 fun UnAchievedGoal(
     modifier: Modifier = Modifier
 ) {
-    var defaultItemCount by rememberSaveable { mutableStateOf(3)}
+    var defaultItemCount by rememberSaveable { mutableStateOf(3) }
     Column(
         modifier = modifier
             .wrapContentHeight()
@@ -155,28 +154,24 @@ fun UnAchievedGoal(
                 )
             )
     ) {
-        Text(text = stringResource(id = R.string.current))
-        LazyColumn {
-            items(defaultItemCount) {
+        Text(text = stringResource(id = R.string.unachieved))
+        Column {
+            repeat(defaultItemCount) {
                 GoalItem(modifier, hasCompleted = false)
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
             }
         }
         Box(
-            modifier = modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.BottomEnd
         ) {
             TextButton(onClick = { defaultItemCount = if (defaultItemCount == 3) 6 else 3 }) {
-
-                Text(text = if(defaultItemCount == 3)stringResource(id = R.string.see_all) else stringResource(
-                    id = R.string.see_less
-                ))
+                Text(text = if (defaultItemCount == 3) stringResource(id = R.string.see_all) else stringResource(id = R.string.see_less))
             }
         }
-
     }
 }
+
 @Composable
 fun GoalItem(
     modifier: Modifier,
