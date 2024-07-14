@@ -1,5 +1,6 @@
 package com.solodev.ideahub.ui.screen.goalScreen
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -97,8 +98,9 @@ fun GoalScreen(
         }
 
         item {
+            Log.d("GoalScreen", "$customIndex")
             MainTabScreen(
-                selecTedTabIndex = selectedIndex,
+                selecTedTabIndex = customIndex,
                 tabTitle = "MyGoal"
             )
         }
@@ -112,15 +114,24 @@ fun MainTabScreen(
     selecTedTabIndex: Int = 0,
     tabTitle: String
 ){
-    Column {
-        Text(
-            text = tabTitle,
-            style = MaterialTheme.typography.labelMedium
-        )
-        AchievedGoal()
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
-        UnAchievedGoal()
+    when(selecTedTabIndex){
+        0-> {
+            Column {
+                Text(
+                    text = tabTitle,
+                    style = MaterialTheme.typography.labelMedium
+                )
+                AchievedGoal()
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
+                UnAchievedGoal()
+            }
+        }
+        1-> {
+            DayPlan()
+        }
+
     }
+
 }
 
 @Composable
