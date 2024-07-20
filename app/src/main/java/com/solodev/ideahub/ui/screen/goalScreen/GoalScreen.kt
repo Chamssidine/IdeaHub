@@ -20,20 +20,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -135,7 +139,7 @@ fun MainTabScreen(
         1 -> {
             Box(modifier = modifier.wrapContentSize())
             {
-                DayPlan(modifier =modifier)
+                DayPlan()
             }
         }
     }
@@ -222,10 +226,12 @@ fun GoalItem(
         shape = MaterialTheme.shapes.medium,
     )  {
         Row(
-            modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small)),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.padding_small)),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = modifier) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.labelMedium
@@ -245,7 +251,7 @@ fun GoalItem(
             }
             else {
                 Spacer(modifier = Modifier.weight(1f))
-                Column() {
+                Column(modifier = modifier) {
                     Text(
                         text = stringResource(id = R.string.deadline),
                         style = MaterialTheme.typography.bodyMedium
@@ -257,7 +263,7 @@ fun GoalItem(
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Column() {
+                Column(modifier = modifier) {
                     Text(
                         text = deadLine,
                         style = MaterialTheme.typography.labelSmall
@@ -316,19 +322,33 @@ fun GoalScreenTab(
 
 
 @Composable
-fun DayPlan(modifier: Modifier = Modifier
+fun DayPlan(
+    modifier: Modifier = Modifier,
+    onAddButtonCLicked: ()-> Unit = {}
 ) {
     val defaultIcount by remember{mutableStateOf(3)}
     Column(
-        modifier = modifier
+        modifier = modifier.wrapContentWidth()
     ) {
-        LazyColumn {
-            items(count = defaultIcount){
-                DayPlanItem()
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-
-            }
+        repeat(3) {
+            DayPlanItem()
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
         }
+       Box(
+           modifier = Modifier.fillMaxWidth(),
+           contentAlignment = Alignment.BottomEnd
+       )
+       {
+           FloatingActionButton(onClick = onAddButtonCLicked) {
+               IconButton(onClick = onAddButtonCLicked) {
+                   Icon(Icons.Filled.Add,
+                       contentDescription = "icon_add_goal",
+                       tint = MaterialTheme.colorScheme.primary
+                   )
+               }
+           }
+       }
+
     }
 
 }
@@ -395,9 +415,9 @@ fun DayPlanItem(
             ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
             {
                 IconButton(onClick = onChecked) {
-                    Icon(painter = painterResource(
-                        id = R.drawable.open_in_new_24px),
-                        contentDescription = "icon_share",
+                    Icon(
+                        Icons.Filled.Done,
+                        contentDescription = "icon_done",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -407,7 +427,13 @@ fun DayPlanItem(
         }
 }
 
+@Composable
+fun PopularGroupSection(
+    modifier: Modifier = Modifier,
+    title: String = "Popular Group",
+){
 
+}
 
 @Preview(showBackground = true)
 @Composable
