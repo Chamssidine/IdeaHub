@@ -133,5 +133,6 @@
     <string name="priority_low">Low</string>
     <string name="see_less">See less\n</string>
     <string name="unachieved">unachieved</string>
+    <string name="join">Join</string>
 
 </resources>

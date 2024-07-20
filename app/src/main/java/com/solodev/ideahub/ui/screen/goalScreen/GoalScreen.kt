@@ -33,6 +33,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedButton
@@ -435,8 +436,70 @@ fun PopularGroupSection(
 
 }
 
+@Composable
+fun GroupSection(
+    sectionName: String = "Group",
+    modifier: Modifier = Modifier,
+) {
+
+
+}
+
+@Composable
+fun GroupItem(
+    modifier: Modifier = Modifier,
+    groupName: String = "Group Name",
+    description: String = "Description",
+    onlikeClicked: () -> Unit = {},
+    onJoinClicked:() -> Unit = {},
+    onAddToFavoryClicked:() -> Unit = {},
+) {
+    ElevatedCard(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+    ) {
+        Column(
+            modifier = modifier 
+        ) {
+            Text(description)
+            Row(
+
+            ){
+                ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
+                {
+                    IconButton(onClick = onlikeClicked) {
+                        Icon(painter = painterResource(
+                            id = R.drawable.thumb_up_24px),
+                            contentDescription = "icon_like",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+                ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
+                {
+                   Text(
+                       text = stringResource(R.string.join),
+                       style = MaterialTheme.typography.labelMedium
+                   )
+                }
+                ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
+                {
+                    IconButton(onClick = onlikeClicked) {
+                        Icon(
+                            Icons.Filled.FavoriteBorder,
+                            contentDescription = "icon_favorite",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 @Preview(showBackground = true)
 @Composable
 fun GoalItemPreview() {
-    DayPlan(modifier = Modifier.padding(16.dp))
+    GroupItem(modifier = Modifier.padding(16.dp))
 }
