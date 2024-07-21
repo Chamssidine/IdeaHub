@@ -29,8 +29,8 @@ val bottomNavigationItems = listOf(
     ),
     BottomNavigationItem(
         title = "Gemini",
-        selectedIcon = R.drawable.arcticons__google_gemini,
-        unselectedIcon = R.drawable.arcticons__google_gemini_filled,
+        selectedIcon = R.drawable.outline_auto_awesome_black_48,
+        unselectedIcon = R.drawable.baseline_auto_awesome_black_48,
         route = "gemini",
         hasNews = false
     ),
