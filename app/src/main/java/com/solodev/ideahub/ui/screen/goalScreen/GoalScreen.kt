@@ -563,7 +563,7 @@ fun ActiveDiscussionItem(
       }
       Spacer(modifier = Modifier.weight(1f))
       ElevatedButton(onClick = onOpen) {
-          
+          Text(text = stringResource(id = R.string.open_button))
       }
 
   }
