@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.solodev.ideahub" />
+                  <option name="mobileSdkAppId" value="1:880822219652:android:44aceac7a136ab2902a3d1" />
+                  <option name="projectId" value="ideahub-e4a20" />
+                  <option name="projectNumber" value="880822219652" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

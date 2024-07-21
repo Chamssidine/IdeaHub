@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- App Name -->
     <string name="app_name">IdeaHub</string>
 
@@ -8,11 +8,24 @@
     <string name="login_phone_email">Phone or email</string>
     <string name="login_password">Password</string>
     <string name="login_forgot_password">Forgot Password?</string>
+    <string name="login_with_social_media">Login with Social Media</string>
     <string name="login_button">Login</string>
     <string name="login_sign_up">Don\'t have an account? Sign up</string>
+    <!-- Account Creation Screen -->
+    <string name="create_your_account">Create Your Account</string>
+    <string name="full_name">Full name</string>
+    <string name="telephone">Telephone</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="create">Create</string>
+    <string name="already_have_account">Already have an Account?</string>
+    <string name="sign_in">Sign in</string>
+    <string name="or_create_using">Or create using</string>
 
     <!-- Home Screen -->
     <string name="home_search_group">Search group</string>
+    <string name="home_begin_tour">Welcome,
+        \nlet\'s Begin with a tour!</string>
     <string name="home_welcome">Welcome to IdeaHub!</string>
     <string name="home_no_objectives">You don\'t have any objectives yet. Would you like to create a new one?</string>
     <string name="home_create_objective_button">Let\'s Go</string>
@@ -20,6 +33,9 @@
     <string name="home_your_group">Your Group</string>
     <string name="home_explore">Explore</string>
     <string name="home_active_discussion">Active Discussion</string>
+
+    <!-- First Goal Creation -->
+    <string name="first_goal_creation">Let\'s start by creating your First Goal </string>
 
     <!-- Community Screen -->
     <string name="community_categories">Categories</string>
@@ -64,4 +80,59 @@
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="default_label">Label</string>
+    <string name="mail_confirmation_title">Confirm your email</string>
+    <string name="mail_confirmation_text">We have sent a confirmation code to your email</string>
+    <string name="type_the_confirmation_code">Enter the confirmation code </string>
+    <string name="send">Send\n</string>
+    <string name="confirm">confirm\n</string>
+    <string name="modify_email">Change email</string>
+
+
+    <!-- ThreadHistory -->
+
+    <string name="search_placeholder">Search</string>
+    <string name="my_threads">MyThreads</string>
+    <string name="contributed_threads">Contributed Threads</string>
+    <string name="total_contributions">Total Contributions</string>
+    <string name="total_contributions_message">You have contributed to more than 10 Thread</string>
+    <string name="points">Points: 270 pts</string>
+    <string name="last_contribution">Last contribution: 3 days ago</string>
+
+    <string name="contribution_rate">Your contribution Rate: 30 %</string>
+    <string name="name">Name</string>
+    <string name="title_and_description">Title and Description</string>
+    <string name="title">Title</string>
+    <string name="contributions">20 Contributions</string>
+    <string name="see_all">See All..</string>
+    <string name="getstarted">Let\'s Go</string>
+    <string name="description">Description\n</string>
+    <string name="description_example">write your goal description here\n</string>
+    <string name="deadline">Deadline</string>
+    <string name="reminder_frequency">Reminder frequency</string>
+    <string name="daily">Daily</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Monthly</string>
+
+    <!--Goal Screen-->
+    <string name="search_group">Search group</string>
+    <string name="congratulations_message">Great Job, you have just created a new Goal. Your created Goal is now available in the tab Goal and Task. Let\'s move on.</string>
+    <string name="tab_goal_and_task">Goal and Task</string>
+    <string name="tab_plan_of_the_day">Plan of the Day</string>
+    <string name="tab_popular_groups">Popular Groups</string>
+    <string name="tab_active_discussions">Active Discussions</string>
+    <string name="your_goal">Your Goal</string>
+    <string name="achieved">Achieved</string>
+    <string name="goal_name">MyGoal</string>
+    <string name="created_at">Created at:</string>
+    <string name="open_button">Open</string>
+    <string name="current">Current</string>
+    <string name="priority">Priority:</string>
+    <string name="priority_high">High</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_low">Low</string>
+    <string name="see_less">See less\n</string>
+    <string name="unachieved">unachieved</string>
+    <string name="join">Join</string>
+
 </resources>
