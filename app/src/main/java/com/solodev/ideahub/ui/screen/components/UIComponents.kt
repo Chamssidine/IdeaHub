@@ -1,4 +1,4 @@
-package com.solodev.ideahub.model
+package com.solodev.ideahub.ui.screen.components
 
 import androidx.annotation.DrawableRes
 import com.solodev.ideahub.R
@@ -29,8 +29,8 @@ val bottomNavigationItems = listOf(
     ),
     BottomNavigationItem(
         title = "Gemini",
-        selectedIcon = R.drawable.outline_auto_awesome_black_48,
-        unselectedIcon = R.drawable.baseline_auto_awesome_black_48,
+        selectedIcon = R.drawable.baseline_auto_awesome_black_24,
+        unselectedIcon = R.drawable.outline_auto_awesome_24,
         route = "gemini",
         hasNews = false
     ),

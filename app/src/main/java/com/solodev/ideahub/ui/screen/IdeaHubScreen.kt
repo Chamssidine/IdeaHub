@@ -13,19 +13,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.solodev.ideahub.model.BottomNavigationItem
-import com.solodev.ideahub.model.bottomNavigationItems
+import com.solodev.ideahub.ui.screen.components.bottomNavigationItems
 import com.solodev.ideahub.ui.screen.login.LoginScreen
 import com.solodev.ideahub.ui.screen.sign_up.SignUpScreen
 
