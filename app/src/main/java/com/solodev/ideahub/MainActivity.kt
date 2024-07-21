@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import com.solodev.ideahub.ui.screen.IdeaHubScreen
 import com.solodev.ideahub.ui.screen.ThreadScreen.ThreadScreen
@@ -24,6 +25,7 @@ import com.solodev.ideahub.ui.screen.userThreadScreen.UserThreadScreen
 import com.solodev.ideahub.ui.screen.welcomeScreen.WelcomeScreen
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 
+
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +37,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GoalScreen()
+                    IdeaHubScreen()
                 }
             }
         }
