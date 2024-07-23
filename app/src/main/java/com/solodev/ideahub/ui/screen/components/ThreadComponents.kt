@@ -107,7 +107,7 @@ fun ThreadContent(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = "20 Contributions",
+            text = "${totalContributionCount} Contributions",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
@@ -170,7 +170,9 @@ fun CommentSectionInput(
                         )
                 )
             }
-            Box(modifier = Modifier.align(Alignment.CenterEnd).padding(end = 20.dp)) {
+            Box(modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 20.dp)) {
                 ElevatedButton(onClick = {} ) {
                     Icon(
                         painter = painterResource(id = R.drawable.send_24px),

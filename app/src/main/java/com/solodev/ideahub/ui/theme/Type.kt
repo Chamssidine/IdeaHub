@@ -32,13 +32,7 @@ val tenten = FontFamily(
 )
 
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    ),
+
     displayLarge = TextStyle(
         fontFamily = montserrat,
         fontWeight = FontWeight.Bold,
@@ -62,20 +56,43 @@ val Typography = Typography(
     ),
     bodySmall = TextStyle(
         fontFamily = tenten,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.1.sp
     ),
     bodyMedium = TextStyle(
         fontFamily = tenten,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.15.sp
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = tenten,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.15.sp
+    ),
+    titleLarge = TextStyle(
+        fontFamily = monograf,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        lineHeight = 32.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = monograf,
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp,
+        lineHeight = 28.sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = monograf,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp
     )
-
-
     /* Other default text styles to override
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,

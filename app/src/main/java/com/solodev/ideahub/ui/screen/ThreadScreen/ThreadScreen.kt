@@ -41,7 +41,9 @@ import androidx.compose.ui.unit.dp
 import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.CustomSearchBar
 import com.solodev.ideahub.ui.screen.components.ThreadContent
+import com.solodev.ideahub.ui.screen.components.ThreadItem
 import com.solodev.ideahub.ui.screen.components.UserProfile
+import com.solodev.ideahub.ui.screen.components.threadItems
 import java.sql.Time
 
 @Composable
@@ -50,8 +52,11 @@ fun ThreadScreen() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CustomSearchBar()
             LazyColumn {
-                items(3) {
-                    ThreadItem()
+                items(threadItems.size) { threadItem ->
+                    ThreadItem(
+                        threadItem = threadItems[threadItem],
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
             }
         }
@@ -63,7 +68,7 @@ fun ThreadScreen() {
 @Composable
 fun ThreadItem(
     modifier: Modifier = Modifier,
-
+    threadItem: ThreadItem
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -95,9 +100,22 @@ fun ThreadItem(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
-            UserProfile(modifier = Modifier)
+            UserProfile(
+                modifier = Modifier,
+                name = threadItem.userProfile.name,
+                image = threadItem.userProfile.image,
+                publicationTime = threadItem.userProfile.publicationTime,
+
+            )
             Spacer(modifier = Modifier.height(8.dp))
-            ThreadContent(expanded = expanded, lineCount = lineCount, defaultTextOverflowValue = defaultTextOverflowValue)
+            ThreadContent(
+                modifier = Modifier,
+                title = threadItem.threadTitle,
+                threadContentText = threadItem.threadDescription,
+                totalContributionCount = threadItem.contributionCount,
+                expanded = expanded, lineCount = lineCount,
+                defaultTextOverflowValue = defaultTextOverflowValue
+            )
         }
     }
 }

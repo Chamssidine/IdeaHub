@@ -42,9 +42,11 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.CustomSearchBar
+import com.solodev.ideahub.ui.screen.ThreadScreen.ThreadItem
 import com.solodev.ideahub.ui.screen.components.CommunityTabItem
 import com.solodev.ideahub.ui.screen.components.communityTabItems
 import com.solodev.ideahub.ui.screen.components.groupItemData
+import com.solodev.ideahub.ui.screen.components.threadItems
 import com.solodev.ideahub.ui.screen.goalScreen.GroupItem
 
 @Composable
@@ -59,18 +61,18 @@ fun CommunityScreen(
            CustomSearchBar()
        }
        LazyColumn(
-           modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+           modifier = modifier.fillMaxSize(),
            verticalArrangement = Arrangement.Center,
            horizontalAlignment = Alignment.CenterHorizontally
        ) {
             item {
-                Text(
-                    text = stringResource(id = R.string.home_idea_hub),
-                    modifier = modifier.fillMaxWidth()
-                )
+                Box(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))){
+                    Text(
+                        text = stringResource(id = R.string.home_idea_hub),
+                        modifier = modifier.fillMaxWidth()
+                    )
+                }
             }
-             
-            item { Spacer(modifier = modifier.padding(dimensionResource(id = R.dimen.spacing_small))) }
 
             item{
                 Row(
@@ -92,10 +94,8 @@ fun CommunityScreen(
                 }
             }
 
-            item{ Spacer(modifier = modifier.padding(dimensionResource(id = R.dimen.spacing_small)))}
-
             item {
-                LazyRow(modifier = Modifier.fillMaxWidth())
+                LazyRow(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
                 {
                     items(groupItemData.size) { index ->
                         CommunityGroupItem(
@@ -110,6 +110,13 @@ fun CommunityScreen(
                 }
 
             }
+
+            item { 
+                threadItems.forEachIndexed { index, threadItem ->  
+                    ThreadItem(threadItem = threadItem)
+                }
+            }
+
        }
     }
 }
@@ -152,6 +159,7 @@ fun CommunityGroupItem(
 
     }
 }
+
 
 @Composable
 fun CustomTab(
