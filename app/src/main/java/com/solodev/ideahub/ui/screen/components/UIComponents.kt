@@ -1,7 +1,24 @@
 package com.solodev.ideahub.ui.screen.components
 
+import android.util.Log
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import com.solodev.ideahub.R
+import com.solodev.ideahub.ui.screen.goalScreen.AchievedGoal
+import com.solodev.ideahub.ui.screen.goalScreen.ActiveDiscussionSection
+import com.solodev.ideahub.ui.screen.goalScreen.DayPlan
+import com.solodev.ideahub.ui.screen.goalScreen.PopularGroupSection
+import com.solodev.ideahub.ui.screen.goalScreen.UnAchievedGoal
 
 
 data class BottomNavigationItem (
@@ -18,11 +35,6 @@ data class CommunityTabItem(
     val selected: Boolean,
 )
 
-data class GroupItemData    (
-    val groupName: String,
-    val groupDescription: String,
-    val groupeImage: String,
-)
 
 data class UserProfile(
     val name: String,
@@ -40,6 +52,25 @@ data class ThreadItem(
     val userProfile: UserProfile
 )
 
+data class CommunityCategory(
+    val categoryName: String,
+    val categoryImage: String?,
+    val memberCount: Int,
+    val groupList: List<GroupItemData> = emptyList(),
+
+)
+
+data class GroupItemData    (
+    val groupName: String,
+    val groupDescription: String,
+    val groupImage: String,
+    val memberList: List<User> = emptyList(),
+)
+data class User(
+    val name: String,
+    val photo: String?,
+    val contributionCount: Int,
+)
 
 val threadItems = listOf(
     ThreadItem(
@@ -175,29 +206,115 @@ val threadItems = listOf(
 )
 
 
-val groupItemData = listOf(
-    GroupItemData(
-        groupName = "Science",
-        groupDescription = "This is a group description",
-        groupeImage = "https://pixabay.com/fr/users/kadirkritik-2019309/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1244649"
-    ),
-    GroupItemData(
-        groupName = "Maths",
-        groupDescription = "This is a group description",
-        groupeImage = "https://pixabay.com/fr/users/marandap-7632346/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=5247958"
-    ),
-    GroupItemData(
-        groupName = "Physics",
-        groupDescription = "This is a group description",
-        groupeImage ="https://pixabay.com/fr/photos/le-jeu-parc-amusement-nuageux-1715803/"
-    ),
-    GroupItemData(
-        groupName = "Astronomy",
-        groupDescription = "This is a group description",
-        groupeImage ="https://pixabay.com/fr/users/noel_bauza-2019050/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1197755\">Noel Bauza</a> de <a href=\"https://pixabay.com/fr//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1197755"
-    ),
 
+
+// Création de plusieurs utilisateurs
+val user1 = User(name = "Alice", photo = "alice_photo_url", contributionCount = 10)
+val user2 = User(name = "Bob", photo = "bob_photo_url", contributionCount = 5)
+val user3 = User(name = "Charlie", photo = "charlie_photo_url", contributionCount = 3)
+val user4 = User(name = "David", photo = "david_photo_url", contributionCount = 7)
+val user5 = User(name = "Eve", photo = "eve_photo_url", contributionCount = 2)
+val user6 = User(name = "Frank", photo = "frank_photo_url", contributionCount = 4)
+val user7 = User(name = "Grace", photo = "grace_photo_url", contributionCount = 6)
+val user8 = User(name = "Hank", photo = "hank_photo_url", contributionCount = 1)
+
+// Création de groupes pour la catégorie "Alimentation and Nutrition"
+val nutritionGroup1 = GroupItemData(
+    groupName = "Healthy Eating",
+    groupDescription = "Discussions about healthy eating habits.",
+    groupImage = "https://pixabay.com/fr/photos/le-jeu-parc-amusement-nuageux-1715803/",
+    memberList = listOf(user1, user2)
 )
+
+val nutritionGroup2 = GroupItemData(
+    groupName = "Vegan Recipes",
+    groupDescription = "Sharing vegan recipes and tips.",
+    groupImage = "https://pixabay.com/fr/users/marandap-7632346/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=5247958",
+    memberList = listOf(user3, user4)
+)
+
+// Création de groupes pour la catégorie "Personal Development"
+val personalDevGroup1 = GroupItemData(
+    groupName = "Mindfulness",
+    groupDescription = "Practices and discussions on mindfulness.",
+    groupImage = "https://pixabay.com/fr/users/kadirkritik-2019309/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1244649",
+    memberList = listOf(user5, user6)
+)
+
+val personalDevGroup2 = GroupItemData(
+    groupName = "Time Management",
+    groupDescription = "Tips and tricks for better time management.",
+    groupImage = "https://pixabay.com/fr/users/noel_bauza-2019050/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1197755",
+    memberList = listOf(user7, user8)
+)
+
+// Création de groupes pour la catégorie "Technologies and Innovation"
+val techGroup1 = GroupItemData(
+    groupName = "AI and Machine Learning",
+    groupDescription = "Latest trends and discussions on AI.",
+    groupImage = "https://pixabay.com/fr/photos/le-jeu-parc-amusement-nuageux-1715803/",
+    memberList = listOf(user1, user3)
+)
+
+val techGroup2 = GroupItemData(
+    groupName = "Blockchain",
+    groupDescription = "Exploring blockchain technology.",
+    groupImage = "https://pixabay.com/fr/photos/le-jeu-parc-amusement-nuageux-1715803/",
+    memberList = listOf(user2, user4)
+)
+
+// Création de groupes pour la catégorie "Personal Finance"
+val financeGroup1 = GroupItemData(
+    groupName = "Investing",
+    groupDescription = "Tips and strategies for investing.",
+    groupImage = "https://pixabay.com/fr/photos/le-jeu-parc-amusement-nuageux-1715803/",
+    memberList = listOf(user5, user7)
+)
+
+val financeGroup2 = GroupItemData(
+    groupName = "Budgeting",
+    groupDescription = "How to budget effectively.",
+    groupImage = "https://pixabay.com/fr/photos/le-jeu-parc-amusement-nuageux-1715803/",
+    memberList = listOf(user6, user8)
+)
+
+// Création des catégories avec les groupes associés
+val communityCategories = listOf(
+    CommunityCategory(
+        categoryName = "Alimentation and Nutrition",
+        categoryImage = "https://pixabay.com/fr/photos/alimentation-saine-healthy-eating-1238255/",
+        memberCount = nutritionGroup1.memberList.size + nutritionGroup2.memberList.size,
+        groupList = listOf(nutritionGroup1, nutritionGroup2)
+    ),
+    CommunityCategory(
+        categoryName = "Personal Development",
+        categoryImage = "https://pixabay.com/fr/photos/d%c3%a9veloppement-personnel-1207839/",
+        memberCount = personalDevGroup1.memberList.size + personalDevGroup2.memberList.size,
+        groupList = listOf(personalDevGroup1, personalDevGroup2)
+    ),
+    CommunityCategory(
+        categoryName = "Technologies and Innovation",
+        categoryImage = "https://pixabay.com/fr/photos/technologies-innovation-id%c3%a9es-1239581/",
+        memberCount = techGroup1.memberList.size + techGroup2.memberList.size,
+        groupList = listOf(techGroup1, techGroup2)
+    ),
+    CommunityCategory(
+        categoryName = "Personal Finance",
+        categoryImage = "https://pixabay.com/fr/photos/finances-personnelles-budget-1239484/",
+        memberCount = financeGroup1.memberList.size + financeGroup2.memberList.size,
+        groupList = listOf(financeGroup1, financeGroup2)
+    )
+)
+
+val groupItemData = listOf(
+    nutritionGroup1,
+    nutritionGroup2,
+    personalDevGroup1,
+    personalDevGroup2,
+    techGroup1,
+    techGroup2,
+)
+
 val communityTabItems = listOf(
     CommunityTabItem(
         title = "Your Group",
@@ -244,3 +361,13 @@ val bottomNavigationItems = listOf(
 
 
 )
+
+@Composable
+fun MainTabScreenHandler(
+    modifier: Modifier = Modifier,
+    tabScreenToShow: Unit,
+) {
+    Box(modifier = modifier.wrapContentSize()) {
+        tabScreenToShow
+    }
+}

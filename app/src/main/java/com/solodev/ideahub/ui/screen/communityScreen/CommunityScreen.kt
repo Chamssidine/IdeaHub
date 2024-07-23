@@ -8,10 +8,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,10 +49,18 @@ import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.CustomSearchBar
 import com.solodev.ideahub.ui.screen.ThreadScreen.ThreadItem
 import com.solodev.ideahub.ui.screen.components.CommunityTabItem
+import com.solodev.ideahub.ui.screen.components.MainTabScreenHandler
+import com.solodev.ideahub.ui.screen.components.communityCategories
 import com.solodev.ideahub.ui.screen.components.communityTabItems
 import com.solodev.ideahub.ui.screen.components.groupItemData
 import com.solodev.ideahub.ui.screen.components.threadItems
+import com.solodev.ideahub.ui.screen.goalScreen.AchievedGoal
+import com.solodev.ideahub.ui.screen.goalScreen.ActiveDiscussionSection
+import com.solodev.ideahub.ui.screen.goalScreen.DayPlan
 import com.solodev.ideahub.ui.screen.goalScreen.GroupItem
+import com.solodev.ideahub.ui.screen.goalScreen.MainTabScreen
+import com.solodev.ideahub.ui.screen.goalScreen.PopularGroupSection
+import com.solodev.ideahub.ui.screen.goalScreen.UnAchievedGoal
 
 @Composable
 fun CommunityScreen(
@@ -94,35 +106,73 @@ fun CommunityScreen(
                     }
                 }
             }
-
             item {
-                LazyRow(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
-                {
-                    items(groupItemData.size) { index ->
-                        CommunityGroupItem(
-                            modifier = modifier,
-                            imageUrl = groupItemData[index].groupeImage,
-                            onClick = {},
-                            groupName = groupItemData[index].groupName
-
-                        )
-                        Log.d("TAG", "CommunityScreen: ${groupItemData[index].groupeImage}")
-                        Spacer(modifier = modifier.padding(dimensionResource(id = R.dimen.spacing_small)))
-                    }
-                }
-
+                MainCommunityTabScreen(tabTitle = "",selectedTabIndex = selectedItem)
             }
-
-            item { 
-                threadItems.forEachIndexed { index, threadItem ->  
-                    ThreadItem(threadItem = threadItem)
-                }
-            }
-
        }
     }
 }
+@Composable
+fun MainCommunityTabScreen(
+    modifier: Modifier = Modifier,
+    selectedTabIndex: Int = 0,
+    tabTitle: String
+) {
+    Log.d("MainTabScreen", "selectedTabIndex: $selectedTabIndex, tabTitle: $tabTitle")
+    when (selectedTabIndex) {
+        0 -> {
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = tabTitle,
+                    style = MaterialTheme.typography.displayMedium
+                )
+                MainGroupScreen()
+            }
+        }
+        1 -> {
+            Box(modifier = modifier.wrapContentSize())
+            {
+                ExploreTabSection()
+            }
+        }
+        2 -> {
+            Box(modifier = modifier.wrapContentSize())
+            {
+                ActiveDiscussionSection()
+            }
+        }
 
+    }
+}
+@Composable
+fun MainGroupScreen(
+    modifier: Modifier = Modifier,
+){
+    Column(modifier = modifier) {
+
+        LazyRow(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
+            {
+                items(groupItemData.size) { index ->
+                    CommunityGroupItem(
+                        modifier = modifier,
+                        imageUrl = groupItemData[index].groupImage,
+                        onClick = {},
+                        groupName = groupItemData[index].groupName
+
+                    )
+                    Log.d("TAG", "CommunityScreen: ${groupItemData[index].groupImage}")
+                    Spacer(modifier = modifier.padding(dimensionResource(id = R.dimen.spacing_small)))
+                }
+            }
+
+        }
+            threadItems.forEachIndexed { index, threadItem ->
+                ThreadItem(threadItem = threadItem)
+            }
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityGroupItem(
@@ -146,11 +196,12 @@ fun CommunityGroupItem(
                   .data(imageUrl)
                   .crossfade(true)
                   .build(),
-              placeholder = painterResource(R.drawable.add_circle_24px),
+              placeholder = painterResource(R.drawable.loading_img),
               contentDescription = stringResource(R.string.description),
-              error = painterResource(R.drawable.baseline_visibility_off_24),
+              error = painterResource(R.drawable.ic_broken_image),
               contentScale = ContentScale.Crop,
-              modifier = Modifier.fillMaxSize()
+              modifier = Modifier
+                  .fillMaxSize()
                   .clip(CircleShape)
           )
           Text(
@@ -165,7 +216,68 @@ fun CommunityGroupItem(
     }
 }
 
+@Composable
+fun ExploreTabSection(
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxSize()) {
+        Text(
+            stringResource(id = R.string.community_categories),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+        )
+        LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp)) {
+            items(communityCategories.size){ item ->
+                CategoryItem(
+                    categoryName = communityCategories[item].categoryName,
+                    onClick = {},
+                    categoryImage =  communityCategories[item].categoryImage
+                )
+            }
+            
+        }
 
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategoryItem(
+    modifier: Modifier = Modifier,
+    categoryName: String,
+    onClick: () -> Unit = {},
+    categoryImage: String?,
+){
+    ElevatedCard(onClick = onClick) {
+        Box(modifier = modifier)
+        {
+            ElevatedCard(
+                modifier = modifier.fillMaxWidth()
+            ) {
+                AsyncImage(model = ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(categoryImage)
+                    .crossfade(true)
+                    .build(),
+                    placeholder = painterResource(R.drawable.loading_img),
+                    contentDescription = stringResource(R.string.description),
+                    error = painterResource(R.drawable.ic_broken_image),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                )
+                Text(
+                    categoryName,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+
+            }
+        }
+    }
+}
 @Composable
 fun CustomTab(
     modifier: Modifier = Modifier,
