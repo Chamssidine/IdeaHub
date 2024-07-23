@@ -179,16 +179,17 @@ val groupItemData = listOf(
     GroupItemData(
         groupName = "Science",
         groupDescription = "This is a group description",
-        groupeImage = "https://pixabay.com/fr/users/kadirkritik-2019309/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1244649\">Kadir Kritik</a> de <a href=\"https://pixabay.com/fr//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1244649"
+        groupeImage = "https://pixabay.com/fr/users/kadirkritik-2019309/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=1244649"
     ),
     GroupItemData(
         groupName = "Maths",
         groupDescription = "This is a group description",
-        groupeImage = "https://pixabay.com/fr/users/marandap-7632346/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=5247958\">Mario Aranda</a> de <a href=\"https://pixabay.com/fr//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=5247958"    ),
+        groupeImage = "https://pixabay.com/fr/users/marandap-7632346/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=5247958"
+    ),
     GroupItemData(
         groupName = "Physics",
         groupDescription = "This is a group description",
-        groupeImage ="https://pixabay.com/fr/users/zerpixelt-7250091/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=3079904\">zerpixelt</a> de <a href=\"https://pixabay.com/fr//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=3079904"
+        groupeImage ="https://pixabay.com/fr/photos/le-jeu-parc-amusement-nuageux-1715803/"
     ),
     GroupItemData(
         groupName = "Astronomy",

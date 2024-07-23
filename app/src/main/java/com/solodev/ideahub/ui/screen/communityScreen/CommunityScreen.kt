@@ -1,5 +1,6 @@
 package com.solodev.ideahub.ui.screen.communityScreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -105,6 +106,7 @@ fun CommunityScreen(
                             groupName = groupItemData[index].groupName
 
                         )
+                        Log.d("TAG", "CommunityScreen: ${groupItemData[index].groupeImage}")
                         Spacer(modifier = modifier.padding(dimensionResource(id = R.dimen.spacing_small)))
                     }
                 }
@@ -137,14 +139,8 @@ fun CommunityGroupItem(
 
       Box(
           contentAlignment = Alignment.BottomCenter,
+          modifier = modifier.fillMaxSize()
       ) {
-          Text(
-              groupName,
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis,
-              modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
-              style = MaterialTheme.typography.bodyMedium
-          )
           AsyncImage(
               model = ImageRequest.Builder(LocalContext.current)
                   .data(imageUrl)
@@ -152,8 +148,17 @@ fun CommunityGroupItem(
                   .build(),
               placeholder = painterResource(R.drawable.add_circle_24px),
               contentDescription = stringResource(R.string.description),
+              error = painterResource(R.drawable.baseline_visibility_off_24),
               contentScale = ContentScale.Crop,
-              modifier = Modifier.clip(CircleShape)
+              modifier = Modifier.fillMaxSize()
+                  .clip(CircleShape)
+          )
+          Text(
+              groupName,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
+              modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
+              style = MaterialTheme.typography.bodyMedium
           )
       }
 
