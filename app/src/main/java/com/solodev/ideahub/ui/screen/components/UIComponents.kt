@@ -59,6 +59,21 @@ data class CommunityCategory(
     val groupList: List<GroupItemData> = emptyList(),
 
 )
+data class ConversationMessage(
+    val aiMessage: AiMessage,
+    val userMessage: UserMessage,
+    val discussionTitle: String
+)
+
+data class AiMessage(
+    val message: String,
+    val time: String
+)
+
+data class UserMessage(
+    val message: String,
+    val time: String
+)
 
 data class GroupItemData    (
     val groupName: String,
@@ -71,6 +86,43 @@ data class User(
     val photo: String?,
     val contributionCount: Int,
 )
+
+val aiMessage1 = AiMessage(
+    message = "Hello! How can I assist you today?",
+    time = "2024-07-25T10:00:00"
+)
+
+val userMessage1 = UserMessage(
+    message = "I need help with my project.",
+    time = "2024-07-25T10:01:00"
+)
+
+val conversationMessage1 = ConversationMessage(
+    aiMessage = aiMessage1,
+    userMessage = userMessage1,
+    discussionTitle = "Project Assistance"
+)
+
+val aiMessage2 = AiMessage(
+    message = "Sure! What specifically do you need help with?",
+    time = "2024-07-25T10:02:00"
+)
+
+val userMessage2 = UserMessage(
+    message = "I am having trouble with data structuring.",
+    time = "2024-07-25T10:03:00"
+)
+
+val conversationMessage2 = ConversationMessage(
+    aiMessage = aiMessage2,
+    userMessage = userMessage2,
+    discussionTitle = "Data Structuring"
+)
+
+val conversationMessages = listOf(conversationMessage1, conversationMessage2)
+
+
+
 
 val threadItems = listOf(
     ThreadItem(
@@ -362,12 +414,3 @@ val bottomNavigationItems = listOf(
 
 )
 
-@Composable
-fun MainTabScreenHandler(
-    modifier: Modifier = Modifier,
-    tabScreenToShow: Unit,
-) {
-    Box(modifier = modifier.wrapContentSize()) {
-        tabScreenToShow
-    }
-}

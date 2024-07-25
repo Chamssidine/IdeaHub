@@ -151,7 +151,7 @@ fun CommentSection(
             shape = MaterialTheme.shapes.medium
         ) {
             Column(
-                //modifier = modifier.height(100.dp),
+
                 horizontalAlignment = Alignment.Start,
             ){
                 UserProfile(modifier = Modifier.wrapContentSize())

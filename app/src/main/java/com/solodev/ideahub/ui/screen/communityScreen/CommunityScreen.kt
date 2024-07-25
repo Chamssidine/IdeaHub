@@ -41,26 +41,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
-import coil.compose.AsyncImagePainter.State.Empty.painter
-import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.CustomSearchBar
 import com.solodev.ideahub.ui.screen.ThreadScreen.ThreadItem
-import com.solodev.ideahub.ui.screen.components.CommunityTabItem
-import com.solodev.ideahub.ui.screen.components.MainTabScreenHandler
 import com.solodev.ideahub.ui.screen.components.communityCategories
 import com.solodev.ideahub.ui.screen.components.communityTabItems
 import com.solodev.ideahub.ui.screen.components.groupItemData
 import com.solodev.ideahub.ui.screen.components.threadItems
-import com.solodev.ideahub.ui.screen.goalScreen.AchievedGoal
 import com.solodev.ideahub.ui.screen.goalScreen.ActiveDiscussionSection
-import com.solodev.ideahub.ui.screen.goalScreen.DayPlan
-import com.solodev.ideahub.ui.screen.goalScreen.GroupItem
-import com.solodev.ideahub.ui.screen.goalScreen.MainTabScreen
-import com.solodev.ideahub.ui.screen.goalScreen.PopularGroupSection
-import com.solodev.ideahub.ui.screen.goalScreen.UnAchievedGoal
 
 @Composable
 fun CommunityScreen(
@@ -121,30 +110,21 @@ fun MainCommunityTabScreen(
     Log.d("MainTabScreen", "selectedTabIndex: $selectedTabIndex, tabTitle: $tabTitle")
     when (selectedTabIndex) {
         0 -> {
-            Column(
-                modifier = modifier
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = tabTitle,
-                    style = MaterialTheme.typography.displayMedium
-                )
+            Column(modifier = modifier.fillMaxWidth()) {
+                Text(text = tabTitle, style = MaterialTheme.typography.displayMedium)
                 MainGroupScreen()
             }
         }
         1 -> {
-            Box(modifier = modifier.wrapContentSize())
-            {
+            Box(modifier = modifier.padding(16.dp)) {
                 ExploreTabSection()
             }
         }
         2 -> {
-            Box(modifier = modifier.wrapContentSize())
-            {
+            Box(modifier = modifier.padding(16.dp)) {
                 ActiveDiscussionSection()
             }
         }
-
     }
 }
 @Composable
@@ -222,23 +202,33 @@ fun ExploreTabSection(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         Text(
-            stringResource(id = R.string.community_categories),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+            "Community Categories",
+            style = MaterialTheme.typography.displayMedium,
+            modifier = modifier.padding(16.dp) // Utiliser une valeur codée en dur pour simplifier
         )
-        LazyVerticalGrid(columns = GridCells.Adaptive(minSize = 128.dp)) {
-            items(communityCategories.size){ item ->
-                CategoryItem(
-                    categoryName = communityCategories[item].categoryName,
-                    onClick = {},
-                    categoryImage =  communityCategories[item].categoryImage
-                )
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(500.dp) // Définir une hauteur fixe ou utiliser une autre contrainte appropriée
+        ) {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 128.dp),
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(communityCategories.size) { item ->
+                    CategoryItem(
+                        categoryName = communityCategories[item].categoryName,
+                        onClick = {},
+                        categoryImage = communityCategories[item].categoryImage
+                    )
+                }
             }
-            
         }
-
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryItem(
@@ -247,7 +237,9 @@ fun CategoryItem(
     onClick: () -> Unit = {},
     categoryImage: String?,
 ){
-    ElevatedCard(onClick = onClick) {
+    ElevatedCard(
+        onClick = onClick
+    ) {
         Box(modifier = modifier)
         {
             ElevatedCard(
@@ -301,5 +293,5 @@ fun CustomTab(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun CommunityScreenPreview(){
-    CommunityScreen()
+    ExploreTabSection()
 }

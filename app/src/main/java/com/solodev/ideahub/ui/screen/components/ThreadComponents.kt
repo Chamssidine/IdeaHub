@@ -147,16 +147,14 @@ fun CommentSectionInput(
     onValueChange: (String) -> Unit = {},
 ) {
     Row(
-
+        modifier = modifier.fillMaxWidth(),
     ) {
 
-        Box()
+        Box(modifier = modifier.fillMaxWidth())
         {
             Card(
                 onClick = { /*TODO*/ },
-                modifier = modifier
-                    .padding(dimensionResource(id = R.dimen.padding_medium))
-
+                modifier = modifier.fillMaxWidth()
             ) {
                 TextField(
                     value = "", onValueChange = { onValueChange(it) },
