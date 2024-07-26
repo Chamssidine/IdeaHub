@@ -36,12 +36,6 @@ data class CommunityTabItem(
 )
 
 
-data class UserProfile(
-    val name: String,
-    val image: String,
-    val publicationTime: Int
-)
-
 data class ThreadItem(
     val threadTitle: String,
     val threadDescription: String,
@@ -87,6 +81,29 @@ data class User(
     val contributionCount: Int,
 )
 
+data class UserProfile(
+    val name: String,
+    val biography: String,
+    val profileImage: String,
+    val publicationTime: Int,
+    val personalStatistics: PersonalStatistics,
+    val userSettings: UserSettings
+)
+
+
+data class PersonalStatistics(
+    val reachedGoalPercentage: Int,
+    val contributions: Int
+)
+
+
+data class UserSettings(
+    val notificationsEnabled: Boolean,
+    val selectedLanguage: String,
+    val selectedTheme: String
+)
+
+
 val aiMessage1 = AiMessage(
     message = "Hello! How can I assist you today?",
     time = "2024-07-25T10:00:00"
@@ -121,7 +138,28 @@ val conversationMessage2 = ConversationMessage(
 
 val conversationMessages = listOf(conversationMessage1, conversationMessage2)
 
+// Données de statistiques personnelles
+val personalStatistics = PersonalStatistics(
+    reachedGoalPercentage = 60, // Pourcentage d'objectifs atteints
+    contributions = 30 // Nombre de contributions
+)
 
+// Données de paramètres utilisateur
+val userSettings = UserSettings(
+    notificationsEnabled = true, // Notifications activées
+    selectedLanguage = "English", // Langue sélectionnée
+    selectedTheme = "Light" // Thème sélectionné
+)
+
+// Données de profil utilisateur
+val userProfile = UserProfile(
+    name = "CHRISTOPHER",
+    biography = "Biographie",
+    publicationTime = 20,
+    profileImage = "https://example.com/path/to/profile_image.png", // URL de l'image de profil
+    personalStatistics = personalStatistics,
+    userSettings = userSettings
+)
 
 
 val threadItems = listOf(
@@ -134,7 +172,10 @@ val threadItems = listOf(
         category = "Technology",
         userProfile = UserProfile(
             name = "John Doe",
-            image = "https://example.com/images/john_doe.png",
+            biography = "Software Engineer with a passion for Kotlin.",
+            profileImage = "https://example.com/images/john_doe.png",
+            personalStatistics = PersonalStatistics(60, 45),
+            userSettings = UserSettings(true, "English", "Light"),
             publicationTime = 2
         )
     ),
@@ -147,7 +188,10 @@ val threadItems = listOf(
         category = "Technology",
         userProfile = UserProfile(
             name = "Jane Smith",
-            image = "https://example.com/images/jane_smith.png",
+            biography = "Android Developer and UI/UX Designer.",
+            profileImage = "https://example.com/images/jane_smith.png",
+            personalStatistics = PersonalStatistics(70, 30),
+            userSettings = UserSettings(true, "English", "Dark"),
             publicationTime = 5
         )
     ),
@@ -160,7 +204,10 @@ val threadItems = listOf(
         category = "Technology",
         userProfile = UserProfile(
             name = "Alice Johnson",
-            image = "https://example.com/images/alice_johnson.png",
+            biography = "Mobile App Developer with expertise in Firebase.",
+            profileImage = "https://example.com/images/alice_johnson.png",
+            personalStatistics = PersonalStatistics(80, 20),
+            userSettings = UserSettings(false, "French", "Light"),
             publicationTime = 10
         )
     ),
@@ -173,7 +220,10 @@ val threadItems = listOf(
         category = "Technology",
         userProfile = UserProfile(
             name = "Bob Brown",
-            image = "https://example.com/images/bob_brown.png",
+            biography = "Senior Android Developer specializing in Dagger and Hilt.",
+            profileImage = "https://example.com/images/bob_brown.png",
+            personalStatistics = PersonalStatistics(50, 25),
+            userSettings = UserSettings(true, "Spanish", "Dark"),
             publicationTime = 8
         )
     ),
@@ -186,7 +236,10 @@ val threadItems = listOf(
         category = "Technology",
         userProfile = UserProfile(
             name = "Charlie Davis",
-            image = "https://example.com/images/charlie_davis.png",
+            biography = "Kotlin Enthusiast and Contributor.",
+            profileImage = "https://example.com/images/charlie_davis.png",
+            personalStatistics = PersonalStatistics(75, 35),
+            userSettings = UserSettings(true, "English", "Light"),
             publicationTime = 3
         )
     ),
@@ -199,7 +252,10 @@ val threadItems = listOf(
         category = "Science",
         userProfile = UserProfile(
             name = "Dana Lee",
-            image = "https://example.com/images/dana_lee.png",
+            biography = "Environmental Scientist focused on renewable energy.",
+            profileImage = "https://example.com/images/dana_lee.png",
+            personalStatistics = PersonalStatistics(65, 50),
+            userSettings = UserSettings(true, "English", "Dark"),
             publicationTime = 1
         )
     ),
@@ -212,7 +268,10 @@ val threadItems = listOf(
         category = "Economy",
         userProfile = UserProfile(
             name = "Evan Green",
-            image = "https://example.com/images/evan_green.png",
+            biography = "Economist researching climate change impacts.",
+            profileImage = "https://example.com/images/evan_green.png",
+            personalStatistics = PersonalStatistics(85, 40),
+            userSettings = UserSettings(true, "French", "Light"),
             publicationTime = 6
         )
     ),
@@ -225,7 +284,10 @@ val threadItems = listOf(
         category = "Health",
         userProfile = UserProfile(
             name = "Fiona White",
-            image = "https://example.com/images/fiona_white.png",
+            biography = "Medical Researcher at a leading university.",
+            profileImage = "https://example.com/images/fiona_white.png",
+            personalStatistics = PersonalStatistics(90, 60),
+            userSettings = UserSettings(false, "German", "Dark"),
             publicationTime = 4
         )
     ),
@@ -238,7 +300,10 @@ val threadItems = listOf(
         category = "Technology",
         userProfile = UserProfile(
             name = "Grace Miller",
-            image = "https://example.com/images/grace_miller.png",
+            biography = "AI Researcher and Developer.",
+            profileImage = "https://example.com/images/grace_miller.png",
+            personalStatistics = PersonalStatistics(95, 70),
+            userSettings = UserSettings(true, "Japanese", "Light"),
             publicationTime = 7
         )
     ),
@@ -251,11 +316,15 @@ val threadItems = listOf(
         category = "Science",
         userProfile = UserProfile(
             name = "Hank Williams",
-            image = "https://example.com/images/hank_williams.png",
+            biography = "Astrophysicist working with space agencies.",
+            profileImage = "https://example.com/images/hank_williams.png",
+            personalStatistics = PersonalStatistics(100, 80),
+            userSettings = UserSettings(true, "English", "Dark"),
             publicationTime = 9
         )
     )
 )
+
 
 
 

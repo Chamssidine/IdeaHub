@@ -11,14 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +42,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.CustomSearchBar
-import com.solodev.ideahub.ui.screen.ThreadScreen.ThreadItem
+import com.solodev.ideahub.ui.screen.threadScreen.ThreadItem
 import com.solodev.ideahub.ui.screen.components.communityCategories
 import com.solodev.ideahub.ui.screen.components.communityTabItems
 import com.solodev.ideahub.ui.screen.components.groupItemData

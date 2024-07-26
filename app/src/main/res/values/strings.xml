@@ -134,5 +134,16 @@
     <string name="see_less">See less\n</string>
     <string name="unachieved">unachieved</string>
     <string name="join">Join</string>
+    <string name="user_profile_information">Informations</string>
+    <string name="personal_stats">Personal Statistics</string>
+    <string name="user_profile_progression">Progression</string>
+    <string name="user_reached_goal">Reached goal</string>
+    <string name="user_settings">Settings</string>
+    <string name="user_notifications">Notifications</string>
+    <string name="user_notifications_sound">Notification sound</string>
+    <string name="user_languages">Languages</string>
+    <string name="user_languages_select">Select lanaguage</string>
+    <string name="user_theme">Theme</string>
+    <string name="user_theme_select">Select theme</string>
 
 </resources>

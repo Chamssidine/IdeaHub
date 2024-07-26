@@ -12,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.solodev.ideahub.ui.screen.IdeaHubScreen
 import com.solodev.ideahub.ui.screen.communityScreen.CommunityScreen
 import com.solodev.ideahub.ui.screen.gemini_chat.GeminiChatScreen
+import com.solodev.ideahub.ui.screen.userProfileScreen.UserProfileScreen
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GeminiChatScreen()
+                    UserProfileScreen()
                 }
             }
         }
