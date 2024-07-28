@@ -157,9 +157,8 @@ fun UserPersonalStats(
                 )
                 Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
                 Row(
-                    modifier = modifier.fillMaxWidth(),
+                    modifier = modifier.padding(start = dimensionResource(id = R.dimen.padding_medium)),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
                 ){
                     Icon(
                         painter = painterResource
@@ -173,17 +172,19 @@ fun UserPersonalStats(
                         style = MaterialTheme.typography.bodyMedium,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Spacer(modifier = modifier.weight(1f))
+                    Spacer(modifier = modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                     Button(onClick = onTaskAndGoalCliked) {
                         Text(
-                            stringResource(id = R.string.tab_goal_and_task)
+                            stringResource(id = R.string.tab_goal_and_task),
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
                         )
                     }
 
                 }
                 Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.spacing_small)))
                 Row(
-                    modifier = modifier.fillMaxWidth(),
+                    modifier = modifier.padding(start = dimensionResource(id = R.dimen.padding_medium)),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                 ){
