@@ -178,7 +178,7 @@ fun UserPersonalStats(
                 ){
                     Icon(
                         painter = painterResource
-                            (id = R.drawable.diversity_3_filled_24px),
+                            (id = R.drawable.diversity_3_24px),
                         contentDescription = "icon_contribution"
                     )
                     Text(

@@ -573,7 +573,7 @@ fun ActiveDiscussionItem(
     {
         ElevatedCard {
             Image(
-                painter = painterResource(id = R.drawable.account_circle_24px),
+                painter = painterResource(id = R.drawable.account_circle_24px_filled),
                 contentDescription = "imageProfile",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(60.dp),
