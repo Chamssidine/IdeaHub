@@ -141,7 +141,7 @@ fun UserPersonalStats(
         Text(
             stringResource(id = R.string.personal_stats)
         )
-        Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
+        Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.spacing_small)))
         ElevatedCard(modifier = modifier.fillMaxWidth()
         ) {
             Column(
@@ -222,7 +222,7 @@ fun UserSettings(
 ){
     Column(modifier = modifier.fillMaxWidth()) {
         Text(text = stringResource(id = R.string.user_settings))
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_medium)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
         ElevatedCard(modifier.fillMaxWidth()) {
             Column(
                 modifier.padding(dimensionResource(id = R.dimen.padding_medium))
@@ -231,7 +231,7 @@ fun UserSettings(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 ElevatedCard(
-                    onClick = onNotificationClicked
+                    onClick = onNotificationClicked,
                 ) {
                     Row(
                         modifier.padding(dimensionResource(id = R.dimen.spacing_medium)),
@@ -240,7 +240,8 @@ fun UserSettings(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.notifications_filled_24px),
-                            contentDescription = "icon_notification"
+                            contentDescription = "icon_notification",
+                            tint = MaterialTheme.colorScheme.tertiary
                         )
                         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                         Column(
@@ -258,9 +259,9 @@ fun UserSettings(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_medium)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
                 ElevatedCard(
-                    onClick = onLanguageSelect
+                    onClick = onLanguageSelect,
                 ) {
                     Row(
                         modifier.padding(dimensionResource(id = R.dimen.spacing_medium)),
@@ -269,7 +270,8 @@ fun UserSettings(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.language_24px),
-                            contentDescription = "icon_language"
+                            contentDescription = "icon_language",
+                            tint = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                         Column(
@@ -287,9 +289,9 @@ fun UserSettings(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_medium)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
                 ElevatedCard(
-                    onClick = onThemeSelect
+                    onClick = onThemeSelect,
                 ) {
                     Row(
                         modifier.padding(dimensionResource(id = R.dimen.spacing_medium)),
@@ -298,7 +300,9 @@ fun UserSettings(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.palette_24px),
-                            contentDescription = "icon_palette"
+                            contentDescription = "icon_palette",
+                            tint = MaterialTheme.colorScheme.error
+
                         )
                         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                         Column(
