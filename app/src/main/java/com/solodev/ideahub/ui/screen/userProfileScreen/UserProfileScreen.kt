@@ -164,7 +164,8 @@ fun UserPersonalStats(
                     Icon(
                         painter = painterResource
                             (id = R.drawable.flag_circle_filled_24px),
-                        contentDescription = "icon_goal"
+                        contentDescription = "icon_goal",
+                        tint = MaterialTheme.colorScheme.onErrorContainer
                     )
                     Spacer(modifier = modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                     Text(
@@ -189,7 +190,8 @@ fun UserPersonalStats(
                     Icon(
                         painter = painterResource
                             (id = R.drawable.diversity_3_24px),
-                        contentDescription = "icon_contribution"
+                        contentDescription = "icon_contribution",
+                        tint = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                     Text(
