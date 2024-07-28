@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -167,11 +168,10 @@ fun UserPersonalStats(
                     )
                     Spacer(modifier = modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                     Text(
-                        text = stringResource(id = R.string.user_reached_goal),
+                        text = stringResource(id = R.string.user_reached_goal)+" $reachedGoal %",
                         style = MaterialTheme.typography.bodyMedium,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    Text(text = "$reachedGoal %")
                     Spacer(modifier = modifier.weight(1f))
                     Button(onClick = onTaskAndGoalCliked) {
                         Text(
@@ -180,7 +180,7 @@ fun UserPersonalStats(
                     }
 
                 }
-                Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
+                Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.spacing_small)))
                 Row(
                     modifier = modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -192,7 +192,11 @@ fun UserPersonalStats(
                         contentDescription = "icon_contribution"
                     )
                     Spacer(modifier = modifier.width(dimensionResource(id = R.dimen.spacing_small)))
-                    Text(text = "$contribution contributions")
+                    Text(
+                        text = "$contribution contributions",
+                        style = MaterialTheme.typography.bodyMedium,
+                        overflow = TextOverflow.Ellipsis,
+                        )
                     Spacer(modifier = modifier.weight(1f))
                     Button(onClick = onCommunityCliked) {
                         Text(
@@ -221,7 +225,8 @@ fun UserSettings(
         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_medium)))
         ElevatedCard(modifier.fillMaxWidth()) {
             Column(
-                modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+                modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                    .wrapContentSize(),
                 verticalArrangement = Arrangement.SpaceEvenly,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
