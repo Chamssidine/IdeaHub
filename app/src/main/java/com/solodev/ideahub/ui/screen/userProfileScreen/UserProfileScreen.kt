@@ -1,5 +1,6 @@
 package com.solodev.ideahub.ui.screen.userProfileScreen
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -40,22 +44,26 @@ fun UserProfileScreen(
 
 ){
     val userProfile = userProfile
-    Column(modifier = modifier.fillMaxSize()) {
-        Box() {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        Box(modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))) {
             UserInfos(
                 name = userProfile.name,
                 biography = userProfile.biography,
                 profileImage = userProfile.profileImage
             )
         }
-        Box(modifier = modifier)
+        Box(modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
         {
             UserPersonalStats(
                 reachedGoal = userProfile.personalStatistics.reachedGoalPercentage,
                 contribution = userProfile.personalStatistics.contributions
             )
         }
-        Box(modifier = modifier)
+        Box(modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
         {
             UserSettings()
         }
@@ -77,7 +85,6 @@ fun UserInfos(
              modifier = modifier.fillMaxWidth()
         )
         Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-
         ElevatedCard (modifier = modifier.fillMaxWidth()){
             Row (
                 modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
@@ -144,6 +151,7 @@ fun UserPersonalStats(
                     text = stringResource(
                         id = R.string.user_profile_progression
                     ),
+                    overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
@@ -157,9 +165,11 @@ fun UserPersonalStats(
                             (id = R.drawable.flag_circle_filled_24px),
                         contentDescription = "icon_goal"
                     )
+                    Spacer(modifier = modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                     Text(
                         text = stringResource(id = R.string.user_reached_goal),
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Text(text = "$reachedGoal %")
                     Spacer(modifier = modifier.weight(1f))
@@ -181,10 +191,7 @@ fun UserPersonalStats(
                             (id = R.drawable.diversity_3_24px),
                         contentDescription = "icon_contribution"
                     )
-                    Text(
-                        text = stringResource(id = R.string.user_reached_goal),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+                    Spacer(modifier = modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                     Text(text = "$contribution contributions")
                     Spacer(modifier = modifier.weight(1f))
                     Button(onClick = onCommunityCliked) {
@@ -211,9 +218,12 @@ fun UserSettings(
 ){
     Column(modifier = modifier.fillMaxWidth()) {
         Text(text = stringResource(id = R.string.user_settings))
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_medium)))
         ElevatedCard(modifier.fillMaxWidth()) {
             Column(
-                modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+                modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 ElevatedCard(
                     onClick = onNotificationClicked
@@ -229,7 +239,7 @@ fun UserSettings(
                         )
                         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                         Column(
-
+                            modifier = modifier.fillMaxWidth()
                         ){
                             Text(
                                 text = stringResource(id = R.string.user_notifications),
@@ -243,6 +253,7 @@ fun UserSettings(
                         }
                     }
                 }
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_medium)))
                 ElevatedCard(
                     onClick = onLanguageSelect
                 ) {
@@ -257,7 +268,7 @@ fun UserSettings(
                         )
                         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                         Column(
-
+                            modifier = modifier.fillMaxWidth()
                         ){
                             Text(
                                 text = stringResource(id = R.string.user_languages),
@@ -271,6 +282,7 @@ fun UserSettings(
                         }
                     }
                 }
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_medium)))
                 ElevatedCard(
                     onClick = onThemeSelect
                 ) {
@@ -285,7 +297,7 @@ fun UserSettings(
                         )
                         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.spacing_small)))
                         Column(
-
+                            modifier = modifier.fillMaxWidth()
                         ){
                             Text(
                                 text = stringResource(id = R.string.user_theme),
