@@ -4,6 +4,9 @@ enum class Routes {
     Home,
     Login,
     SignUp,
-    mail_Confirmation
+    mail_Confirmation,
+    community,
+    gemini,
+    profile
 
 }

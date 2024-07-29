@@ -22,9 +22,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.solodev.ideahub.ui.screen.communityScreen.CommunityScreen
 import com.solodev.ideahub.ui.screen.components.bottomNavigationItems
+import com.solodev.ideahub.ui.screen.gemini_chat.GeminiChatScreen
+import com.solodev.ideahub.ui.screen.goalScreen.GoalScreen
 import com.solodev.ideahub.ui.screen.login.LoginScreen
 import com.solodev.ideahub.ui.screen.sign_up.SignUpScreen
+import com.solodev.ideahub.ui.screen.userProfileScreen.UserProfileScreen
 
 
 @ExperimentalMaterial3Api
@@ -97,6 +101,21 @@ fun IdeaHubScreen(
                     onConfirmButtonClicked = {navController.navigate(Routes.Login.name)},
                     onChangeEmailClicked = {navController.navigate(Routes.SignUp.name)}
                 )
+            }
+            composable(Routes.Home.name){
+                GoalScreen(
+
+                )
+            }
+            composable(Routes.community.name){
+                CommunityScreen()
+
+            }
+            composable(Routes.gemini.name){
+                GeminiChatScreen()
+            }
+            composable(Routes.profile.name){
+                UserProfileScreen()
             }
 
         }
