@@ -4,6 +4,7 @@ import com.solodev.ideahub.ui.screen.login.LoginViewModel
 import MailConfirmationScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -47,7 +49,7 @@ fun IdeaHubScreen(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
             NavigationBar(
-                modifier = modifier.height(dimensionResource(id = R.dimen.spacing_small))
+                modifier = modifier.height(60.dp)
             ){
                 bottomNavigationItems.forEachIndexed { index, bottomNavigationItem ->
 
@@ -79,14 +81,13 @@ fun IdeaHubScreen(
                 }
             }
         }
-
     ) {
-
             innerPadding ->
         val innerPadding = innerPadding
         NavHost(
             navController = navController,
-            startDestination = Routes.Login.name
+            startDestination = Routes.Login.name,
+            modifier = Modifier.padding(innerPadding)
         ) {
             composable(Routes.Login.name) {
                 LoginScreen(
