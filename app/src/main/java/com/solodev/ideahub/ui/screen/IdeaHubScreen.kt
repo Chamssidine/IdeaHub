@@ -3,6 +3,7 @@ package com.solodev.ideahub.ui.screen
 import com.solodev.ideahub.ui.screen.login.LoginViewModel
 import MailConfirmationScreen
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,12 +17,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.communityScreen.CommunityScreen
 import com.solodev.ideahub.ui.screen.components.bottomNavigationItems
 import com.solodev.ideahub.ui.screen.gemini_chat.GeminiChatScreen
@@ -43,7 +46,9 @@ fun IdeaHubScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                modifier = modifier.height(dimensionResource(id = R.dimen.spacing_small))
+            ){
                 bottomNavigationItems.forEachIndexed { index, bottomNavigationItem ->
 
                     NavigationBarItem(
