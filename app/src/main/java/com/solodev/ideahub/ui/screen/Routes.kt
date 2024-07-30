@@ -7,6 +7,10 @@ enum class Routes {
     mail_Confirmation,
     community,
     gemini,
-    profile
+    profile,
+    thread,
+    threadHistory,
+    goalCreation,
+    welcome,
 
 }

@@ -73,7 +73,7 @@ fun SignUpScreen(
         )
 
         InputContainer(
-            inputValue = fullName,
+            inputValue = signUpViewModel.name,
             leadingIconValue = { Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null) },
             labelValue = stringResource(R.string.full_name),
             onInputValueChange = {signUpViewModel.updateName(it)},
@@ -82,7 +82,7 @@ fun SignUpScreen(
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
 
-        InputContainer(inputValue = email,
+        InputContainer(inputValue = signUpViewModel.userEmail,
                 leadingIconValue = { Icon(imageVector = Icons.Default.Email, contentDescription = null) },
             labelValue = stringResource(R.string.email),
             onInputValueChange = {signUpViewModel.updateEmail(it)},
@@ -92,7 +92,7 @@ fun SignUpScreen(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
 
 
-        InputContainer(inputValue = password,
+        InputContainer(inputValue = signUpViewModel.password,
             leadingIconValue = { Icon(imageVector = Icons.Default.Lock, contentDescription = null) },
             trailingIconValue = { Icon(painterResource(id = R.drawable.baseline_visibility_black_24), contentDescription = null) },
             labelValue = stringResource(R.string.password),
