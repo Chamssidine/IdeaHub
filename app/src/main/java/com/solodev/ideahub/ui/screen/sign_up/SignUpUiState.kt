@@ -5,6 +5,8 @@ data class SignUpUiState(
     val email: String = "",
     val password: String = "",
     val errorMessage: String? = null,
-    val hasError: Boolean = false
+    val hasError: Boolean = false,
+    val isPasswordVisible: Boolean = false,
+    val isAccountCreationSuccessful: Boolean = false
 
 )

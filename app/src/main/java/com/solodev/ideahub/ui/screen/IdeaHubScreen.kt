@@ -99,7 +99,7 @@ fun IdeaHubScreen(
         ) {
             composable(Routes.SignUp.name) {
                 SignUpScreen(
-                    onSignUpButtonClicked = {},
+                    onSignUpButtonClicked = {navController.navigate(Routes.Login.name)},
                     onLoginButtonClicked = {navController.navigate(Routes.Login.name)}
                 )
 

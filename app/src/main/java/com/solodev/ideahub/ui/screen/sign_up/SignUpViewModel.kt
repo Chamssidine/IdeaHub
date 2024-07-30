@@ -48,7 +48,10 @@ class SignUpViewModel @Inject constructor(
         } else {
 
             signUp(name, userEmail, password)
+
+
         }
+
     }
 
     private fun signUp(name: String, email: String, password: String) {
@@ -56,7 +59,8 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 accountService.register(email, password, name)
-                _loginState.value = Result.success(true)
+               // _loginState.value = Result.success(true)
+                _uiState.update { state -> state.copy(isAccountCreationSuccessful = true) }
             } catch (e: Exception) {
                 _loginState.value = Result.failure(e)
             }

@@ -37,8 +37,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.InputContainer
+import com.solodev.ideahub.ui.screen.Routes
 import com.solodev.ideahub.ui.screen.SocialMediaSection
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 
@@ -51,6 +54,7 @@ fun SignUpScreen(
     onLoginButtonClicked: () -> Unit = {},
     onShowPasswordClicked: () -> Unit = {},
     onSignUpWithSocialMediaClicked: () -> Unit = {},
+
 ) {
 
     val uiState by signUpViewModel.uiState.collectAsState()
@@ -105,7 +109,13 @@ fun SignUpScreen(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_large)))
 
 
-        ElevatedButton(onClick = { signUpViewModel.onSignUpClick() },
+        ElevatedButton( onClick = {
+            signUpViewModel.onSignUpClick()
+            if(uiState.isAccountCreationSuccessful)
+                onSignUpButtonClicked()
+            else
+                onLoginButtonClicked()
+        },
             Modifier
                 .wrapContentWidth(align = Alignment.CenterHorizontally)
                 .width(dimensionResource(id = R.dimen.button_width_large))
