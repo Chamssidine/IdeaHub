@@ -191,7 +191,6 @@ fun DialogContent(
     ) {
         ElevatedCard(
             modifier = Modifier
-               // .padding(dimensionResource(id = R.dimen.padding_medium))
                 .wrapContentSize(),
         ) {
             Column(

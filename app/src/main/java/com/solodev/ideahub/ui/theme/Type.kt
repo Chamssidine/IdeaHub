@@ -16,7 +16,6 @@ val montserrat = FontFamily(
 )
 val museo =  FontFamily(
     Font(R.font.museo_sans_rounded_900),
-    Font(R.font.museo_sans_rounded_filled_900, FontWeight.Bold),
 
 )
 val monograf = FontFamily(

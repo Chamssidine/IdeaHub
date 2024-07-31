@@ -71,24 +71,30 @@ fun GoalScreen(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.padding_medium))
     ) {
         item {
-            CustomSearchBar()
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+            Box(modifier = modifier.padding(dimensionResource(id = R.dimen.spacing_medium))
+            ) {
+                CustomSearchBar()
+            }
+            Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         }
 
         item {
-            Text(
-                text = stringResource(id = R.string.congratulations_message),
-                style = MaterialTheme.typography.headlineSmall
-            )
+            Box(modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))) {
+                Text(
+                    text = stringResource(id = R.string.congratulations_message),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         }
 
         item {
             LazyRow(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(id = R.dimen.spacing_medium)),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 itemsIndexed(items) { index, item ->
@@ -106,6 +112,7 @@ fun GoalScreen(
         item {
             Log.d("GoalScreen", "$customIndex")
             MainTabScreen(
+                modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
                 selectedTabIndex = customIndex,
                 tabTitle = "MyGoal"
             )
@@ -125,7 +132,7 @@ fun MainTabScreen(
         0 -> {
             Column(
                 modifier = modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
             ) {
                 Text(
                     text = tabTitle,
@@ -611,5 +618,5 @@ fun ActiveDiscussionItem(
 @Preview(showBackground = true)
 @Composable
 fun GoalItemPreview() {
-    ActiveDiscussionItem(modifier = Modifier.padding(16.dp))
+    GoalScreen(modifier = Modifier.padding(16.dp))
 }

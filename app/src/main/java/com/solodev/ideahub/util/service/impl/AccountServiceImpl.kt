@@ -11,7 +11,7 @@ class AccountServiceImpl @Inject constructor(private val auth: FirebaseAuth) : A
     }
 
     override suspend fun sendRecoveryEmail(email: String) {
-        TODO("Not yet implemented")
+        auth.sendPasswordResetEmail(email)
     }
 
     override suspend fun createAnonymousAccount() {

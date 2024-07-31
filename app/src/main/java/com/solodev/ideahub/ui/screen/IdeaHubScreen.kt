@@ -1,4 +1,4 @@
-package com.solodev.ideahub.ui.screen
+ package com.solodev.ideahub.ui.screen
 
 import com.solodev.ideahub.ui.screen.login.LoginViewModel
 import MailConfirmationScreen
@@ -52,7 +52,7 @@ fun IdeaHubScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-            if(!uiState.showBottomNavigationBar)
+            if(uiState.showBottomNavigationBar)
             {
                 NavigationBar(
                     modifier = modifier.height(60.dp)
@@ -110,7 +110,14 @@ fun IdeaHubScreen(
             }
             composable(Routes.Login.name) {
                 LoginScreen(
-                    onSignUpButtonClicked = {navController.navigate(Routes.SignUp.name)},
+                    onLoginButtonClicked = {
+                        navController.navigate(Routes.GoalAndTasks.name)
+                        screenManagerVM.showBottomNavigationBar(true)
+                    },
+                    onForgotPasswordButtonClicked = {
+
+                    },
+                    onSignUpButtonClicked = {navController.navigate(Routes.SignUp.name)}
                 )
             }
             composable(Routes.MailConfirmation.name) {
@@ -131,13 +138,13 @@ fun IdeaHubScreen(
                 UserProfileScreen()
             }
             composable(Routes.GoalAndTasks.name){
-                GoalCreationScreen()
+                GoalScreen()
             }
             composable(Routes.GoalCreation.name){
                 GoalCreationScreen(
                     onGoalCreationButtonClicked = {
-                        screenManagerVM.showBottomNavigationBar(true)
                         navController.navigate(Routes.GoalAndTasks.name)
+                        screenManagerVM.showBottomNavigationBar(true)
                     }
                 )
             }

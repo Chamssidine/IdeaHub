@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
+class  LoginViewModel @Inject constructor(
     private val accountService: AccountService
 ) : ViewModel() {
 
@@ -74,11 +74,40 @@ class LoginViewModel @Inject constructor(
             try {
                 accountService.authenticate(email, password)
                 _loginState.value = Result.success(true)
+                _uiState.update {
+                        state -> state.copy(
+                    loginState = LoginState(
+                        ConnexionState.Success,
+                        "Login success"
+                    )
+                )
+                }
+
             } catch (e: Exception) {
                 _loginState.value = Result.failure(e)
+                _uiState.update {
+                    state -> state.copy(
+                        loginState = LoginState(
+                            ConnexionState.Failed,
+                            e.message.toString()
+                        )
+                    )
+                }
+                _uiState.update {state -> state.copy(loginErrorMessage = e.message.toString()) }
             }
         }
 
+    }
+
+    private  fun OnResetPassword(email: String) {
+        viewModelScope.launch {
+            try {
+                 accountService.sendRecoveryEmail(email)
+
+            }catch (e: Exception) {
+                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "${e.message}")
+            }
+        }
     }
     fun updateEmail(email: String) {
         userEmail = email

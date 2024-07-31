@@ -1,5 +1,7 @@
 package com.solodev.ideahub.ui.screen.login
 
+import com.solodev.ideahub.ui.screen.components.AiMessage
+
 data class LoginUIState(
     val userName: String = "",
     val password: String = "",
@@ -10,5 +12,22 @@ data class LoginUIState(
     val passwordErrorMessage: String = "",
     val emailError: Boolean = false,
     val userNameError: Boolean = false,
-    val passwordError: Boolean = false
+    val passwordError: Boolean = false,
+    val loginErrorMessage: String = "",
+    val loginState: LoginState? = null,
+
 )
+
+data class LoginState(
+    val state: ConnexionState,
+    val message: String
+)
+
+enum class ConnexionState{
+    Success,
+    Failed,
+    Loading
+}
+
+
+

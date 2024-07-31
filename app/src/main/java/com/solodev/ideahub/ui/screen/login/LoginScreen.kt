@@ -40,6 +40,7 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     loginViewModel: LoginViewModel = hiltViewModel<LoginViewModel>(),
     onForgotPasswordButtonClicked: () -> Unit = {},
+    onLoginButtonClicked: () -> Unit = {},
     onSignUpButtonClicked: () -> Unit = {},
 
     onSocialMediaButtonClicked: () -> Unit = {},
@@ -77,10 +78,16 @@ fun LoginScreen(
             onInputValueChange = {loginViewModel.updatePassword(it)},
             isError = uiState.passwordError
         )
-
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
 
-
+        if(uiState.loginState?.state == ConnexionState.Failed){
+            Text(
+                text = uiState.loginErrorMessage ?: "",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
         TextButton(
             onClick = { onForgotPasswordButtonClicked() },
             modifier = Modifier.align(Alignment.End),
@@ -94,7 +101,13 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_large)))
 
 
-        ElevatedButton(onClick = { loginViewModel.login()},
+        ElevatedButton(onClick = {
+            loginViewModel.login()
+            if(uiState.loginState?.state == ConnexionState.Success)
+            {
+                onLoginButtonClicked()
+            }
+        },
             Modifier
                 .wrapContentWidth(align = Alignment.CenterHorizontally)
                 .width(dimensionResource(id = R.dimen.button_width_large))
