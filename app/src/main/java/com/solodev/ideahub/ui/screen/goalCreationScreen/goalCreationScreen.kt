@@ -44,6 +44,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,7 +64,10 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun GoalCreationScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onGoalCreationButtonClicked: () -> Unit = {},
+    goalCreationViewModel: GoalCreationViewModel = GoalCreationViewModel()
+
 ){
     var showDialog by remember { mutableStateOf(false)}
     Box(modifier = modifier
@@ -111,8 +115,12 @@ fun GoalCreationScreen(
            if (showDialog){
                 GoalCreationDialog(
                     showDialog = showDialog,
-                    onCreateButtonClicked = {showDialog = false},
-                    onDismissButtonClicked = {showDialog = true}
+                    onCreateButtonClicked = {
+                        showDialog = false
+                        onGoalCreationButtonClicked()
+                                            },
+                    onDismissButtonClicked = {showDialog = true},
+                    goalCreationViewModel = goalCreationViewModel
                 )
             }
 
@@ -125,7 +133,8 @@ fun GoalCreationDialog(
     modifier: Modifier = Modifier,
     showDialog: Boolean = false,
     onCreateButtonClicked: () -> Unit = {},
-    onDismissButtonClicked: () -> Unit = {}
+    onDismissButtonClicked: () -> Unit = {},
+    goalCreationViewModel: GoalCreationViewModel
 ) {
     var animateIn by remember { mutableStateOf(false) }
 
@@ -153,7 +162,8 @@ fun GoalCreationDialog(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     DialogContent(
-                        modifier = modifier
+                        modifier = modifier,
+                        viewModel = goalCreationViewModel,
                     )
                     ElevatedButton(
                         modifier = Modifier
@@ -171,8 +181,10 @@ fun GoalCreationDialog(
 @Composable
 fun DialogContent(
     modifier: Modifier = Modifier,
+    viewModel: GoalCreationViewModel,
     onValueChange: (String) -> Unit = {}
 ){
+    val uiState by viewModel.uiState.collectAsState()
     Box(
         modifier = modifier.wrapContentSize(),
         contentAlignment = Alignment.Center
@@ -193,12 +205,19 @@ fun DialogContent(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 Box()
                 {
-                    TextArea(text = "", onTextChange = {}, label = stringResource(id = R.string.title))
+                    TextArea(
+                        text = uiState.title,
+                        onTextChange = {viewModel.updateTitle(it)},
+                        label = stringResource(id = R.string.title))
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                 Box()
                 {
-                    TextArea(text = "", onTextChange = {},)
+                    TextArea(
+                        text = uiState.description,
+                        onTextChange = {viewModel.updateDescription(it)}
+
+                    )
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 HeaderTitle(title = stringResource(id = R.string.deadline))
@@ -218,15 +237,24 @@ fun DialogContent(
                 ) {
                     Column(modifier = Modifier) {
                         Text(text = stringResource(id = R.string.daily))
-                        Checkbox(checked = false, onCheckedChange = {})
+                        Checkbox(
+                            checked = uiState.reminderFrequency == "Daily",
+                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Daily") }
+                        )
                     }
                     Column(modifier = Modifier) {
                         Text(text = stringResource(id = R.string.weekly))
-                        Checkbox(checked = false, onCheckedChange = {})
+                        Checkbox(
+                            checked = uiState.reminderFrequency == "Weekly",
+                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Weekly") }
+                        )
                     }
                     Column(modifier = Modifier) {
                         Text(text = stringResource(id = R.string.monthly))
-                        Checkbox(checked = false, onCheckedChange = {})
+                        Checkbox(
+                            checked = uiState.reminderFrequency == "Monthly",
+                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Monthly") }
+                        )
                     }
 
                 }
@@ -363,5 +391,5 @@ fun TextArea(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun WelcomeScreenPreview(){
-    GoalCreationDialog()
+    GoalCreationDialog(goalCreationViewModel = GoalCreationViewModel())
 }

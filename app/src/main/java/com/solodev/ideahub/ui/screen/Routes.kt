@@ -4,13 +4,16 @@ enum class Routes {
     Home,
     Login,
     SignUp,
-    mail_Confirmation,
-    community,
-    gemini,
-    profile,
-    thread,
-    threadHistory,
-    goalCreation,
-    welcome,
+    MailConfirmation,
+    Community,
+    Gemini,
+    Profile,
+    Thread,
+    ThreadHistory,
+    GoalCreation,
+    Welcome,
+    GoalAndTasks
+
+
 
 }

@@ -17,6 +17,13 @@ class ScreenManagerVM @Inject constructor(
     fun setFirstLaunch(isFirstLaunch: Boolean) {
         _uiState.value = _uiState.value.copy(isFirstLaunch = isFirstLaunch)
     }
+    fun showBottomNavigationBar(showBottomNavigationBar: Boolean) {
+        _uiState.value = _uiState.value.copy(showBottomNavigationBar = showBottomNavigationBar)
+    }
+    fun setDestination(destination: String) {
+        _uiState.value = _uiState.value.copy(destination = destination)
+
+    }
 
 
 }

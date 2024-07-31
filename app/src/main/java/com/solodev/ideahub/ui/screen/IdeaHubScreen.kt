@@ -52,7 +52,7 @@ fun IdeaHubScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
-            if(!uiState.isFirstLaunch)
+            if(!uiState.showBottomNavigationBar)
             {
                 NavigationBar(
                     modifier = modifier.height(60.dp)
@@ -94,15 +94,18 @@ fun IdeaHubScreen(
         val innerPadding = innerPadding
         NavHost(
             navController = navController,
-            startDestination = Routes.SignUp.name,
+            startDestination = uiState.destination,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Routes.SignUp.name) {
                 SignUpScreen(
-                    onSignUpButtonClicked = {navController.navigate(Routes.Login.name)},
+                    onSignUpButtonClicked = {
+                        if(uiState.isFirstLaunch)
+                            navController.navigate(Routes.Welcome.name)
+                        else
+                            navController.navigate(Routes.GoalAndTasks.name) },
                     onLoginButtonClicked = {navController.navigate(Routes.Login.name)}
                 )
-
 
             }
             composable(Routes.Login.name) {
@@ -110,37 +113,47 @@ fun IdeaHubScreen(
                     onSignUpButtonClicked = {navController.navigate(Routes.SignUp.name)},
                 )
             }
-            composable(Routes.mail_Confirmation.name) {
+            composable(Routes.MailConfirmation.name) {
                 MailConfirmationScreen(
                     onConfirmButtonClicked = {navController.navigate(Routes.Login.name)},
                     onChangeEmailClicked = {navController.navigate(Routes.SignUp.name)}
                 )
             }
-            composable(Routes.Home.name){
-                GoalScreen(
 
-                )
-            }
-            composable(Routes.community.name){
+            composable(Routes.Community.name){
                 CommunityScreen()
 
             }
-            composable(Routes.gemini.name){
+            composable(Routes.Gemini.name){
                 GeminiChatScreen()
             }
-            composable(Routes.profile.name){
+            composable(Routes.Profile.name){
                 UserProfileScreen()
             }
-            composable(Routes.goalCreation.name){
+            composable(Routes.GoalAndTasks.name){
                 GoalCreationScreen()
             }
-            composable(Routes.welcome.name){
-                WelcomeScreen()
+            composable(Routes.GoalCreation.name){
+                GoalCreationScreen(
+                    onGoalCreationButtonClicked = {
+                        screenManagerVM.showBottomNavigationBar(true)
+                        navController.navigate(Routes.GoalAndTasks.name)
+                    }
+                )
             }
-            composable(Routes.thread.name){
+            composable(Routes.Welcome.name){
+                WelcomeScreen(
+                    onLetsGoClicked = {
+
+                        navController.navigate(Routes.GoalCreation.name)
+
+                    }
+                )
+            }
+            composable(Routes.Thread.name){
                 GoalScreen()
             }
-            composable(Routes.threadHistory.name) {
+            composable(Routes.ThreadHistory.name) {
                 GoalScreen()
             }
         }

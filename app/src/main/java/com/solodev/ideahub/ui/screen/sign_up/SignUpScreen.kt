@@ -58,9 +58,6 @@ fun SignUpScreen(
 ) {
 
     val uiState by signUpViewModel.uiState.collectAsState()
-    var password by remember { mutableStateOf("") }
-    var fullName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -105,6 +102,14 @@ fun SignUpScreen(
         )
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+        if(uiState.hasError){
+            Text(
+                text = uiState.errorMessage ?: "",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
+
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_large)))
 
@@ -113,8 +118,6 @@ fun SignUpScreen(
             signUpViewModel.onSignUpClick()
             if(uiState.isAccountCreationSuccessful)
                 onSignUpButtonClicked()
-            else
-                onLoginButtonClicked()
         },
             Modifier
                 .wrapContentWidth(align = Alignment.CenterHorizontally)

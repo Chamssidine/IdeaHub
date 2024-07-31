@@ -33,7 +33,8 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun WelcomeScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLetsGoClicked: () -> Unit = {}
 ){
     Box(modifier = modifier
         .fillMaxSize(),
@@ -72,7 +73,7 @@ fun WelcomeScreen(
                 PulsingElevatedButton(
                     width = dimensionResource(id = R.dimen.button_width_full_width),
                     height = dimensionResource(id = R.dimen.button_height_medium),
-                    onLetsGoClicked = {}
+                    onLetsGoClicked = onLetsGoClicked
                 )
             }
 
