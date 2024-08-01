@@ -1,6 +1,7 @@
 package com.solodev.ideahub.ui.screen.goalCreationScreen
 
 
+import android.annotation.SuppressLint
 import android.widget.Space
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
@@ -33,18 +34,23 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.goalScreen.Goal
+import com.solodev.ideahub.util.Tools
 import kotlinx.coroutines.delay
 
 @Composable
@@ -192,6 +199,9 @@ fun DialogContent(
     viewModel: GoalCreationViewModel,
     onValueChange: (String) -> Unit = {}
 ){
+    val showDatePickerDialog = remember {
+        mutableStateOf(false)
+    }
     val uiState by viewModel.uiState.collectAsState()
     Box(
         modifier = modifier.wrapContentSize(),
@@ -200,6 +210,7 @@ fun DialogContent(
         ElevatedCard(
             modifier = Modifier
                 .wrapContentSize(),
+            shape = MaterialTheme.shapes.extraLarge
         ) {
             Column(
                 modifier = Modifier
@@ -231,7 +242,16 @@ fun DialogContent(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 Box()
                 {
-                    Text(text = stringResource(id = R.string.objectives_due_date),modifier = modifier.wrapContentSize(align = Alignment.Center))
+                    TextButton(onClick = {
+                        showDatePickerDialog.value = true
+                    }) {
+                        Text(text = stringResource(id = R.string.objectives_due_date),modifier = modifier.wrapContentSize(align = Alignment.Center))
+                    }
+                    if(showDatePickerDialog.value)
+                    {
+                        DatePickerDialog()
+                    }
+
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 HeaderTitle(title = stringResource(id = R.string.reminder_frequency))
@@ -265,6 +285,7 @@ fun DialogContent(
                     }
 
                 }
+
            }
        }
    }
@@ -356,6 +377,39 @@ fun HeaderTitle(
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerDialog(
+
+){
+    var dateResult by remember {
+        mutableStateOf("Date Picker")
+    }
+    val openDialog = remember { mutableStateOf(true)}
+    val datePickerState = rememberDatePickerState()
+    val confirmEnabled = derivedStateOf { datePickerState.selectedDateMillis !=null }
+
+     DatePickerDialog(
+        onDismissRequest = { openDialog.value= false},
+        confirmButton = {
+            TextButton(onClick = {
+                openDialog.value = false
+                var date = "No Selection"
+                if(datePickerState.selectedDateMillis !=null){
+                    date = Tools.convertLongToTime((datePickerState.selectedDateMillis!!))
+                }
+                dateResult = date
+            },
+                enabled = confirmEnabled.value
+            ) {
+                Text(text = "Confirm")
+            }
+        }) {
+         DatePicker(state = datePickerState)
+        
+    }
+}
 @Composable
 fun TextArea(
     modifier: Modifier = Modifier,
@@ -398,5 +452,5 @@ fun TextArea(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun WelcomeScreenPreview(){
-    GoalCreationDialog(goalCreationViewModel = GoalCreationViewModel())
+    DialogContent(viewModel = GoalCreationViewModel())
 }
