@@ -253,7 +253,7 @@ fun IdeaHubTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColors
+        darkTheme -> darkScheme
         else -> LightColors
     }
     val view = LocalView.current

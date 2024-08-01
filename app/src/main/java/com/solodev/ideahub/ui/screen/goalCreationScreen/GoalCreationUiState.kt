@@ -6,5 +6,6 @@ data class GoalCreationUiState(
     val deadline: String = "",
     val reminderFrequency: String = "",
     val hasError: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val confirmDateCreation: Boolean = false
 )

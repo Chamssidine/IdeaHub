@@ -2,8 +2,7 @@ package com.solodev.ideahub.ui.screen.goalCreationScreen
 
 
 import android.annotation.SuppressLint
-import android.widget.Space
-import androidx.annotation.StringRes
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -34,6 +33,7 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ElevatedButton
@@ -47,7 +47,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -60,13 +59,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.solodev.ideahub.R
-import com.solodev.ideahub.ui.screen.goalScreen.Goal
 import com.solodev.ideahub.util.Tools
 import kotlinx.coroutines.delay
 
@@ -171,22 +169,18 @@ fun GoalCreationDialog(
                     DialogContent(
                         modifier = modifier,
                         viewModel = goalCreationViewModel,
-                    )
-                    ElevatedButton(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        onClick = {
+                        onConfirm = {
                             val newGoal = goalCreationViewModel.createGoal()
                             if(newGoal!=null)
                             {
                                 onCreateButtonClicked()
+                                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "${newGoal.id} ${newGoal.title}")
                                 goalCreationViewModel.onGoalCreated(newGoal)
                             }
 
                         }
-                    ) {
-                        Text(text = stringResource(id = R.string.create))
-                    }
+                    )
+
                 }
             }
         }
@@ -197,7 +191,7 @@ fun GoalCreationDialog(
 fun DialogContent(
     modifier: Modifier = Modifier,
     viewModel: GoalCreationViewModel,
-    onValueChange: (String) -> Unit = {}
+    onConfirm: () -> Unit,
 ){
     val showDatePickerDialog = remember {
         mutableStateOf(false)
@@ -214,7 +208,7 @@ fun DialogContent(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.padding_medium)),
+                    .padding(top = dimensionResource(id = R.dimen.padding_medium), start = dimensionResource(id = R.dimen.padding_medium), end = dimensionResource(id = R.dimen.padding_medium)),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -247,9 +241,12 @@ fun DialogContent(
                     }) {
                         Text(text = stringResource(id = R.string.objectives_due_date),modifier = modifier.wrapContentSize(align = Alignment.Center))
                     }
-                    if(showDatePickerDialog.value)
+                    if(showDatePickerDialog.value )
                     {
-                        DatePickerDialog()
+                        DatePickerDialog(onConfirmButtonClicked = {
+                            viewModel.OnConfirmDatePickingDialog(it)
+                            showDatePickerDialog.value = false
+                        })
                     }
 
                 }
@@ -266,26 +263,55 @@ fun DialogContent(
                         Text(text = stringResource(id = R.string.daily))
                         Checkbox(
                             checked = uiState.reminderFrequency == "Daily",
-                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Daily") }
+                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Daily") },
+                            colors = CheckboxDefaults.colors(
+                                uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
+                            ),
                         )
                     }
                     Column(modifier = Modifier) {
                         Text(text = stringResource(id = R.string.weekly))
                         Checkbox(
                             checked = uiState.reminderFrequency == "Weekly",
-                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Weekly") }
+                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Weekly") },
+                            colors = CheckboxDefaults.colors(
+                                uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
+                            ),
+
                         )
                     }
                     Column(modifier = Modifier) {
                         Text(text = stringResource(id = R.string.monthly))
                         Checkbox(
                             checked = uiState.reminderFrequency == "Monthly",
-                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Monthly") }
+                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Monthly")},
+                                colors = CheckboxDefaults.colors(
+                                    uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
+                                ),
                         )
                     }
 
                 }
+                Row(
+                    modifier = modifier.fillMaxWidth()
+                        .align(Alignment.End),
+                    verticalAlignment = Alignment.CenterVertically,
 
+                ){
+                    Spacer(modifier = modifier.weight(1f))
+                    TextButton(onClick = { /*TODO*/ }) {
+                        Text(text = stringResource(id = R.string.cancel))
+                    }
+
+                    TextButton(
+                        onClick = onConfirm,
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.confirm),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
            }
        }
    }
@@ -363,9 +389,6 @@ fun HeaderTitle(
             modifier = Modifier
                 .fillMaxWidth()
             ,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-            ),
             shape = MaterialTheme.shapes.extraLarge,
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
         ) {
@@ -381,35 +404,40 @@ fun HeaderTitle(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerDialog(
-
-){
+    onConfirmButtonClicked: (String)-> Unit = {}
+) {
     var dateResult by remember {
         mutableStateOf("Date Picker")
     }
-    val openDialog = remember { mutableStateOf(true)}
+    val openDialog = remember { mutableStateOf(true) }
     val datePickerState = rememberDatePickerState()
-    val confirmEnabled = derivedStateOf { datePickerState.selectedDateMillis !=null }
+    val confirmEnabled = derivedStateOf { datePickerState.selectedDateMillis != null }
 
-     DatePickerDialog(
-        onDismissRequest = { openDialog.value= false},
-        confirmButton = {
-            TextButton(onClick = {
-                openDialog.value = false
-                var date = "No Selection"
-                if(datePickerState.selectedDateMillis !=null){
-                    date = Tools.convertLongToTime((datePickerState.selectedDateMillis!!))
+    if (openDialog.value) {
+        DatePickerDialog(
+            onDismissRequest = { openDialog.value = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        openDialog.value = false
+                        var date = "No Selection"
+                        if (datePickerState.selectedDateMillis != null) {
+                            date = Tools.convertLongToTime((datePickerState.selectedDateMillis!!))
+                        }
+                        dateResult = date
+                        onConfirmButtonClicked(dateResult)
+                    },
+                    enabled = confirmEnabled.value
+                ) {
+                    Text(text = "Confirm")
                 }
-                dateResult = date
-            },
-                enabled = confirmEnabled.value
-            ) {
-                Text(text = "Confirm")
             }
-        }) {
-         DatePicker(state = datePickerState)
-        
+        ) {
+            DatePicker(state = datePickerState)
+        }
     }
 }
+
 @Composable
 fun TextArea(
     modifier: Modifier = Modifier,
@@ -423,14 +451,15 @@ fun TextArea(
         contentAlignment = Alignment.Center
     ){
         Card (
-            shape = MaterialTheme.shapes.small,
+            shape = MaterialTheme.shapes.medium,
             colors = CardDefaults.cardColors(
                 containerColor = Color.Transparent,
             ),
             modifier = modifier.border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outline,
-                shape = MaterialTheme.shapes.small
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                shape = MaterialTheme.shapes.medium
+
             )
         ){
             TextField(
@@ -452,5 +481,5 @@ fun TextArea(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun WelcomeScreenPreview(){
-    DialogContent(viewModel = GoalCreationViewModel())
+    DialogContent(viewModel = GoalCreationViewModel(), onConfirm = {})
 }

@@ -46,18 +46,18 @@ class GoalCreationViewModel : ViewModel() {
         val state = _uiState.value ?: return false
         return when {
             state.title.isBlank() -> {
-                _uiState.value = state.copy(hasError = true, errorMessage = "Title cannot be empty")
-                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Error: $_uiState.value.errorMessage")
+                _uiState.update { state-> state.copy(hasError = true, errorMessage = "title is empty")}
+                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Error: ${_uiState.value.errorMessage}")
                 false
             }
             state.deadline.isBlank() -> {
-                _uiState.value = state.copy(hasError = true, errorMessage = "Deadline cannot be empty")
-                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Error: $_uiState.value.errorMessage")
+                _uiState.update { state-> state.copy(hasError = true, errorMessage = "empty deadline")}
+                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Error: ${_uiState.value.errorMessage}")
                 false
             }
             !isValidDate(state.deadline) -> {
-                _uiState.value = state.copy(hasError = true, errorMessage = "Deadline must be a valid date")
-                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Error: $_uiState.value.errorMessage")
+                _uiState.update { state-> state.copy(hasError = true, errorMessage = "the date is invalide or empty")}
+                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Error: ${_uiState.value.errorMessage}")
                 false
             }
             else -> {
@@ -69,12 +69,12 @@ class GoalCreationViewModel : ViewModel() {
 
     // Check if the deadline is a valid date
     private fun isValidDate(date: String): Boolean {
-        return try {
-            val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            format.parse(date) != null
-        } catch (e: Exception) {
-            false
+        Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Date: ${date}")
+        if (date.isBlank()) {
+            return false
         }
+        else
+            return true
     }
 
     // Create a new goal
@@ -93,8 +93,10 @@ class GoalCreationViewModel : ViewModel() {
             )
             return  newGoal
         }
-        Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "the goal is null")
-        return  null
+        else{
+            return  null
+        }
+
     }
 
     fun onGoalCreated(goal: Goal){
@@ -109,6 +111,14 @@ class GoalCreationViewModel : ViewModel() {
         }
     }
 
+    fun OnConfirmDatePickingDialog(date: String){
+        _uiState.update {
+            state -> state.copy(
+                deadline = date,
+                confirmDateCreation = true
+            )
+        }
+    }
     // Get the current date in the required format
     private fun getCurrentDate(): String {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

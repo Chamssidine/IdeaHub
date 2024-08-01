@@ -105,7 +105,7 @@ fun MailConfirmationScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
 
         TextButton(
             onClick = { onChangeEmailClicked() },
