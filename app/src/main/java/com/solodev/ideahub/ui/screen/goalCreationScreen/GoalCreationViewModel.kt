@@ -1,21 +1,29 @@
 package com.solodev.ideahub.ui.screen.goalCreationScreen
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firestore.v1.DocumentDelete
+import com.solodev.ideahub.ui.screen.goalScreen.Goal
+import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenUIState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
 
 class GoalCreationViewModel : ViewModel() {
 
     // UI state
     private val _uiState = MutableStateFlow(GoalCreationUiState())
     val uiState: StateFlow<GoalCreationUiState> = _uiState.asStateFlow()
-
+    private val _goalList = MutableStateFlow(GoalScreenUIState())
+    val goalList: StateFlow<GoalScreenUIState> = _goalList.asStateFlow()
     // Update functions for each field
     fun updateTitle(newTitle: String) {
         _uiState.value = _uiState.value.copy(title = newTitle)
@@ -39,14 +47,17 @@ class GoalCreationViewModel : ViewModel() {
         return when {
             state.title.isBlank() -> {
                 _uiState.value = state.copy(hasError = true, errorMessage = "Title cannot be empty")
+                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Error: $_uiState.value.errorMessage")
                 false
             }
             state.deadline.isBlank() -> {
                 _uiState.value = state.copy(hasError = true, errorMessage = "Deadline cannot be empty")
+                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Error: $_uiState.value.errorMessage")
                 false
             }
             !isValidDate(state.deadline) -> {
                 _uiState.value = state.copy(hasError = true, errorMessage = "Deadline must be a valid date")
+                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Error: $_uiState.value.errorMessage")
                 false
             }
             else -> {
@@ -67,17 +78,34 @@ class GoalCreationViewModel : ViewModel() {
     }
 
     // Create a new goal
-    fun createGoal(onGoalCreated: (Goal) -> Unit) {
+    fun createGoal() :Goal? {
         if (validateInputs()) {
-            val state = _uiState.value ?: return
+            val state = _uiState.value ?: return null
             val newGoal = Goal(
                 title = state.title,
                 description = state.description,
                 deadline = state.deadline,
                 reminderFrequency = state.reminderFrequency,
-                creationDate = getCurrentDate()
+                creationDate = getCurrentDate(),
+                id = System.currentTimeMillis(),
+                isCompleted = false,
+                delete = false
             )
-            onGoalCreated(newGoal)
+            return  newGoal
+        }
+        Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "the goal is null")
+        return  null
+    }
+
+    fun onGoalCreated(goal: Goal){
+        if(goal != null){
+            val goalList: MutableList<Goal>  = mutableListOf()
+            goalList.add(goal)
+            _goalList.update {
+                state -> state.copy(
+                    goalList = goalList
+                )
+            }
         }
     }
 
@@ -88,11 +116,3 @@ class GoalCreationViewModel : ViewModel() {
     }
 }
 
-// Data class for Goal
-data class Goal(
-    val title: String,
-    val description: String,
-    val deadline: String,
-    val reminderFrequency: String,
-    val creationDate: String
-)

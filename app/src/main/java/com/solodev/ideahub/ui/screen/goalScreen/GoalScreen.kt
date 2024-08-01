@@ -50,7 +50,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -77,11 +76,11 @@ fun GoalScreen(
             ) {
                 CustomSearchBar()
             }
-            Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+            Spacer(modifier = modifier.height(dimensionResource(id = R.dimen.padding_small )))
         }
 
         item {
-            Box(modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium))) {
+            Box(modifier = modifier.padding(start = dimensionResource(id = R.dimen.padding_medium),end = dimensionResource(id = R.dimen.padding_medium))) {
                 Text(
                     text = stringResource(id = R.string.congratulations_message),
                     style = MaterialTheme.typography.bodyMedium
@@ -92,9 +91,8 @@ fun GoalScreen(
 
         item {
             LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.spacing_medium)),
+                modifier = modifier.padding(start = dimensionResource(id = R.dimen.padding_medium),end = dimensionResource(id = R.dimen.padding_medium))
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 itemsIndexed(items) { index, item ->
@@ -112,7 +110,7 @@ fun GoalScreen(
         item {
             Log.d("GoalScreen", "$customIndex")
             MainTabScreen(
-                modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+                modifier = modifier.padding(start = dimensionResource(id = R.dimen.padding_medium),end = dimensionResource(id = R.dimen.padding_medium)),
                 selectedTabIndex = customIndex,
                 tabTitle = "MyGoal"
             )
@@ -138,8 +136,9 @@ fun MainTabScreen(
                     text = tabTitle,
                     style = MaterialTheme.typography.displayMedium
                 )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
                 AchievedGoal()
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
                 UnAchievedGoal()
             }
         }
@@ -179,6 +178,7 @@ fun AchievedGoal(
             )
     ) {
         Text(text = stringResource(id = R.string.achieved))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
         Column {
             repeat(defaultItemCount) {
                 GoalItem(modifier, hasCompleted = true)
@@ -239,84 +239,90 @@ fun GoalItem(
     onOpen: () -> Unit = {},
     deadLine: String = "19-05-2024",
     priority: String = "High",
+    delete: Boolean = false,
+    goalItemIndex: Int = 0,
 
 ){
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-    )  {
-        Row(
-            modifier = modifier
-                .padding(dimensionResource(id = R.dimen.padding_small)),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = modifier) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-                Text(
-                    text = creationDate,
-                    style = MaterialTheme
-                        .typography.labelSmall,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                )
-            }
-            if (hasCompleted) {
-                Spacer(modifier = Modifier.weight(1f))
-                Text(text = "Completed",style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.weight(1f))
-            }
-            else {
-                Spacer(modifier = Modifier.weight(1f))
+    if(!delete)
+    {
+        ElevatedCard(
+            modifier = modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium,
+        )  {
+            Row(
+                modifier = modifier
+                    .padding(dimensionResource(id = R.dimen.padding_small)),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Column(modifier = modifier) {
                     Text(
-                        text = stringResource(id = R.string.deadline),
+                        text = title,
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                     Text(
-                        text = stringResource(id = R.string.priority),
-                        style = MaterialTheme.typography.bodyMedium
+                        text = creationDate,
+                        style = MaterialTheme
+                            .typography.labelSmall,
+                        modifier = Modifier
+                            .align(Alignment.End)
                     )
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                Column(modifier = modifier) {
-                    Text(
-                        text = deadLine,
-                        style = MaterialTheme.typography.labelSmall
-                    )
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                    Text(
-                        text = priority,
-                        style = MaterialTheme.typography.labelSmall
-                    )
+                if (hasCompleted) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(text = "Completed",style = MaterialTheme.typography.bodyLarge)
+                    Spacer(modifier = Modifier.weight(1f))
                 }
-            }
-            ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
-            {
-                IconButton(onClick = onOpen) {
-                    Icon(painter = painterResource(
-                        id = R.drawable.open_in_new_24px),
-                        contentDescription = "icon_share",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                else {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Column(modifier = modifier) {
+                        Text(
+                            text = stringResource(id = R.string.deadline),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                        Text(
+                            text = stringResource(id = R.string.priority),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Column(modifier = modifier) {
+                        Text(
+                            text = deadLine,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                        Text(
+                            text = priority,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                    }
                 }
-            }
-            ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
-            {
-                IconButton(onClick = onDelete) {
-                    Icon(painter = painterResource(
-                        id = R.drawable.delete_forever_24px),
-                        contentDescription = "icon_share",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
+                {
+                    IconButton(onClick = onOpen) {
+                        Icon(painter = painterResource(
+                            id = R.drawable.open_in_new_24px),
+                            contentDescription = "icon_share",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+                ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
+                {
+                    IconButton(onClick = onDelete) {
+                        Icon(painter = painterResource(
+                            id = R.drawable.delete_forever_24px),
+                            contentDescription = "icon_share",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             }
         }
     }
+
 }
 
 @Composable

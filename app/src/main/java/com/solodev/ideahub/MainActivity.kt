@@ -12,6 +12,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.solodev.ideahub.ui.screen.IdeaHubScreen
 import com.solodev.ideahub.ui.screen.communityScreen.CommunityScreen
 import com.solodev.ideahub.ui.screen.gemini_chat.GeminiChatScreen
+import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationScreen
+import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationViewModel
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreen
 import com.solodev.ideahub.ui.screen.userProfileScreen.UserProfileScreen
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
@@ -30,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GoalScreen()
+                    GoalCreationScreen(goalCreationViewModel = GoalCreationViewModel())
                 }
             }
         }

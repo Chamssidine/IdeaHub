@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.solodev.ideahub.R
+import com.solodev.ideahub.ui.screen.goalScreen.Goal
 import kotlinx.coroutines.delay
 
 @Composable
@@ -117,8 +118,7 @@ fun GoalCreationScreen(
                     showDialog = showDialog,
                     onCreateButtonClicked = {
                         showDialog = false
-                        onGoalCreationButtonClicked()
-                                            },
+                        onGoalCreationButtonClicked() },
                     onDismissButtonClicked = {showDialog = true},
                     goalCreationViewModel = goalCreationViewModel
                 )
@@ -168,7 +168,15 @@ fun GoalCreationDialog(
                     ElevatedButton(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        onClick = onCreateButtonClicked
+                        onClick = {
+                            val newGoal = goalCreationViewModel.createGoal()
+                            if(newGoal!=null)
+                            {
+                                onCreateButtonClicked()
+                                goalCreationViewModel.onGoalCreated(newGoal)
+                            }
+
+                        }
                     ) {
                         Text(text = stringResource(id = R.string.create))
                     }
