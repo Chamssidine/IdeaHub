@@ -115,7 +115,8 @@ fun GoalCreationScreen(
                     height = dimensionResource(id = R.dimen.button_height_large),
                     onCreateGoalClicked = {
                         showDialog = true
-                    }
+                    },
+                    
                 )
             }
            if (showDialog){
@@ -124,8 +125,8 @@ fun GoalCreationScreen(
                     onCreateButtonClicked = {
                         showDialog = false
                         onGoalCreationButtonClicked() },
-                    onDismissButtonClicked = {showDialog = true},
-                    goalCreationViewModel = goalCreationViewModel
+                    onDismissButtonClicked = {showDialog = false},
+                    goalCreationViewModel = goalCreationViewModel,
                 )
             }
 
@@ -178,6 +179,10 @@ fun GoalCreationDialog(
                                 goalCreationViewModel.onGoalCreated(newGoal)
                             }
 
+                        },
+                        onCancel = {
+                            onDismissButtonClicked()
+                            animateIn = false
                         }
                     )
 
@@ -192,6 +197,7 @@ fun DialogContent(
     modifier: Modifier = Modifier,
     viewModel: GoalCreationViewModel,
     onConfirm: () -> Unit,
+    onCancel: ()-> Unit
 ){
     val showDatePickerDialog = remember {
         mutableStateOf(false)
@@ -293,13 +299,14 @@ fun DialogContent(
 
                 }
                 Row(
-                    modifier = modifier.fillMaxWidth()
+                    modifier = modifier
+                        .fillMaxWidth()
                         .align(Alignment.End),
                     verticalAlignment = Alignment.CenterVertically,
 
                 ){
                     Spacer(modifier = modifier.weight(1f))
-                    TextButton(onClick = { /*TODO*/ }) {
+                    TextButton(onClick = onCancel) {
                         Text(text = stringResource(id = R.string.cancel))
                     }
 
@@ -481,5 +488,5 @@ fun TextArea(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun WelcomeScreenPreview(){
-    DialogContent(viewModel = GoalCreationViewModel(), onConfirm = {})
+    DialogContent(viewModel = GoalCreationViewModel(), onConfirm = {}, onCancel = {})
 }
