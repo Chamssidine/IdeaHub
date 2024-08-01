@@ -239,7 +239,7 @@ fun DialogContent(
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 HeaderTitle(title = stringResource(id = R.string.deadline))
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                 Box()
                 {
                     TextButton(onClick = {
@@ -256,7 +256,7 @@ fun DialogContent(
                     }
 
                 }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                 HeaderTitle(title = stringResource(id = R.string.reminder_frequency))
                 Row(
                     modifier = Modifier
