@@ -71,7 +71,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun GoalCreationScreen(
     modifier: Modifier = Modifier,
-    onGoalCreationButtonClicked: () -> Unit = {},
+    onGoalCreated: () -> Unit = {},
     goalCreationViewModel: GoalCreationViewModel = GoalCreationViewModel()
 
 ){
@@ -80,7 +80,6 @@ fun GoalCreationScreen(
         .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-
 
         Column(
             modifier = modifier
@@ -119,16 +118,26 @@ fun GoalCreationScreen(
                     
                 )
             }
-           if (showDialog){
+            if (showDialog) {
                 GoalCreationDialog(
                     showDialog = showDialog,
-                    onCreateButtonClicked = {
+                    onConfirm = {
+                        Log.d("GoalCreationScreen", "Dialog onConfirm called")
                         showDialog = false
-                        onGoalCreationButtonClicked() },
-                    onDismissButtonClicked = {showDialog = false},
+                    },
+                    onGoalCreated = {
+                        Log.d("GoalCreationScreen", "onGoalCreated called")
+                        onGoalCreated()
+                        Log.d("GoalCreationScreen", "onGoalCreated stops")
+                    },
+                    onDismissButtonClicked = {
+                        Log.d("GoalCreationScreen", "Dialog dismissed")
+                        showDialog = false
+                    },
                     goalCreationViewModel = goalCreationViewModel,
                 )
             }
+
 
         }
     }
@@ -138,7 +147,8 @@ fun GoalCreationScreen(
 fun GoalCreationDialog(
     modifier: Modifier = Modifier,
     showDialog: Boolean = false,
-    onCreateButtonClicked: () -> Unit = {},
+    onConfirm: () -> Unit = {},
+    onGoalCreated: () -> Unit = {},
     onDismissButtonClicked: () -> Unit = {},
     goalCreationViewModel: GoalCreationViewModel
 ) {
@@ -172,36 +182,37 @@ fun GoalCreationDialog(
                         viewModel = goalCreationViewModel,
                         onConfirm = {
                             val newGoal = goalCreationViewModel.createGoal()
-                            if(newGoal!=null)
-                            {
-                                onCreateButtonClicked()
+                            if (newGoal != null) {
                                 Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "${newGoal.id} ${newGoal.title}")
                                 goalCreationViewModel.onGoalCreated(newGoal)
+                                onConfirm()
+                                onGoalCreated() // Appeler onGoalCreated après la confirmation
                             }
-
                         },
                         onCancel = {
                             onDismissButtonClicked()
                             animateIn = false
-                        }
+                        },
                     )
-
                 }
             }
         }
     }
 }
 
+
+
 @Composable
 fun DialogContent(
     modifier: Modifier = Modifier,
     viewModel: GoalCreationViewModel,
     onConfirm: () -> Unit,
-    onCancel: ()-> Unit
+    onCancel: ()-> Unit,
 ){
-    val showDatePickerDialog = remember {
+    var showDatePickerDialog by remember {
         mutableStateOf(false)
     }
+
     val uiState by viewModel.uiState.collectAsState()
     Box(
         modifier = modifier.wrapContentSize(),
@@ -243,15 +254,22 @@ fun DialogContent(
                 Box()
                 {
                     TextButton(onClick = {
-                        showDatePickerDialog.value = true
+                        showDatePickerDialog = true
                     }) {
-                        Text(text = stringResource(id = R.string.objectives_due_date),modifier = modifier.wrapContentSize(align = Alignment.Center))
+                        Text(text =
+                                if(uiState.deadline.isBlank())
+                                    stringResource(id = R.string.pick_a_date)
+                                else
+                                    uiState.deadline,
+                            modifier = modifier.wrapContentSize(align = Alignment.Center))
                     }
-                    if(showDatePickerDialog.value )
+                    if(showDatePickerDialog )
                     {
-                        DatePickerDialog(onConfirmButtonClicked = {
-                            viewModel.OnConfirmDatePickingDialog(it)
-                            showDatePickerDialog.value = false
+                        DatePickerDialog(
+                            onConfirmButtonClicked = {
+                            viewModel.onConfirmDatePickingDialog(it)
+                            showDatePickerDialog = false
+
                         })
                     }
 
@@ -312,6 +330,7 @@ fun DialogContent(
 
                     TextButton(
                         onClick = onConfirm,
+
                     ) {
                         Text(
                             text = stringResource(id = R.string.confirm),

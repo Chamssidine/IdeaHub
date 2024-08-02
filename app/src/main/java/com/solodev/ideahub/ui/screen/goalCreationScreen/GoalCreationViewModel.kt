@@ -1,13 +1,9 @@
 package com.solodev.ideahub.ui.screen.goalCreationScreen
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firestore.v1.DocumentDelete
 import com.solodev.ideahub.ui.screen.goalScreen.Goal
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenUIState
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -100,7 +96,6 @@ class GoalCreationViewModel : ViewModel() {
     }
 
     fun onGoalCreated(goal: Goal){
-        if(goal != null){
             val goalList: MutableList<Goal>  = mutableListOf()
             goalList.add(goal)
             _goalList.update {
@@ -108,10 +103,9 @@ class GoalCreationViewModel : ViewModel() {
                     goalList = goalList
                 )
             }
-        }
     }
 
-    fun OnConfirmDatePickingDialog(date: String){
+    fun onConfirmDatePickingDialog(date: String){
         _uiState.update {
             state -> state.copy(
                 deadline = date,

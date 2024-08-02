@@ -145,5 +145,6 @@
     <string name="user_languages_select">Select lanaguage</string>
     <string name="user_theme">Theme</string>
     <string name="user_theme_select">Select theme</string>
+    <string name="pick_a_date">Pick a date</string>
 
 </resources>

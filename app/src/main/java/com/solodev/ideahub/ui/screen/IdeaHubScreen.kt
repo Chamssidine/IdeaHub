@@ -2,6 +2,7 @@
 
 import com.solodev.ideahub.ui.screen.login.LoginViewModel
 import MailConfirmationScreen
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -142,9 +143,15 @@ fun IdeaHubScreen(
             }
             composable(Routes.GoalCreation.name){
                 GoalCreationScreen(
-                    onGoalCreationButtonClicked = {
-                        navController.navigate(Routes.GoalAndTasks.name)
-                        screenManagerVM.showBottomNavigationBar(true)
+                    onGoalCreated = {
+                        try {
+                            Log.d("MainScreen", "Goal created callback")
+                            screenManagerVM.showBottomNavigationBar(true)
+                            navController.navigate(Routes.GoalAndTasks.name)
+                            Log.d("MainScreen", "Navigating to GoalAndTasks")
+                        } catch (e: Exception) {
+                            Log.d("MainScreen", "$e.message")
+                        }
                     }
                 )
             }
