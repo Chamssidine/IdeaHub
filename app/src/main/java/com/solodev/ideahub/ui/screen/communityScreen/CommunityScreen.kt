@@ -41,12 +41,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.solodev.ideahub.R
+import com.solodev.ideahub.model.communityCategories
+import com.solodev.ideahub.model.communityTabItems
+import com.solodev.ideahub.model.groupItemData
+import com.solodev.ideahub.model.threadItems
 import com.solodev.ideahub.ui.screen.CustomSearchBar
 import com.solodev.ideahub.ui.screen.threadScreen.ThreadItem
-import com.solodev.ideahub.ui.screen.components.communityCategories
-import com.solodev.ideahub.ui.screen.components.communityTabItems
-import com.solodev.ideahub.ui.screen.components.groupItemData
-import com.solodev.ideahub.ui.screen.components.threadItems
 import com.solodev.ideahub.ui.screen.goalScreen.ActiveDiscussionSection
 
 @Composable

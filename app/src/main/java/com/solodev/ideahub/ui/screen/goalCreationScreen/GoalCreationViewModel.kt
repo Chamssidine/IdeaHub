@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.solodev.ideahub.ui.screen.goalScreen.Goal
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenUIState
+import com.solodev.ideahub.ui.screen.goalScreen.goalData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -96,13 +97,8 @@ class GoalCreationViewModel : ViewModel() {
     }
 
     fun onGoalCreated(goal: Goal){
-            val goalList: MutableList<Goal>  = mutableListOf()
-            goalList.add(goal)
-            _goalList.update {
-                state -> state.copy(
-                    goalList = goalList
-                )
-            }
+        goalData.add(goal)
+
     }
 
     fun onConfirmDatePickingDialog(date: String){

@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.solodev.ideahub.R
-import com.solodev.ideahub.ui.screen.components.userProfile
+import com.solodev.ideahub.model.userProfile
 
 @Composable
 fun UserProfileScreen(

@@ -1,6 +1,5 @@
 package com.solodev.ideahub.ui.screen.login
 
-import com.solodev.ideahub.ui.screen.components.AiMessage
 
 data class LoginUIState(
     val userName: String = "",

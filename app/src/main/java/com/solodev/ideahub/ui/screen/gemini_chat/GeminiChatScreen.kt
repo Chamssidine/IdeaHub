@@ -20,10 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.solodev.ideahub.R
+import com.solodev.ideahub.model.ConversationMessage
+import com.solodev.ideahub.model.conversationMessages
 import com.solodev.ideahub.ui.screen.CustomSearchBar
 import com.solodev.ideahub.ui.screen.components.CommentSectionInput
-import com.solodev.ideahub.ui.screen.components.ConversationMessage
-import com.solodev.ideahub.ui.screen.components.conversationMessages
 
 @Composable
 fun GeminiChatScreen(

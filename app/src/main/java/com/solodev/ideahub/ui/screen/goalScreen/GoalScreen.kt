@@ -43,6 +43,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,11 +59,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.CustomSearchBar
+import com.solodev.ideahub.ui.screen.components.GoalCreationDialog
+import com.solodev.ideahub.ui.screen.components.MenuSample
+import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationViewModel
 
 @Composable
 fun GoalScreen(
     modifier: Modifier = Modifier,
-    selectedIndex: Int = 0
+    selectedIndex: Int = 0,
+    goalScreenViewModel: GoalScreenViewModel
 ) {
     var customIndex by remember { mutableStateOf(selectedIndex) }
     val items = listOf("Item 1", "Item 2", "Item 3", "Item 4")
@@ -91,7 +96,11 @@ fun GoalScreen(
 
         item {
             LazyRow(
-                modifier = modifier.padding(start = dimensionResource(id = R.dimen.padding_medium),end = dimensionResource(id = R.dimen.padding_medium))
+                modifier = modifier
+                    .padding(
+                        start = dimensionResource(id = R.dimen.padding_medium),
+                        end = dimensionResource(id = R.dimen.padding_medium)
+                    )
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
@@ -112,7 +121,8 @@ fun GoalScreen(
             MainTabScreen(
                 modifier = modifier.padding(start = dimensionResource(id = R.dimen.padding_medium),end = dimensionResource(id = R.dimen.padding_medium)),
                 selectedTabIndex = customIndex,
-                tabTitle = "MyGoal"
+                tabTitle = "MyGoal",
+                goalScreenViewModel = goalScreenViewModel
             )
         }
 
@@ -123,9 +133,13 @@ fun GoalScreen(
 fun MainTabScreen(
     modifier: Modifier = Modifier,
     selectedTabIndex: Int = 0,
-    tabTitle: String
+    tabTitle: String,
+    goalScreenViewModel: GoalScreenViewModel,
+    goalCreationViewModel: GoalCreationViewModel = GoalCreationViewModel(),
+
 ) {
     Log.d("MainTabScreen", "selectedTabIndex: $selectedTabIndex, tabTitle: $tabTitle")
+    var showDialog by remember { mutableStateOf(false) }
     when (selectedTabIndex) {
         0 -> {
             Column(
@@ -137,9 +151,40 @@ fun MainTabScreen(
                     style = MaterialTheme.typography.displayMedium
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                AchievedGoal()
+                AchievedGoal(
+                    goalScreenViewModel =  goalScreenViewModel
+                )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                UnAchievedGoal()
+                UnAchievedGoal(
+                    goalScreenViewModel =  goalScreenViewModel
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
+                )
+                {
+                    FloatingButton(onClick = {
+                        showDialog = true
+                    })
+                }
+                if (showDialog) {
+                    Log.d("GoalCreationScreen", "Showing dialog")
+                    GoalCreationDialog(
+                        showDialog = showDialog,
+                        onConfirm = {
+                            Log.d("GoalCreationScreen", "Dialog onConfirm called")
+                            showDialog = false
+                        },
+                        onGoalCreated = {goalScreenViewModel.refreshGoals()},
+                        onDismissButtonClicked = {
+                            Log.d("GoalCreationScreen", "Dialog dismissed")
+                            showDialog = false
+                        },
+                        goalCreationViewModel = goalCreationViewModel,
+                    )
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
             }
         }
         1 -> {
@@ -163,10 +208,14 @@ fun MainTabScreen(
 
     }
 }
+
 @Composable
 fun AchievedGoal(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    goalScreenViewModel: GoalScreenViewModel
 ) {
+
+    val goalScreenUIState by goalScreenViewModel.uiState.collectAsState()
     var defaultItemCount by rememberSaveable { mutableStateOf(3) }
     Column(
         modifier = modifier
@@ -180,8 +229,21 @@ fun AchievedGoal(
         Text(text = stringResource(id = R.string.achieved))
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
         Column {
-            repeat(defaultItemCount) {
-                GoalItem(modifier, hasCompleted = true)
+            goalScreenUIState.goalList.forEachIndexed { index, goal ->
+                Log.d("AchievedGoal", "Goal: ${goal.title}")
+                Log.d("AchievedGoal", "Goal: ${goal.creationDate}")
+                GoalItem(
+                    modifier,
+                    hasCompleted = true,
+                    title = goal.title,
+                    creationDate = goal.creationDate,
+                    deadLine = goal.deadline,
+                    priority = goal.reminderFrequency,
+                    onDelete = {
+                        goalScreenViewModel.deleteGoal(goal)
+
+                    }
+                )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
             }
         }
@@ -198,7 +260,8 @@ fun AchievedGoal(
 
 @Composable
 fun UnAchievedGoal(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    goalScreenViewModel: GoalScreenViewModel
 ) {
     var defaultItemCount by rememberSaveable { mutableStateOf(3) }
     Column(
@@ -231,7 +294,7 @@ fun UnAchievedGoal(
 @Composable
 fun GoalItem(
     modifier: Modifier,
-    title: String = "My Goal",
+    title: String = "My Goaldnbsjdbsj",
     creationDate: String = "01/01/2023",
     hasCompleted: Boolean = false,
     onCompleted: () -> Unit = {},
@@ -241,7 +304,6 @@ fun GoalItem(
     priority: String = "High",
     delete: Boolean = false,
     goalItemIndex: Int = 0,
-
 ){
     if(!delete)
     {
@@ -254,7 +316,12 @@ fun GoalItem(
                     .padding(dimensionResource(id = R.dimen.padding_small)),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(modifier = modifier) {
+                Column(
+                    modifier = modifier,
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center
+
+                ) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.bodyMedium
@@ -265,7 +332,7 @@ fun GoalItem(
                         style = MaterialTheme
                             .typography.labelSmall,
                         modifier = Modifier
-                            .align(Alignment.End)
+
                     )
                 }
                 if (hasCompleted) {
@@ -274,7 +341,7 @@ fun GoalItem(
                     Spacer(modifier = Modifier.weight(1f))
                 }
                 else {
-                    Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_medium)))
                     Column(modifier = modifier) {
                         Text(
                             text = stringResource(id = R.string.deadline),
@@ -287,6 +354,7 @@ fun GoalItem(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
+                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_medium)))
                     Column(modifier = modifier) {
                         Text(
                             text = deadLine,
@@ -299,18 +367,10 @@ fun GoalItem(
                         )
                     }
                 }
+                MenuSample()
                 ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
                 {
-                    IconButton(onClick = onOpen) {
-                        Icon(painter = painterResource(
-                            id = R.drawable.open_in_new_24px),
-                            contentDescription = "icon_share",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-                ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
-                {
+
                     IconButton(onClick = onDelete) {
                         Icon(painter = painterResource(
                             id = R.drawable.delete_forever_24px),
@@ -346,6 +406,18 @@ fun GoalScreenTab(
 
 }
 
+@Composable
+fun FloatingButton(
+    onClick: () -> Unit
+) {
+    FloatingActionButton(onClick = onClick) {
+        IconButton(onClick = onClick) {
+            Icon(Icons.Filled.Add,
+                contentDescription = "icon_add_goal",
+            )
+        }
+    }
+}
 
 @Composable
 fun DayPlan(
@@ -365,14 +437,7 @@ fun DayPlan(
            contentAlignment = Alignment.BottomEnd
        )
        {
-           FloatingActionButton(onClick = onAddButtonCLicked) {
-               IconButton(onClick = onAddButtonCLicked) {
-                   Icon(Icons.Filled.Add,
-                       contentDescription = "icon_add_goal",
-                       tint = MaterialTheme.colorScheme.primary
-                   )
-               }
-           }
+           FloatingButton(onClick = onAddButtonCLicked)
        }
 
     }
@@ -624,5 +689,5 @@ fun ActiveDiscussionItem(
 @Preview(showBackground = true)
 @Composable
 fun GoalItemPreview() {
-    GoalScreen(modifier = Modifier.padding(16.dp))
+    GoalScreen(modifier = Modifier.padding(16.dp), goalScreenViewModel = GoalScreenViewModel())
 }

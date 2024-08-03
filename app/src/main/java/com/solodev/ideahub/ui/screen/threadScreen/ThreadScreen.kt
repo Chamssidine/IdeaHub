@@ -24,11 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.solodev.ideahub.model.ThreadItem
+import com.solodev.ideahub.model.threadItems
 import com.solodev.ideahub.ui.screen.CustomSearchBar
 import com.solodev.ideahub.ui.screen.components.ThreadContent
-import com.solodev.ideahub.ui.screen.components.ThreadItem
+
 import com.solodev.ideahub.ui.screen.components.UserProfile
-import com.solodev.ideahub.ui.screen.components.threadItems
+
 
 @Composable
 fun ThreadScreen() {
