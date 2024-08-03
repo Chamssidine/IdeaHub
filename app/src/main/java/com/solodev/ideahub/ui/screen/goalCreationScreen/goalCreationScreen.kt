@@ -73,11 +73,12 @@ fun GoalCreationScreen(
     modifier: Modifier = Modifier,
     onGoalCreated: () -> Unit = {},
     goalCreationViewModel: GoalCreationViewModel = GoalCreationViewModel()
+) {
+    var showDialog by remember { mutableStateOf(false) }
+    Log.d("GoalCreationScreen", "Entering GoalCreationScreen")
 
-){
-    var showDialog by remember { mutableStateOf(false)}
-    Box(modifier = modifier
-        .fillMaxSize(),
+    Box(
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
 
@@ -105,31 +106,28 @@ fun GoalCreationScreen(
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_large)))
-            Box (
+            Box(
                 modifier = modifier
                     .padding(top = dimensionResource(id = R.dimen.padding_extra_large))
             ) {
-                CreateGoalButton (
+                CreateGoalButton(
                     width = dimensionResource(id = R.dimen.button_height_large),
                     height = dimensionResource(id = R.dimen.button_height_large),
                     onCreateGoalClicked = {
+                        Log.d("GoalCreationScreen", "Create goal button clicked")
                         showDialog = true
-                    },
-                    
+                    }
                 )
             }
             if (showDialog) {
+                Log.d("GoalCreationScreen", "Showing dialog")
                 GoalCreationDialog(
                     showDialog = showDialog,
                     onConfirm = {
                         Log.d("GoalCreationScreen", "Dialog onConfirm called")
                         showDialog = false
                     },
-                    onGoalCreated = {
-                        Log.d("GoalCreationScreen", "onGoalCreated called")
-                        onGoalCreated()
-                        Log.d("GoalCreationScreen", "onGoalCreated stops")
-                    },
+                    onGoalCreated = onGoalCreated,
                     onDismissButtonClicked = {
                         Log.d("GoalCreationScreen", "Dialog dismissed")
                         showDialog = false
@@ -137,11 +135,10 @@ fun GoalCreationScreen(
                     goalCreationViewModel = goalCreationViewModel,
                 )
             }
-
-
         }
     }
 }
+
 
 @Composable
 fun GoalCreationDialog(
@@ -155,10 +152,12 @@ fun GoalCreationDialog(
     var animateIn by remember { mutableStateOf(false) }
 
     LaunchedEffect(showDialog) {
+        Log.d("GoalCreationDialog", "LaunchedEffect triggered with showDialog = $showDialog")
         animateIn = showDialog
     }
 
     if (showDialog) {
+        Log.d("GoalCreationDialog", "Dialog is visible")
         Dialog(onDismissRequest = onDismissButtonClicked) {
             AnimatedVisibility(
                 visible = animateIn,
@@ -181,15 +180,19 @@ fun GoalCreationDialog(
                         modifier = modifier,
                         viewModel = goalCreationViewModel,
                         onConfirm = {
+                            Log.d("GoalCreationDialog", "DialogContent onConfirm called")
                             val newGoal = goalCreationViewModel.createGoal()
                             if (newGoal != null) {
-                                Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "${newGoal.id} ${newGoal.title}")
+                                Log.d("GoalCreationDialog", "Goal created: ${newGoal.id} ${newGoal.title}")
                                 goalCreationViewModel.onGoalCreated(newGoal)
                                 onConfirm()
-                                onGoalCreated() // Appeler onGoalCreated après la confirmation
+                                Log.d("GoalCreationDialog", "Calling onGoalCreated")
+                                onGoalCreated()
+                                Log.d("GoalCreationDialog", " onGoalCreated called")
                             }
                         },
                         onCancel = {
+                            Log.d("GoalCreationDialog", "DialogContent onCancel called")
                             onDismissButtonClicked()
                             animateIn = false
                         },
@@ -207,11 +210,11 @@ fun DialogContent(
     modifier: Modifier = Modifier,
     viewModel: GoalCreationViewModel,
     onConfirm: () -> Unit,
-    onCancel: ()-> Unit,
-){
-    var showDatePickerDialog by remember {
-        mutableStateOf(false)
-    }
+    onCancel: () -> Unit,
+) {
+    Log.d("DialogContent", "Entering DialogContent")
+
+    var showDatePickerDialog by remember { mutableStateOf(false) }
 
     val uiState by viewModel.uiState.collectAsState()
     Box(
@@ -219,60 +222,60 @@ fun DialogContent(
         contentAlignment = Alignment.Center
     ) {
         ElevatedCard(
-            modifier = Modifier
-                .wrapContentSize(),
+            modifier = Modifier.wrapContentSize(),
             shape = MaterialTheme.shapes.extraLarge
         ) {
             Column(
                 modifier = Modifier
-                    .padding(top = dimensionResource(id = R.dimen.padding_medium), start = dimensionResource(id = R.dimen.padding_medium), end = dimensionResource(id = R.dimen.padding_medium)),
+                    .padding(
+                        top = dimensionResource(id = R.dimen.padding_medium),
+                        start = dimensionResource(id = R.dimen.padding_medium),
+                        end = dimensionResource(id = R.dimen.padding_medium)
+                    ),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 HeaderTitle(title = stringResource(id = R.string.title_and_description))
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-                Box()
-                {
+                Box {
                     TextArea(
                         text = uiState.title,
-                        onTextChange = {viewModel.updateTitle(it)},
-                        label = stringResource(id = R.string.title))
+                        onTextChange = { viewModel.updateTitle(it) },
+                        label = stringResource(id = R.string.title)
+                    )
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-                Box()
-                {
+                Box {
                     TextArea(
                         text = uiState.description,
-                        onTextChange = {viewModel.updateDescription(it)}
-
+                        onTextChange = { viewModel.updateDescription(it) }
                     )
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 HeaderTitle(title = stringResource(id = R.string.deadline))
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-                Box()
-                {
+                Box {
                     TextButton(onClick = {
+                        Log.d("DialogContent", "Date picker button clicked")
                         showDatePickerDialog = true
                     }) {
-                        Text(text =
-                                if(uiState.deadline.isBlank())
-                                    stringResource(id = R.string.pick_a_date)
-                                else
-                                    uiState.deadline,
-                            modifier = modifier.wrapContentSize(align = Alignment.Center))
+                        Text(
+                            text = if (uiState.deadline.isBlank())
+                                stringResource(id = R.string.pick_a_date)
+                            else
+                                uiState.deadline,
+                            modifier = modifier.wrapContentSize(align = Alignment.Center)
+                        )
                     }
-                    if(showDatePickerDialog )
-                    {
+                    if (showDatePickerDialog) {
                         DatePickerDialog(
                             onConfirmButtonClicked = {
-                            viewModel.onConfirmDatePickingDialog(it)
-                            showDatePickerDialog = false
-
-                        })
+                                viewModel.onConfirmDatePickingDialog(it)
+                                showDatePickerDialog = false
+                            }
+                        )
                     }
-
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                 HeaderTitle(title = stringResource(id = R.string.reminder_frequency))
@@ -301,36 +304,38 @@ fun DialogContent(
                             colors = CheckboxDefaults.colors(
                                 uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
                             ),
-
                         )
                     }
                     Column(modifier = Modifier) {
                         Text(text = stringResource(id = R.string.monthly))
                         Checkbox(
                             checked = uiState.reminderFrequency == "Monthly",
-                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Monthly")},
-                                colors = CheckboxDefaults.colors(
-                                    uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
-                                ),
+                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Monthly") },
+                            colors = CheckboxDefaults.colors(
+                                uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
+                            ),
                         )
                     }
-
                 }
                 Row(
                     modifier = modifier
                         .fillMaxWidth()
                         .align(Alignment.End),
                     verticalAlignment = Alignment.CenterVertically,
-
-                ){
+                ) {
                     Spacer(modifier = modifier.weight(1f))
-                    TextButton(onClick = onCancel) {
+                    TextButton(onClick = {
+                        Log.d("DialogContent", "Cancel button clicked")
+                        onCancel()
+                    }) {
                         Text(text = stringResource(id = R.string.cancel))
                     }
 
                     TextButton(
-                        onClick = onConfirm,
-
+                        onClick = {
+                            Log.d("DialogContent", "Confirm button clicked")
+                            onConfirm()
+                        }
                     ) {
                         Text(
                             text = stringResource(id = R.string.confirm),
@@ -338,12 +343,11 @@ fun DialogContent(
                         )
                     }
                 }
-           }
-       }
-   }
-
-
+            }
+        }
+    }
 }
+
 
 @Composable
 fun CreateGoalButton(

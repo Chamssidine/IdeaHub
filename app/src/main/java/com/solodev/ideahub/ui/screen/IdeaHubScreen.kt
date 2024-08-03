@@ -141,17 +141,13 @@ fun IdeaHubScreen(
             composable(Routes.GoalAndTasks.name){
                 GoalScreen()
             }
-            composable(Routes.GoalCreation.name){
+            composable(Routes.GoalCreation.name) {
                 GoalCreationScreen(
                     onGoalCreated = {
-                        try {
-                            Log.d("MainScreen", "Goal created callback")
-                            screenManagerVM.showBottomNavigationBar(true)
-                            navController.navigate(Routes.GoalAndTasks.name)
-                            Log.d("MainScreen", "Navigating to GoalAndTasks")
-                        } catch (e: Exception) {
-                            Log.d("MainScreen", "$e.message")
-                        }
+                        Log.d("IdeaHubScreen", "Goal created callback")
+                        screenManagerVM.showBottomNavigationBar(true)
+                        navController.navigate(Routes.GoalAndTasks.name)
+                        Log.d("IdeaHubScreen", "Navigating to GoalAndTasks")
                     }
                 )
             }
