@@ -31,6 +31,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Settings
@@ -48,6 +49,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -65,6 +67,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -370,7 +373,6 @@ fun TextArea(
                 singleLine = singleLine,
                 label = {Text(text = label)},
                 //placeholder = {Text(text = stringResource(id = R.string.description_example))},
-
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
@@ -444,31 +446,45 @@ fun GoalCreationDialog(
     }
 }
 
-@Preview
+
 @Composable
-fun MenuSample() {
+fun MenuSample(
+    modifier: Modifier = Modifier,
+    isCompleted: Boolean = false,
+    onEditClicked: () -> Unit = {},
+    onMarkAsCompletedClicked: () -> Unit = {},
+    onDeleteClicked: () -> Unit = {}
+) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.TopStart)) {
+    Box(modifier = modifier
+        .fillMaxSize()
+        .wrapContentSize(Alignment.CenterEnd),
+        contentAlignment = Alignment.CenterEnd
+    ) {
         IconButton(onClick = { expanded = true }) {
             Icon(Icons.Default.MoreVert, contentDescription = "Localized description")
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             DropdownMenuItem(
-                text = { Text("Edit") },
-                onClick = { /* Handle edit! */ },
+                text = { Text(stringResource(id = R.string.edit)) },
+                onClick = onEditClicked,
                 leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = null) }
             )
-            DropdownMenuItem(
-                text = { Text("Settings") },
-                onClick = { /* Handle settings! */ },
-                leadingIcon = { Icon(Icons.Outlined.Settings, contentDescription = null) }
-            )
+            if(!isCompleted)
+            {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.mark_as_completed)) },
+                    onClick = onMarkAsCompletedClicked,
+                    leadingIcon = { Checkbox(checked = false, onCheckedChange = {}) }
+                )
+
+            }
 
             DropdownMenuItem(
-                text = { Text("Send Feedback") },
-                onClick = { /* Handle send feedback! */ },
-                leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null) },
+                text = { Text(stringResource(id = R.string.delete)) },
+                onClick = onDeleteClicked,
+                leadingIcon = { Icon(painter = painterResource(id = R.drawable.delete_forever_24px), contentDescription = null) },
                 trailingIcon = { Text("F11", textAlign = TextAlign.Center) }
             )
         }

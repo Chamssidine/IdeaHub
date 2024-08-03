@@ -68,6 +68,21 @@
             else
                 Log.d("GoalScreenViewModel", "No goals found")
         }
+
+        fun markGoalAsCompleted(goal: Goal) {
+            val updatedGoalList = _uiState.value.goalList.toMutableList()
+            updatedGoalList.forEachIndexed { index, item ->
+                if(item.id == goal.id)
+                {
+                    updatedGoalList[index].isCompleted = true
+                }
+            }
+            _uiState.update { state -> state.copy(
+                goalList = updatedGoalList
+            )
+        }
+        }
+
         init {
             setGoals()
 

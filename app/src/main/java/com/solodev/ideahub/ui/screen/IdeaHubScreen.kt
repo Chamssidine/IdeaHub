@@ -105,7 +105,7 @@ fun IdeaHubScreen(
                         if(uiState.isFirstLaunch)
                             navController.navigate(Routes.Welcome.name)
                         else
-                            navController.navigate(Routes.GoalAndTasks.name) },
+                            navController.navigate(Routes.Home.name) },
                     onLoginButtonClicked = {navController.navigate(Routes.Login.name)}
                 )
 
@@ -113,7 +113,7 @@ fun IdeaHubScreen(
             composable(Routes.Login.name) {
                 LoginScreen(
                     onLoginButtonClicked = {
-                        navController.navigate(Routes.GoalAndTasks.name)
+                        navController.navigate(Routes.Home.name)
                         screenManagerVM.showBottomNavigationBar(true)
                     },
                     onForgotPasswordButtonClicked = {
@@ -139,7 +139,7 @@ fun IdeaHubScreen(
             composable(Routes.Profile.name){
                 UserProfileScreen()
             }
-            composable(Routes.GoalAndTasks.name){
+            composable(Routes.Home.name){
                 GoalScreen(
                     goalScreenViewModel = GoalScreenViewModel()
                 )
@@ -149,7 +149,7 @@ fun IdeaHubScreen(
                     onGoalCreated = {
                         Log.d("IdeaHubScreen", "Goal created callback")
                         screenManagerVM.showBottomNavigationBar(true)
-                        navController.navigate(Routes.GoalAndTasks.name)
+                        navController.navigate(Routes.Home.name)
                         Log.d("IdeaHubScreen", "Navigating to GoalAndTasks")
                     }
                 )

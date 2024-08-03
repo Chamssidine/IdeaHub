@@ -1,11 +1,17 @@
 package com.solodev.ideahub.ui.screen.goalScreen
 
 
+import android.app.Dialog
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +42,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
 
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,6 +50,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +63,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.solodev.ideahub.R
@@ -62,6 +71,7 @@ import com.solodev.ideahub.ui.screen.CustomSearchBar
 import com.solodev.ideahub.ui.screen.components.GoalCreationDialog
 import com.solodev.ideahub.ui.screen.components.MenuSample
 import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun GoalScreen(
@@ -151,11 +161,12 @@ fun MainTabScreen(
                     style = MaterialTheme.typography.displayMedium
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                AchievedGoal(
+                UnAchievedGoal(
                     goalScreenViewModel =  goalScreenViewModel
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                UnAchievedGoal(
+
+                AchievedGoal(
                     goalScreenViewModel =  goalScreenViewModel
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
@@ -212,7 +223,8 @@ fun MainTabScreen(
 @Composable
 fun AchievedGoal(
     modifier: Modifier = Modifier,
-    goalScreenViewModel: GoalScreenViewModel
+    goalScreenViewModel: GoalScreenViewModel,
+    goalCreationViewModel: GoalCreationViewModel = GoalCreationViewModel(),
 ) {
 
     val goalScreenUIState by goalScreenViewModel.uiState.collectAsState()
@@ -234,15 +246,17 @@ fun AchievedGoal(
                 Log.d("AchievedGoal", "Goal: ${goal.creationDate}")
                 GoalItem(
                     modifier,
-                    hasCompleted = true,
+                    isCompleted = true,
                     title = goal.title,
                     creationDate = goal.creationDate,
                     deadLine = goal.deadline,
                     priority = goal.reminderFrequency,
+                    description = goal.description,
                     onDelete = {
                         goalScreenViewModel.deleteGoal(goal)
-
-                    }
+                    },
+                    
+                    iAchievedSection = true
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
             }
@@ -261,9 +275,12 @@ fun AchievedGoal(
 @Composable
 fun UnAchievedGoal(
     modifier: Modifier = Modifier,
-    goalScreenViewModel: GoalScreenViewModel
+    goalScreenViewModel: GoalScreenViewModel,
+    goalCreationViewModel: GoalCreationViewModel = GoalCreationViewModel(),
 ) {
+    val goalScreenUIState by goalScreenViewModel.uiState.collectAsState()
     var defaultItemCount by rememberSaveable { mutableStateOf(3) }
+    var openDialog by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -274,11 +291,47 @@ fun UnAchievedGoal(
             )
     ) {
         Text(text = stringResource(id = R.string.unachieved))
-        Column(modifier = Modifier.fillMaxWidth()) {
-            repeat(defaultItemCount) {
-                GoalItem(modifier, hasCompleted = false)
+        Column {
+            goalScreenUIState.goalList.forEachIndexed { index, goal ->
+                Log.d("AchievedGoal", "Goal: ${goal.title}")
+                Log.d("AchievedGoal", "Goal: ${goal.creationDate}")
+                GoalItem(
+                    modifier,
+                    title = goal.title,
+                    creationDate = goal.creationDate,
+                    deadLine = goal.deadline,
+                    priority = goal.reminderFrequency,
+                    description = goal.description,
+                    isCompleted = goal.isCompleted,
+                    onDelete = {
+                        goalScreenViewModel.deleteGoal(goal)
+                    },
+                    onMarkAsCompleted = {
+                        goalScreenViewModel.markGoalAsCompleted(goal)
+                    },
+                    onOpen = {
+                        Log.d("GoalScreen", "Open button clicked")
+                        openDialog = !openDialog
+                    }
+                )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
             }
+        }
+        if(openDialog)
+        {
+            GoalCreationDialog(
+                showDialog = openDialog,
+                onConfirm = {
+                    Log.d("GoalCreationScreen", "Dialog onConfirm called")
+                    openDialog = false
+                },
+                onGoalCreated = {goalScreenViewModel.refreshGoals()},
+                onDismissButtonClicked = {
+                    Log.d("GoalCreationScreen", "Dialog dismissed")
+                    openDialog = false
+                },
+                goalCreationViewModel = goalCreationViewModel,
+            )
         }
         Box(
             modifier = Modifier.fillMaxWidth(),
@@ -291,30 +344,50 @@ fun UnAchievedGoal(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GoalItem(
     modifier: Modifier,
     title: String = "My Goaldnbsjdbsj",
     creationDate: String = "01/01/2023",
-    hasCompleted: Boolean = false,
-    onCompleted: () -> Unit = {},
+    isCompleted: Boolean = false,
+    onMarkAsCompleted: () -> Unit = {},
     onDelete: () -> Unit = {},
     onOpen: () -> Unit = {},
     deadLine: String = "19-05-2024",
     priority: String = "High",
     delete: Boolean = false,
-    goalItemIndex: Int = 0,
+    description: String = "Description",
+    iAchievedSection: Boolean = false,
 ){
+    var expanded by remember { mutableStateOf(false) }
+    var visible by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = Unit, block = {
+        delay(600L)
+        visible = true
+    })
     if(!delete)
     {
         ElevatedCard(
-            modifier = modifier.fillMaxWidth(),
+            onClick = {expanded =! expanded},
+            modifier = modifier
+                .fillMaxWidth()
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ),
             shape = MaterialTheme.shapes.medium,
         )  {
             Row(
                 modifier = modifier
                     .padding(dimensionResource(id = R.dimen.padding_small)),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
                 Column(
                     modifier = modifier,
@@ -327,22 +400,42 @@ fun GoalItem(
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                    if(expanded)
+                    {
+                        AnimatedVisibility(
+                            visible = visible,
+                            enter = fadeIn(initialAlpha = 0.0f) + slideInVertically(
+                            tween(
+                                durationMillis = 600,
+                                delayMillis = 600,
+                                easing = EaseIn
+                            ),
+                            initialOffsetY = { it * 6 }
+                        ) ){
+                            Text(
+                                text = description,
+                                style = MaterialTheme.typography.bodySmall,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                    }
+                   
                     Text(
                         text = creationDate,
                         style = MaterialTheme
                             .typography.labelSmall,
-                        modifier = Modifier
 
                     )
                 }
-                if (hasCompleted) {
-                    Spacer(modifier = Modifier.weight(1f))
+                if (isCompleted) {
+                    Spacer(modifier = Modifier.weight(2f,fill = true))
                     Text(text = "Completed",style = MaterialTheme.typography.bodyLarge)
                     Spacer(modifier = Modifier.weight(1f))
                 }
-                else {
-                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_medium)))
-                    Column(modifier = modifier) {
+                
+                Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_medium)))
+                Column(modifier = modifier) {
                         Text(
                             text = stringResource(id = R.string.deadline),
                             style = MaterialTheme.typography.bodyMedium
@@ -353,9 +446,9 @@ fun GoalItem(
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
-                    Spacer(modifier = Modifier.weight(1f))
-                    Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_medium)))
-                    Column(modifier = modifier) {
+                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_medium)))
+                Column(modifier = modifier) {
                         Text(
                             text = deadLine,
                             style = MaterialTheme.typography.labelSmall
@@ -366,19 +459,13 @@ fun GoalItem(
                             style = MaterialTheme.typography.labelSmall
                         )
                     }
-                }
-                MenuSample()
-                ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
-                {
-
-                    IconButton(onClick = onDelete) {
-                        Icon(painter = painterResource(
-                            id = R.drawable.delete_forever_24px),
-                            contentDescription = "icon_share",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
+                MenuSample(
+                    modifier = modifier.fillMaxSize(),
+                    onDeleteClicked = onDelete,
+                    onMarkAsCompletedClicked = onMarkAsCompleted,
+                    onEditClicked = onOpen,
+                    isCompleted = iAchievedSection
+                )
             }
         }
     }
@@ -689,5 +776,9 @@ fun ActiveDiscussionItem(
 @Preview(showBackground = true)
 @Composable
 fun GoalItemPreview() {
-    GoalScreen(modifier = Modifier.padding(16.dp), goalScreenViewModel = GoalScreenViewModel())
+    Box(modifier = Modifier.height(60.dp))
+    {
+        GoalItem(modifier = Modifier)
+    }
+
 }

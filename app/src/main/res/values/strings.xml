@@ -127,7 +127,7 @@
     <string name="created_at">Created at:</string>
     <string name="open_button">Open</string>
     <string name="current">Current</string>
-    <string name="priority">Priority:</string>
+    <string name="priority">Priority</string>
     <string name="priority_high">High</string>
     <string name="priority_medium">Medium</string>
     <string name="priority_low">Low</string>
@@ -146,5 +146,6 @@
     <string name="user_theme">Theme</string>
     <string name="user_theme_select">Select theme</string>
     <string name="pick_a_date">Pick a date</string>
+    <string name="mark_as_completed">Mark as Complede</string>
 
 </resources>
