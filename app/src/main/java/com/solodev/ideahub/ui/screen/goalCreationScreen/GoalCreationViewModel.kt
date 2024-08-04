@@ -98,7 +98,6 @@ class GoalCreationViewModel : ViewModel() {
 
     fun onGoalCreated(goal: Goal){
         goalData.add(goal)
-
     }
 
     fun onConfirmDatePickingDialog(date: String){

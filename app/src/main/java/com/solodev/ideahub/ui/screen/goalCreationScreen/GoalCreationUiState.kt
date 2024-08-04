@@ -7,5 +7,7 @@ data class GoalCreationUiState(
     val reminderFrequency: String = "",
     val hasError: Boolean = false,
     val errorMessage: String? = null,
-    val confirmDateCreation: Boolean = false
+    val creationDate: String = "",
+    val confirmDateCreation: Boolean = false,
+    val id: Long = 0
 )

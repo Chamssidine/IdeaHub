@@ -27,14 +27,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -48,8 +44,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -70,12 +64,11 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.solodev.ideahub.R
-import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationViewModel
+import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenViewModel
 import com.solodev.ideahub.util.Tools
 import kotlinx.coroutines.delay
 
@@ -83,7 +76,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun GoalDialogContent(
     modifier: Modifier = Modifier,
-    viewModel: GoalCreationViewModel,
+    viewModel: GoalScreenViewModel,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -91,7 +84,7 @@ fun GoalDialogContent(
 
     var showDatePickerDialog by remember { mutableStateOf(false) }
 
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.goalCreationUiState.collectAsState()
     Box(
         modifier = modifier.wrapContentSize(),
         contentAlignment = Alignment.Center
@@ -191,6 +184,12 @@ fun GoalDialogContent(
                             ),
                         )
                     }
+                }
+                if(uiState.hasError)
+                {
+                    Text(
+                        text = uiState.errorMessage!!
+                        , color = MaterialTheme.colorScheme.error)
                 }
                 Row(
                     modifier = modifier
@@ -388,9 +387,8 @@ fun GoalCreationDialog(
     modifier: Modifier = Modifier,
     showDialog: Boolean = false,
     onConfirm: () -> Unit = {},
-    onGoalCreated: () -> Unit = {},
     onDismissButtonClicked: () -> Unit = {},
-    goalCreationViewModel: GoalCreationViewModel
+    goalScreenViewModel: GoalScreenViewModel,
 ) {
     var animateIn by remember { mutableStateOf(false) }
 
@@ -421,19 +419,8 @@ fun GoalCreationDialog(
                 ) {
                     GoalDialogContent(
                         modifier = modifier,
-                        viewModel = goalCreationViewModel,
-                        onConfirm = {
-                            Log.d("GoalCreationDialog", "DialogContent onConfirm called")
-                            val newGoal = goalCreationViewModel.createGoal()
-                            if (newGoal != null) {
-                                Log.d("GoalCreationDialog", "Goal created: ${newGoal.id} ${newGoal.title}")
-                                goalCreationViewModel.onGoalCreated(newGoal)
-                                onConfirm()
-                                Log.d("GoalCreationDialog", "Calling onGoalCreated")
-                                onGoalCreated()
-                                Log.d("GoalCreationDialog", " onGoalCreated called")
-                            }
-                        },
+                        viewModel = goalScreenViewModel,
+                        onConfirm = onConfirm,
                         onCancel = {
                             Log.d("GoalCreationDialog", "DialogContent onCancel called")
                             onDismissButtonClicked()
@@ -476,7 +463,7 @@ fun MenuSample(
                 DropdownMenuItem(
                     text = { Text(stringResource(id = R.string.mark_as_completed)) },
                     onClick = onMarkAsCompletedClicked,
-                    leadingIcon = { Checkbox(checked = false, onCheckedChange = {}) }
+                    leadingIcon = { Icon(painter = painterResource(id = R.drawable.check_circle_24px_filled), contentDescription = null ) }
                 )
 
             }

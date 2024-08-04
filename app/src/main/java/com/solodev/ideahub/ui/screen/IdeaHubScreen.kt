@@ -96,7 +96,7 @@ fun IdeaHubScreen(
         val innerPadding = innerPadding
         NavHost(
             navController = navController,
-            startDestination = uiState.destination,
+            startDestination = uiState.startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Routes.SignUp.name) {

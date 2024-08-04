@@ -147,5 +147,6 @@
     <string name="user_theme_select">Select theme</string>
     <string name="pick_a_date">Pick a date</string>
     <string name="mark_as_completed">Mark as Complede</string>
+    <string name="completed">Completed</string>
 
 </resources>

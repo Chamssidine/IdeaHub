@@ -24,12 +24,13 @@ import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.components.CreateGoalButton
 import com.solodev.ideahub.ui.screen.components.GoalDialogContent
 import com.solodev.ideahub.ui.screen.components.GoalCreationDialog
+import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenViewModel
 
 @Composable
 fun GoalCreationScreen(
     modifier: Modifier = Modifier,
     onGoalCreated: () -> Unit = {},
-    goalCreationViewModel: GoalCreationViewModel = GoalCreationViewModel()
+    goalScreenViewModel: GoalScreenViewModel = GoalScreenViewModel()
 ) {
     var showDialog by remember { mutableStateOf(false) }
     Log.d("GoalCreationScreen", "Entering GoalCreationScreen")
@@ -81,15 +82,23 @@ fun GoalCreationScreen(
                 GoalCreationDialog(
                     showDialog = showDialog,
                     onConfirm = {
-                        Log.d("GoalCreationScreen", "Dialog onConfirm called")
-                        showDialog = false
+                        Log.d("GoalCreationDialog", "DialogContent onConfirm called")
+                        val newGoal = goalScreenViewModel.createGoal()
+                        if (newGoal != null) {
+                            Log.d("GoalCreationDialog", "Goal created: ${newGoal.id} ${newGoal.title}")
+                            goalScreenViewModel.onGoalCreated(newGoal)
+                            goalScreenViewModel.refreshGoals()
+                            showDialog = false
+                            onGoalCreated()
+                        }
+
                     },
-                    onGoalCreated = onGoalCreated,
+
                     onDismissButtonClicked = {
                         Log.d("GoalCreationScreen", "Dialog dismissed")
                         showDialog = false
                     },
-                    goalCreationViewModel = goalCreationViewModel,
+                    goalScreenViewModel = goalScreenViewModel,
                 )
             }
         }
@@ -101,5 +110,5 @@ fun GoalCreationScreen(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun WelcomeScreenPreview(){
-    GoalDialogContent(viewModel = GoalCreationViewModel(), onConfirm = {}, onCancel = {})
+    GoalDialogContent(viewModel = GoalScreenViewModel(), onConfirm = {}, onCancel = {})
 }

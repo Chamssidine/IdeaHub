@@ -21,7 +21,7 @@ class ScreenManagerVM @Inject constructor(
         _uiState.value = _uiState.value.copy(showBottomNavigationBar = showBottomNavigationBar)
     }
     fun setDestination(destination: String) {
-        _uiState.value = _uiState.value.copy(destination = destination)
+        _uiState.value = _uiState.value.copy(startDestination = destination)
 
     }
 
