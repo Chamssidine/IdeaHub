@@ -12,6 +12,7 @@ navigationCompose = "2.7.7"
 supportAnnotations = "28.0.0"
 firebaseFirestoreKtx = "25.0.0"
 toolsCore = "1.0.0-alpha09"
+foundationDesktop = "1.6.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,6 +33,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 support-annotations = { group = "com.android.support", name = "support-annotations", version.ref = "supportAnnotations" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 androidx-tools-core = { group = "androidx.privacysandbox.tools", name = "tools-core", version.ref = "toolsCore" }
+androidx-foundation-desktop = { group = "androidx.compose.foundation", name = "foundation-desktop", version.ref = "foundationDesktop" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -11,7 +11,10 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.HorizontalScrollbar
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalScrollbarStyle
+import androidx.compose.foundation.horizontalScroll
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +34,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -103,8 +108,10 @@ fun GoalScreen(
         }
 
         item {
+            val scrollState = rememberScrollState()
             LazyRow(
                 modifier = modifier
+                    .horizontalScroll(scrollState)
                     .padding(
                         start = dimensionResource(id = R.dimen.padding_medium),
                         end = dimensionResource(id = R.dimen.padding_medium)
@@ -121,6 +128,14 @@ fun GoalScreen(
                     )
                 }
             }
+            HorizontalScrollbar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp) // Adjust height as needed
+                    .padding(bottom = 4.dp),
+                style = LocalScrollbarStyle.current,
+                adapter = rememberScrollbarAdapter(scrollState)
+            )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
         }
 

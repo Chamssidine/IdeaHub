@@ -175,7 +175,7 @@ class GoalScreenViewModel : ViewModel() {
             // Parse the input date string
             val parsedDate = dateFormat.parse(date)
             if (parsedDate == null) {
-                _goalCreationUiState.update { state -> state.copy(hasError = true, errorMessage = "The date format is invalid") }
+                _goalCreationUiState.update { state -> state.copy(hasError = true, errorMessage = "The date is empty") }
                 return false
             }
 
