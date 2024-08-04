@@ -16,6 +16,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.MoreVert
@@ -86,7 +89,11 @@ fun GoalDialogContent(
 
     val uiState by viewModel.goalCreationUiState.collectAsState()
     Box(
-        modifier = modifier.wrapContentSize(),
+        modifier = modifier.wrapContentSize()
+            .verticalScroll(
+                state = rememberScrollState(),
+            )
+        ,
         contentAlignment = Alignment.Center
     ) {
         ElevatedCard(
@@ -413,7 +420,9 @@ fun GoalCreationDialog(
             ) {
                 Column(
                     modifier = modifier
-                        .padding(dimensionResource(id = R.dimen.padding_medium)),
+                        .padding(dimensionResource(id = R.dimen.padding_medium))
+
+                    ,
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

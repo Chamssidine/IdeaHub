@@ -1,6 +1,7 @@
 package com.solodev.ideahub.model
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.solodev.ideahub.R
 
 data class BottomNavigationItem (
@@ -11,7 +12,10 @@ data class BottomNavigationItem (
     val hasNews: Boolean,
 
     )
-
+data class GoalScreenTabItem(
+    @StringRes val title: Int,
+    val selected: Boolean,
+)
 data class CommunityTabItem(
     val title: String,
     val selected: Boolean,
@@ -427,6 +431,23 @@ val communityTabItems = listOf(
         title = "Active Discussion",
         selected = false
     ),
+)
+
+val goalTabItems = listOf(
+    GoalScreenTabItem(
+        title = R.string.goal_screen_tab_item_1,
+        selected = true
+    ),
+    GoalScreenTabItem(
+        title = R.string.goal_screen_tab_item_2,
+        selected = false
+    ),
+    GoalScreenTabItem(
+        title = R.string.goal_screen_tab_item_3,false
+    ),
+    GoalScreenTabItem(
+        R.string.goal_screen_tab_item_4,false
+    )
 )
 val bottomNavigationItems = listOf(
     BottomNavigationItem(

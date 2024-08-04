@@ -67,6 +67,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.solodev.ideahub.R
+import com.solodev.ideahub.model.goalTabItems
 import com.solodev.ideahub.ui.screen.CustomSearchBar
 import com.solodev.ideahub.ui.screen.components.GoalCreationDialog
 import com.solodev.ideahub.ui.screen.components.MenuSample
@@ -79,8 +80,6 @@ fun GoalScreen(
     goalScreenViewModel: GoalScreenViewModel
 ) {
     var customIndex by remember { mutableStateOf(selectedIndex) }
-    val items = listOf("Item 1", "Item 2", "Item 3", "Item 4")
-
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -113,10 +112,10 @@ fun GoalScreen(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                itemsIndexed(items) { index, item ->
+                itemsIndexed(goalTabItems) { index, item ->
                     GoalScreenTab(
                         modifier = Modifier,
-                        tabTitle = if (index == customIndex) "Selected Tab" else item,
+                        tabTitle = stringResource(id = item.title),
                         onSelected = { customIndex = index },
                         selected = index == customIndex
                     )
@@ -290,8 +289,10 @@ fun UnAchievedGoal(
     goalScreenViewModel: GoalScreenViewModel,
 ) {
     val goalScreenUIState by goalScreenViewModel.uiState.collectAsState()
-    var defaultItemCount by rememberSaveable { mutableStateOf(minOf(3, goalScreenUIState.unAchievedGoalList.size)) }
+    var isShowingAll by rememberSaveable { mutableStateOf(false) }
     var openDialog by rememberSaveable { mutableStateOf(false) }
+
+    val itemCount = if (isShowingAll) goalScreenUIState.unAchievedGoalList.size else minOf(3, goalScreenUIState.unAchievedGoalList.size)
 
     Column(
         modifier = modifier
@@ -304,31 +305,38 @@ fun UnAchievedGoal(
     ) {
         Text(text = stringResource(id = R.string.unachieved))
         Column {
-            val itemsToShow = goalScreenUIState.unAchievedGoalList.take(defaultItemCount)
-
-            itemsToShow.forEach { goal ->
-                GoalItem(
-                    modifier,
-                    title = goal.title,
-                    creationDate = goal.creationDate,
-                    deadLine = goal.deadline,
-                    priority = goal.reminderFrequency,
-                    description = goal.description,
-                    isCompleted = goal.isCompleted,
-                    onDelete = {
-                        goalScreenViewModel.deleteGoalFromUnAchievedList(goal)
-                    },
-                    onMarkAsCompleted = {
-                        goalScreenViewModel.markGoalAsCompleted(goal)
-                    },
-                    onEdit = {
-                        Log.d("GoalScreen", "Open button clicked")
-                        goalScreenViewModel.onEditGoal(goal)
-                        openDialog = true
-                    }
+            val itemsToShow = goalScreenUIState.unAchievedGoalList.take(itemCount)
+            if(itemsToShow.isEmpty())
+                Text(
+                    text = stringResource(id = R.string.no_unachieved_goals),
+                    style = MaterialTheme.typography.bodyMedium
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+            else{
+                itemsToShow.forEach { goal ->
+                    GoalItem(
+                        modifier,
+                        title = goal.title,
+                        creationDate = goal.creationDate,
+                        deadLine = goal.deadline,
+                        priority = goal.reminderFrequency,
+                        description = goal.description,
+                        isCompleted = goal.isCompleted,
+                        onDelete = {
+                            goalScreenViewModel.deleteGoalFromUnAchievedList(goal)
+                        },
+                        onMarkAsCompleted = {
+                            goalScreenViewModel.markGoalAsCompleted(goal)
+                        },
+                        onEdit = {
+                            Log.d("GoalScreen", "Open button clicked")
+                            goalScreenViewModel.onEditGoal(goal)
+                            openDialog = true
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                }
             }
+
         }
 
         if (openDialog) {
@@ -353,23 +361,23 @@ fun UnAchievedGoal(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.BottomEnd
         ) {
-            TextButton(
-                onClick = {
-                    if (defaultItemCount == 3) {
-                        defaultItemCount = goalScreenUIState.unAchievedGoalList.size
-                    } else {
-                        defaultItemCount = minOf(3, goalScreenUIState.unAchievedGoalList.size)
+            if(goalScreenUIState.unAchievedGoalList.size > 3)
+            {
+                TextButton(
+                    onClick = {
+                        isShowingAll = !isShowingAll
                     }
+                ) {
+                    Text(
+                        text = if (isShowingAll) {
+                            stringResource(id = R.string.see_less)
+                        } else {
+                            stringResource(id = R.string.see_all)
+                        }
+                    )
                 }
-            ) {
-                Text(
-                    text = if (defaultItemCount == 3) {
-                        stringResource(id = R.string.see_all)
-                    } else {
-                        stringResource(id = R.string.see_less)
-                    }
-                )
             }
+            
         }
     }
 }
@@ -377,8 +385,8 @@ fun UnAchievedGoal(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GoalItem(
-    modifier: Modifier,
-    title: String = "My Goaldnbsjdbsj",
+    modifier: Modifier = Modifier,
+    title: String = "My Goal",
     creationDate: String = "01/01/2023",
     isCompleted: Boolean = false,
     onMarkAsCompleted: () -> Unit = {},
@@ -389,20 +397,18 @@ fun GoalItem(
     delete: Boolean = false,
     description: String = "Description",
     iAchievedSection: Boolean = false,
-){
+) {
     var expanded by remember { mutableStateOf(false) }
-    var visible by remember {
-        mutableStateOf(false)
-    }
+    var visible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = Unit, block = {
+    LaunchedEffect(key1 = Unit) {
         delay(600L)
         visible = true
-    })
-    if(!delete)
-    {
+    }
+
+    if (!delete) {
         ElevatedCard(
-            onClick = {expanded =! expanded},
+            onClick = { expanded = !expanded },
             modifier = modifier
                 .fillMaxWidth()
                 .animateContentSize(
@@ -412,61 +418,62 @@ fun GoalItem(
                     )
                 ),
             shape = MaterialTheme.shapes.medium,
-        )  {
+        ) {
             Row(
                 modifier = modifier
                     .padding(dimensionResource(id = R.dimen.padding_small)),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
-                    modifier = modifier,
+                    modifier = Modifier
+                        .weight(1f),
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Center
-
                 ) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-                    if(expanded)
-                    {
+                    if (expanded) {
                         AnimatedVisibility(
                             visible = visible,
                             enter = fadeIn(initialAlpha = 0.0f) + slideInVertically(
-                            tween(
-                                durationMillis = 600,
-                                delayMillis = 600,
-                                easing = EaseIn
-                            ),
-                            initialOffsetY = { it * 6 }
-                        ) ){
+                                tween(
+                                    durationMillis = 600,
+                                    delayMillis = 600,
+                                    easing = EaseIn
+                                ),
+                                initialOffsetY = { it * 6 }
+                            )
+                        ) {
                             Text(
                                 text = description,
                                 style = MaterialTheme.typography.bodySmall,
                                 overflow = TextOverflow.Ellipsis,
+                                maxLines = 2,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                     }
-                   
                     Text(
                         text = creationDate,
-                        style = MaterialTheme
-                            .typography.labelSmall,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
                 if (isCompleted) {
-                    Spacer(modifier = Modifier.weight(1f))
                     Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_medium)))
-                    Text(text = stringResource(id = R.string.completed),style = MaterialTheme.typography.bodySmall)
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                else {
+                    Text(text = stringResource(id = R.string.completed), style = MaterialTheme.typography.bodySmall)
+                } else {
                     Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_medium)))
                     Column(
-                        modifier = modifier,
+                        modifier = Modifier
+                            .weight(1f),
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -481,23 +488,25 @@ fun GoalItem(
                         )
                     }
                 }
-                
                 Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_medium)))
-                Spacer(modifier = Modifier.weight(1f))
-                Spacer(modifier = Modifier.width(dimensionResource(R.dimen.spacing_medium)))
-                Column(modifier = modifier) {
-                        Text(
-                            text = deadLine,
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                        Text(
-                            text = priority,
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Text(
+                        text = deadLine,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                    Text(
+                        text = priority,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
                 MenuSample(
-                    modifier = modifier.fillMaxSize(),
+                    modifier = Modifier.weight(1f),
                     onDeleteClicked = onDelete,
                     onMarkAsCompletedClicked = onMarkAsCompleted,
                     onEditClicked = onEdit,
@@ -506,8 +515,8 @@ fun GoalItem(
             }
         }
     }
-
 }
+
 
 @Composable
 fun GoalScreenTab(

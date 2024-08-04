@@ -131,7 +131,7 @@
     <string name="priority_high">High</string>
     <string name="priority_medium">Medium</string>
     <string name="priority_low">Low</string>
-    <string name="see_less">See less\n</string>
+    <string name="see_less">See less</string>
     <string name="unachieved">unachieved</string>
     <string name="join">Join</string>
     <string name="user_profile_information">Informations</string>
@@ -148,5 +148,10 @@
     <string name="pick_a_date">Pick a date</string>
     <string name="mark_as_completed">Mark as Complede</string>
     <string name="completed">Completed</string>
+    <string name="no_unachieved_goals">No goals. Click \'Add\' to create one.</string>
+    <string name="goal_screen_tab_item_1">Goals and Tasks</string>
+    <string name="goal_screen_tab_item_2">Day Plan</string>
+    <string name="goal_screen_tab_item_3">Popular Groups</string>
+    <string name="goal_screen_tab_item_4">Active Discussions</string>
 
 </resources>

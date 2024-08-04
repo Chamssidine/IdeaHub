@@ -50,6 +50,7 @@ class GoalScreenViewModel : ViewModel() {
         _uiState.update { state ->
             state.copy(unAchievedGoalList = state.unAchievedGoalList.filterNot { it.id == goal.id })
         }
+        goalData.remove(goal)
     }
     fun refreshGoals() {
         setGoals()
