@@ -3,7 +3,6 @@ package com.solodev.ideahub.ui.screen.goalScreen
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.Spring
@@ -11,23 +10,23 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.HorizontalScrollbar
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.LocalScrollbarStyle
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -35,8 +34,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.rememberScrollbarAdapter
-
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
@@ -44,7 +41,6 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
-
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -57,13 +53,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -121,21 +117,13 @@ fun GoalScreen(
             ) {
                 itemsIndexed(goalTabItems) { index, item ->
                     GoalScreenTab(
-                        modifier = Modifier,
                         tabTitle = stringResource(id = item.title),
                         onSelected = { customIndex = index },
                         selected = index == customIndex
                     )
                 }
             }
-            HorizontalScrollbar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp) // Adjust height as needed
-                    .padding(bottom = 4.dp),
-                style = LocalScrollbarStyle.current,
-                adapter = rememberScrollbarAdapter(scrollState)
-            )
+            HorizontalScrollbar(scrollState = scrollState)
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
         }
 
@@ -161,7 +149,6 @@ fun MainTabScreen(
     goalScreenViewModel: GoalScreenViewModel,
 
 ) {
-    val goalScreenUIState by goalScreenViewModel.uiState.collectAsState()
     Log.d("MainTabScreen", "selectedTabIndex: $selectedTabIndex, tabTitle: $tabTitle")
     var showDialog by remember { mutableStateOf(false) }
 
@@ -195,7 +182,6 @@ fun MainTabScreen(
                     })
                 }
                 if (showDialog) {
-                    val goal : Goal? = null
                     goalScreenViewModel.clearUiState()
                     Log.d("GoalCreationScreen", "Showing dialog")
                     GoalCreationDialog(
@@ -535,7 +521,6 @@ fun GoalItem(
 
 @Composable
 fun GoalScreenTab(
-    modifier: Modifier = Modifier,
     tabTitle: String = "Tab",
     onSelected: () -> Unit = {},
     selected: Boolean = false
@@ -572,7 +557,6 @@ fun DayPlan(
     modifier: Modifier = Modifier,
     onAddButtonCLicked: ()-> Unit = {}
 ) {
-    val defaultIcount by remember{mutableStateOf(3)}
     Column(
         modifier = modifier.wrapContentWidth()
     ) {
@@ -713,7 +697,7 @@ fun GroupItem(
     description: String = "Description",
     onlikeClicked: () -> Unit = {},
     onJoinClicked:() -> Unit = {},
-    onAddToFavoryClicked:() -> Unit = {},
+    onAddToFavoriteClicked:() -> Unit = {},
 ) {
     ElevatedCard(
         modifier = modifier.fillMaxWidth(),
@@ -833,6 +817,24 @@ fun ActiveDiscussionItem(
   }
 }
 
+@Composable
+fun HorizontalScrollbar(scrollState: ScrollState) {
+    val scrollPercentage = scrollState.value / scrollState.maxValue.toFloat()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(8.dp)
+            .background(Color.Gray.copy(alpha = 0.5f))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(50.dp)
+                .offset(x = (scrollPercentage * (scrollState.maxValue - 50)).dp)
+                .background(Color.DarkGray)
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

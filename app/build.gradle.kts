@@ -73,6 +73,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.firestore.ktx)
+    // Remove the following line
+    // implementation(libs.androidx.foundation.desktop)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -89,6 +91,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.android.material:material:1.12.0")
+
 
     //coil image
     implementation("io.coil-kt:coil:2.7.0")
