@@ -71,163 +71,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.solodev.ideahub.R
+import com.solodev.ideahub.ui.screen.goalScreen.DayPlanViewModel
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenViewModel
 import com.solodev.ideahub.util.Tools
 import kotlinx.coroutines.delay
 
-
-@Composable
-fun GoalDialogContent(
-    modifier: Modifier = Modifier,
-    viewModel: GoalScreenViewModel,
-    onConfirm: () -> Unit,
-    onCancel: () -> Unit,
-) {
-    Log.d("DialogContent", "Entering DialogContent")
-
-    var showDatePickerDialog by remember { mutableStateOf(false) }
-
-    val uiState by viewModel.goalCreationUiState.collectAsState()
-    Box(
-        modifier = modifier.wrapContentSize()
-            .verticalScroll(
-                state = rememberScrollState(),
-            )
-        ,
-        contentAlignment = Alignment.Center
-    ) {
-        ElevatedCard(
-            modifier = Modifier.wrapContentSize(),
-            shape = MaterialTheme.shapes.extraLarge
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(
-                        top = dimensionResource(id = R.dimen.padding_medium),
-                        start = dimensionResource(id = R.dimen.padding_medium),
-                        end = dimensionResource(id = R.dimen.padding_medium)
-                    ),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                HeaderTitle(title = stringResource(id = R.string.title_and_description))
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-                Box {
-                    TextArea(
-                        text = uiState.title,
-                        onTextChange = { viewModel.updateTitle(it) },
-                        label = stringResource(id = R.string.title)
-                    )
-                }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-                Box {
-                    TextArea(
-                        text = uiState.description,
-                        onTextChange = { viewModel.updateDescription(it) }
-                    )
-                }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-                HeaderTitle(title = stringResource(id = R.string.deadline))
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-                Box {
-                    TextButton(onClick = {
-                        Log.d("DialogContent", "Date picker button clicked")
-                        showDatePickerDialog = true
-                    }) {
-                        Text(
-                            text = if (uiState.deadline.isBlank())
-                                stringResource(id = R.string.pick_a_date)
-                            else
-                                uiState.deadline,
-                            modifier = modifier.wrapContentSize(align = Alignment.Center)
-                        )
-                    }
-                    if (showDatePickerDialog) {
-                        DatePickerDialog(
-                            onConfirmButtonClicked = {
-                                viewModel.onConfirmDatePickingDialog(it)
-                                showDatePickerDialog = false
-                            }
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-                HeaderTitle(title = stringResource(id = R.string.reminder_frequency))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensionResource(id = R.dimen.padding_medium)),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(modifier = Modifier) {
-                        Text(text = stringResource(id = R.string.daily))
-                        Checkbox(
-                            checked = uiState.reminderFrequency == "Daily",
-                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Daily") },
-                            colors = CheckboxDefaults.colors(
-                                uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
-                            ),
-                        )
-                    }
-                    Column(modifier = Modifier) {
-                        Text(text = stringResource(id = R.string.weekly))
-                        Checkbox(
-                            checked = uiState.reminderFrequency == "Weekly",
-                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Weekly") },
-                            colors = CheckboxDefaults.colors(
-                                uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
-                            ),
-                        )
-                    }
-                    Column(modifier = Modifier) {
-                        Text(text = stringResource(id = R.string.monthly))
-                        Checkbox(
-                            checked = uiState.reminderFrequency == "Monthly",
-                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Monthly") },
-                            colors = CheckboxDefaults.colors(
-                                uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
-                            ),
-                        )
-                    }
-                }
-                if(uiState.hasError)
-                {
-                    Text(
-                        text = uiState.errorMessage!!
-                        , color = MaterialTheme.colorScheme.error)
-                }
-                Row(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .align(Alignment.End),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Spacer(modifier = modifier.weight(1f))
-                    TextButton(onClick = {
-                        Log.d("DialogContent", "Cancel button clicked")
-                        onCancel()
-                    }) {
-                        Text(text = stringResource(id = R.string.cancel))
-                    }
-
-                    TextButton(
-                        onClick = {
-                            Log.d("DialogContent", "Confirm button clicked")
-                            onConfirm()
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.confirm),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 
 @Composable
@@ -441,7 +289,159 @@ fun GoalCreationDialog(
         }
     }
 }
+@Composable
+fun GoalDialogContent(
+    modifier: Modifier = Modifier,
+    viewModel: GoalScreenViewModel,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+) {
+    Log.d("DialogContent", "Entering DialogContent")
 
+    var showDatePickerDialog by remember { mutableStateOf(false) }
+
+    val uiState by viewModel.goalCreationUiState.collectAsState()
+    Box(
+        modifier = modifier
+            .wrapContentSize()
+            .verticalScroll(
+                state = rememberScrollState(),
+            )
+        ,
+        contentAlignment = Alignment.Center
+    ) {
+        ElevatedCard(
+            modifier = Modifier.wrapContentSize(),
+            shape = MaterialTheme.shapes.extraLarge
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(
+                        top = dimensionResource(id = R.dimen.padding_medium),
+                        start = dimensionResource(id = R.dimen.padding_medium),
+                        end = dimensionResource(id = R.dimen.padding_medium)
+                    ),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                HeaderTitle(title = stringResource(id = R.string.title_and_description))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                Box {
+                    TextArea(
+                        text = uiState.title,
+                        onTextChange = { viewModel.updateTitle(it) },
+                        label = stringResource(id = R.string.title)
+                    )
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                Box {
+                    TextArea(
+                        text = uiState.description,
+                        onTextChange = { viewModel.updateDescription(it) }
+                    )
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                HeaderTitle(title = stringResource(id = R.string.deadline))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                Box {
+                    TextButton(onClick = {
+                        Log.d("DialogContent", "Date picker button clicked")
+                        showDatePickerDialog = true
+                    }) {
+                        Text(
+                            text = if (uiState.deadline.isBlank())
+                                stringResource(id = R.string.pick_a_date)
+                            else
+                                uiState.deadline,
+                            modifier = modifier.wrapContentSize(align = Alignment.Center)
+                        )
+                    }
+                    if (showDatePickerDialog) {
+                        DatePickerDialog(
+                            onConfirmButtonClicked = {
+                                viewModel.onConfirmDatePickingDialog(it)
+                                showDatePickerDialog = false
+                            }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                HeaderTitle(title = stringResource(id = R.string.reminder_frequency))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(id = R.dimen.padding_medium)),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier) {
+                        Text(text = stringResource(id = R.string.daily))
+                        Checkbox(
+                            checked = uiState.reminderFrequency == "Daily",
+                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Daily") },
+                            colors = CheckboxDefaults.colors(
+                                uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
+                            ),
+                        )
+                    }
+                    Column(modifier = Modifier) {
+                        Text(text = stringResource(id = R.string.weekly))
+                        Checkbox(
+                            checked = uiState.reminderFrequency == "Weekly",
+                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Weekly") },
+                            colors = CheckboxDefaults.colors(
+                                uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
+                            ),
+                        )
+                    }
+                    Column(modifier = Modifier) {
+                        Text(text = stringResource(id = R.string.monthly))
+                        Checkbox(
+                            checked = uiState.reminderFrequency == "Monthly",
+                            onCheckedChange = { if (it) viewModel.updateReminderFrequency("Monthly") },
+                            colors = CheckboxDefaults.colors(
+                                uncheckedColor = MaterialTheme.colorScheme.secondaryContainer,
+                            ),
+                        )
+                    }
+                }
+                if(uiState.hasError)
+                {
+                    Text(
+                        text = uiState.errorMessage!!
+                        , color = MaterialTheme.colorScheme.error)
+                }
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .align(Alignment.End),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(modifier = modifier.weight(1f))
+                    TextButton(onClick = {
+                        Log.d("DialogContent", "Cancel button clicked")
+                        onCancel()
+                    }) {
+                        Text(text = stringResource(id = R.string.cancel))
+                    }
+
+                    TextButton(
+                        onClick = {
+                            Log.d("DialogContent", "Confirm button clicked")
+                            onConfirm()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.confirm),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun MenuSample(
@@ -484,5 +484,129 @@ fun MenuSample(
                 trailingIcon = { Text("F11", textAlign = TextAlign.Center) }
             )
         }
+    }
+}
+
+
+@Composable
+fun DayPlanDialog (
+    modifier: Modifier,
+    showDialog: Boolean = false,
+    onConfirm: () -> Unit = {},
+    onDismiss: () -> Unit
+) {
+    var animateIn by remember { mutableStateOf(false) }
+
+    LaunchedEffect(showDialog) {
+        Log.d("GoalCreationDialog", "LaunchedEffect triggered with showDialog = $showDialog")
+        animateIn = showDialog
+    }
+    if (showDialog) {
+        Log.d("GoalCreationDialog", "Dialog is visible")
+        Dialog(onDismissRequest = onDismiss) {
+            AnimatedVisibility(
+                visible = animateIn,
+                enter = fadeIn(spring(stiffness = Spring.StiffnessHigh)) + scaleIn(
+                    initialScale = .8f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMediumLow
+                    )
+                ),
+                exit = slideOutVertically { it / 8 } + fadeOut() + scaleOut(targetScale = .95f)
+            ) {
+                Column(
+                    modifier = modifier
+                        .padding(dimensionResource(id = R.dimen.padding_medium))
+
+                    ,
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    DayPlanDialogContent(
+                        onConfirm = onConfirm,
+                        onCancel = {
+                            Log.d("DayPlanDialog", "DialogContent onCancel called")
+                            onDismiss()
+                            animateIn = false
+                        },
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun DayPlanDialogContent(
+    onConfirm: () -> Unit = {},
+    onCancel: () -> Unit = {},
+    viewModel: DayPlanViewModel = DayPlanViewModel()
+) {
+    val uiState by  viewModel.dayPlanDialogUIState.collectAsState()
+    var showDatePickerDialog by remember {
+        mutableStateOf(false)
+    }
+    Box(
+        modifier = Modifier
+            .wrapContentSize()
+            .verticalScroll(
+                state = rememberScrollState()
+            )
+    ) {
+        ElevatedCard (
+            modifier = Modifier.wrapContentSize(),
+            shape = MaterialTheme.shapes.extraLarge
+        ){
+            Column(
+                modifier = Modifier.padding(
+                    top = dimensionResource(id = R.dimen.padding_medium),
+                    start = dimensionResource(id = R.dimen.padding_medium),
+                    end = dimensionResource(id = R.dimen.padding_medium)
+                ),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                HeaderTitle(title = stringResource(id = R.string.title_and_description))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                Box {
+                    uiState.title?.let {
+                        TextArea(
+                            text = it,
+                            onTextChange = { viewModel.updateTitle(it) },
+                            label = stringResource(id = R.string.title)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                Box {
+                    TextArea(
+                        text = uiState.description,
+                        onTextChange = { viewModel.updateDescription(it) }
+                    )
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                HeaderTitle(title = stringResource(id = R.string.estimatedTime))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                Box {
+                    TextButton(onClick = {
+                        Log.d("DialogContent", "Date picker button clicked")
+                        showDatePickerDialog = true
+                    }) {
+                        Text(
+                            text =
+                                stringResource(id = R.string.set_time)
+
+                        )
+                    }
+                    if (showDatePickerDialog) {
+
+                    }
+                }
+
+            }
+        }
+
     }
 }

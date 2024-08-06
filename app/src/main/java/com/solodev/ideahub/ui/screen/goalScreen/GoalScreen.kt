@@ -71,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import com.solodev.ideahub.R
 import com.solodev.ideahub.model.goalTabItems
 import com.solodev.ideahub.ui.screen.CustomSearchBar
+import com.solodev.ideahub.ui.screen.components.DayPlanDialog
 import com.solodev.ideahub.ui.screen.components.GoalCreationDialog
 import com.solodev.ideahub.ui.screen.components.MenuSample
 import kotlinx.coroutines.delay
@@ -125,7 +126,6 @@ fun GoalScreen(
                     )
                 }
             }
-            HorizontalScrollbar(scrollState = scrollState)
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
         }
 
@@ -213,7 +213,21 @@ fun MainTabScreen(
         1 -> {
             Box(modifier = modifier.wrapContentSize())
             {
-                DayPlan()
+                DayPlan(
+                    onAddButtonClicked = {
+                        showDialog = true
+                    }
+                )
+                if (showDialog) {
+                    goalScreenViewModel.clearUiState()
+                    Log.d("GoalCreationScreen", "Showing dialog")
+                    DayPlanDialog(
+                        modifier = Modifier,
+                        showDialog = showDialog,
+                        onConfirm = {},
+                        onDismiss = {showDialog = false}
+                    )
+                }
             }
         }
         2 -> {
@@ -566,16 +580,22 @@ fun DayPlan(
         modifier = modifier.wrapContentWidth()
     ) {
         uiState.dayPlans.forEachIndexed { index, dayPlanItemUiState ->
-            DayPlanItem(
-                title = dayPlanItemUiState.title,
-                description = dayPlanItemUiState.description,
-                creationDate = dayPlanItemUiState.creationDate,
-                deadline = dayPlanItemUiState.deadline,
-                priority = dayPlanItemUiState.priority,
-                progress = dayPlanItemUiState.progress,
-                isCompleted = dayPlanItemUiState.isCompleted,
-                onChecked = { viewModel.toggleCompletion(index) }
-            )
+            dayPlanItemUiState.title?.let {
+                dayPlanItemUiState.creationDate?.let { it1 ->
+                    dayPlanItemUiState.deadline?.let { it2 ->
+                        DayPlanItem(
+                            title = it,
+                            description = dayPlanItemUiState.description,
+                            creationDate = it1,
+                            deadline = it2,
+                            priority = dayPlanItemUiState.priority,
+                            progress = dayPlanItemUiState.progress,
+                            isCompleted = dayPlanItemUiState.isCompleted,
+                            onChecked = { viewModel.toggleCompletion(index) }
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
         }
         Box(

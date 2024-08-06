@@ -153,5 +153,7 @@
     <string name="goal_screen_tab_item_2">Day Plan</string>
     <string name="goal_screen_tab_item_3">Popular Groups</string>
     <string name="goal_screen_tab_item_4">Active Discussions</string>
+    <string name="estimatedTime">Estimated Time</string>
+    <string name="set_time">Set Time</string>
 
 </resources>
