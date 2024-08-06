@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -73,6 +74,8 @@ import com.solodev.ideahub.ui.screen.CustomSearchBar
 import com.solodev.ideahub.ui.screen.components.GoalCreationDialog
 import com.solodev.ideahub.ui.screen.components.MenuSample
 import kotlinx.coroutines.delay
+import java.time.LocalDate
+import java.util.Date
 
 @Composable
 fun GoalScreen(
@@ -107,7 +110,6 @@ fun GoalScreen(
             val scrollState = rememberScrollState()
             LazyRow(
                 modifier = modifier
-                    .horizontalScroll(scrollState)
                     .padding(
                         start = dimensionResource(id = R.dimen.padding_medium),
                         end = dimensionResource(id = R.dimen.padding_medium)
@@ -555,44 +557,54 @@ fun FloatingButton(
 @Composable
 fun DayPlan(
     modifier: Modifier = Modifier,
-    onAddButtonCLicked: ()-> Unit = {}
+    viewModel: DayPlanViewModel = DayPlanViewModel(),
+    onAddButtonClicked: () -> Unit = {}
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Column(
         modifier = modifier.wrapContentWidth()
     ) {
-        repeat(3) {
-            DayPlanItem()
+        uiState.dayPlans.forEachIndexed { index, dayPlanItemUiState ->
+            DayPlanItem(
+                title = dayPlanItemUiState.title,
+                description = dayPlanItemUiState.description,
+                creationDate = dayPlanItemUiState.creationDate,
+                deadline = dayPlanItemUiState.deadline,
+                priority = dayPlanItemUiState.priority,
+                progress = dayPlanItemUiState.progress,
+                isCompleted = dayPlanItemUiState.isCompleted,
+                onChecked = { viewModel.toggleCompletion(index) }
+            )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
         }
-       Box(
-           modifier = Modifier.fillMaxWidth(),
-           contentAlignment = Alignment.BottomEnd
-       )
-       {
-           FloatingButton(onClick = onAddButtonCLicked)
-       }
-
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            FloatingButton(onClick = onAddButtonClicked)
+        }
     }
-
 }
+
+
 
 @Composable
 fun DayPlanItem(
     modifier: Modifier = Modifier,
-    hasFinished: Boolean = false,
+    isCompleted: Boolean = false,
     onChecked: () -> Unit = {},
-    deadLine: String = "DeadLine",
-    deadLineValue: String = "Today",
-    priority: String = "Priority",
-    priorityValue: String = "Low",
     title: String = "My Goal",
-    creationDate: String ="19-05-2024"
-) {
-
+    description: String = "",
+    creationDate: Date = Date(),
+    deadline: Date = Date(),
+    priority: Priority = Priority.LOW,
+    progress: Int = 3
+)  {
     ElevatedCard(
         modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
-    )  {
+    ) {
         Row(
             modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small)),
             verticalAlignment = Alignment.CenterVertically
@@ -603,52 +615,51 @@ fun DayPlanItem(
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                if (description.isNotEmpty()) {
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                 Text(
-                    text = creationDate,
-                    style = MaterialTheme
-                        .typography.labelSmall,
-                    modifier = Modifier
-                        .align(Alignment.End)
+                    text = creationDate.toString(),
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.align(Alignment.End)
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            Column() {
-                    Text(
-                        text = stringResource(id = R.string.deadline),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                    Text(
-                        text = stringResource(id = R.string.priority),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
-            Column() {
+            Column {
                 Text(
-                    text = deadLine,
-                    style = MaterialTheme.typography.labelSmall
+                    text = "Deadline: ${deadline}",
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
                 Text(
-                    text = priority,
-                    style = MaterialTheme.typography.labelSmall
+                    text = "Priority: ${priority.name}",
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
-            ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
-            {
+            Spacer(modifier = Modifier.weight(1f))
+            if (progress > 0) {
+                CircularProgressIndicator(
+                    progress = progress / 100f,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.progress_indicator_size))
+                )
+            }
+            ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small))) {
                 IconButton(onClick = onChecked) {
                     Icon(
                         Icons.Filled.Done,
                         contentDescription = "icon_done",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = if (isCompleted) Color.Gray else MaterialTheme.colorScheme.primary
                     )
                 }
             }
-            }
-
         }
+    }
 }
+
 
 @Composable
 fun PopularGroupSection(
@@ -841,7 +852,7 @@ fun HorizontalScrollbar(scrollState: ScrollState) {
 fun GoalItemPreview() {
     Box(modifier = Modifier.height(60.dp))
     {
-        GoalItem(modifier = Modifier)
+        DayPlanItem(modifier = Modifier)
     }
 
 }
