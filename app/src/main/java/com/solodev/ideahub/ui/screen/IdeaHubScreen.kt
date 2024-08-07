@@ -32,6 +32,7 @@ import com.solodev.ideahub.ui.ViewModels.ScreenManagerVM
 import com.solodev.ideahub.ui.screen.communityScreen.CommunityScreen
 import com.solodev.ideahub.ui.screen.gemini_chat.GeminiChatScreen
 import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationScreen
+import com.solodev.ideahub.ui.screen.goalScreen.DayPlanViewModel
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreen
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenViewModel
 import com.solodev.ideahub.ui.screen.login.LoginScreen
@@ -141,7 +142,8 @@ fun IdeaHubScreen(
             }
             composable(Routes.Home.name){
                 GoalScreen(
-                    goalScreenViewModel = GoalScreenViewModel()
+                    goalScreenViewModel = GoalScreenViewModel(),
+                    dayPlanViewModel = DayPlanViewModel()
                 )
             }
             composable(Routes.GoalCreation.name) {
@@ -165,12 +167,14 @@ fun IdeaHubScreen(
             }
             composable(Routes.Thread.name){
                 GoalScreen(
-                    goalScreenViewModel = GoalScreenViewModel()
+                    goalScreenViewModel = GoalScreenViewModel(),
+                    dayPlanViewModel = DayPlanViewModel()
                 )
             }
             composable(Routes.ThreadHistory.name) {
                 GoalScreen(
-                    goalScreenViewModel = GoalScreenViewModel()
+                    goalScreenViewModel = GoalScreenViewModel(),
+                    dayPlanViewModel = DayPlanViewModel()
                 )
             }
         }

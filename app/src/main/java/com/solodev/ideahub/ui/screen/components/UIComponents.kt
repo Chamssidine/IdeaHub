@@ -1,6 +1,7 @@
 package com.solodev.ideahub.ui.screen.components
 
 import android.annotation.SuppressLint
+import android.app.TimePickerDialog
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -15,20 +16,25 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -63,19 +69,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.solodev.ideahub.R
+import com.solodev.ideahub.ui.screen.goalScreen.DayPlanItemUiState
 import com.solodev.ideahub.ui.screen.goalScreen.DayPlanViewModel
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenViewModel
+
+import com.solodev.ideahub.ui.screen.goalScreen.Priority
 import com.solodev.ideahub.util.Tools
 import kotlinx.coroutines.delay
-
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 
 @Composable
@@ -448,13 +463,12 @@ fun MenuSample(
     modifier: Modifier = Modifier,
     isCompleted: Boolean = false,
     onEditClicked: () -> Unit = {},
-    onMarkAsCompletedClicked: () -> Unit = {},
-    onDeleteClicked: () -> Unit = {}
+    onMarkAsCompleted: () -> Unit = {},
+    onDelete: () -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Box(modifier = modifier
-        .fillMaxSize()
         .wrapContentSize(Alignment.CenterEnd),
         contentAlignment = Alignment.CenterEnd
     ) {
@@ -471,7 +485,7 @@ fun MenuSample(
             {
                 DropdownMenuItem(
                     text = { Text(stringResource(id = R.string.mark_as_completed)) },
-                    onClick = onMarkAsCompletedClicked,
+                    onClick = onMarkAsCompleted,
                     leadingIcon = { Icon(painter = painterResource(id = R.drawable.check_circle_24px_filled), contentDescription = null ) }
                 )
 
@@ -479,9 +493,9 @@ fun MenuSample(
 
             DropdownMenuItem(
                 text = { Text(stringResource(id = R.string.delete)) },
-                onClick = onDeleteClicked,
+                onClick = onDelete,
                 leadingIcon = { Icon(painter = painterResource(id = R.drawable.delete_forever_24px), contentDescription = null) },
-                trailingIcon = { Text("F11", textAlign = TextAlign.Center) }
+
             )
         }
     }
@@ -493,7 +507,8 @@ fun DayPlanDialog (
     modifier: Modifier,
     showDialog: Boolean = false,
     onConfirm: () -> Unit = {},
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    dayPlanViewModel : DayPlanViewModel
 ) {
     var animateIn by remember { mutableStateOf(false) }
 
@@ -523,13 +538,14 @@ fun DayPlanDialog (
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    DayPlanDialogContent(
+                    OpenDayPlanDialogContent(
                         onConfirm = onConfirm,
                         onCancel = {
                             Log.d("DayPlanDialog", "DialogContent onCancel called")
                             onDismiss()
                             animateIn = false
                         },
+                        viewModel = dayPlanViewModel
                     )
                 }
             }
@@ -537,14 +553,60 @@ fun DayPlanDialog (
     }
 }
 
+@Composable
+fun EditDayPlanDialog(
+    showDialog: Boolean,
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+    dayPlanItemUiState: DayPlanItemUiState,
+    onProgressChange: (Int) -> Unit,
+) {
+    var animateIn by remember { mutableStateOf(false) }
+    LaunchedEffect(showDialog) {
+        Log.d("GoalCreationDialog", "LaunchedEffect triggered with showDialog = $showDialog")
+        animateIn = showDialog
+    }
+    if (showDialog) {
+        Log.d("GoalCreationDialog", "Dialog is visible")
+        Dialog(onDismissRequest = onCancel) {
+            AnimatedVisibility(
+                visible = animateIn,
+                enter = fadeIn(spring(stiffness = Spring.StiffnessHigh)) + scaleIn(
+                    initialScale = .8f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMediumLow
+                    )
+                ),
+                exit = slideOutVertically { it / 8 } + fadeOut() + scaleOut(targetScale = .95f)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(dimensionResource(id = R.dimen.padding_medium))
+                    ,
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    DayPlanDialogContent(
+                        onCancel = onCancel,
+                        onConfirm = onConfirm,
+                        onProgressChange = onProgressChange,
+                    )
+                }
+            }
+        }
+    }
+
+}
 
 @Composable
-fun DayPlanDialogContent(
+fun OpenDayPlanDialogContent(
     onConfirm: () -> Unit = {},
     onCancel: () -> Unit = {},
-    viewModel: DayPlanViewModel = DayPlanViewModel()
+    viewModel: DayPlanViewModel
 ) {
     val uiState by  viewModel.dayPlanDialogUIState.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
     var showDatePickerDialog by remember {
         mutableStateOf(false)
     }
@@ -571,13 +633,11 @@ fun DayPlanDialogContent(
                 HeaderTitle(title = stringResource(id = R.string.title_and_description))
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                 Box {
-                    uiState.title?.let {
-                        TextArea(
-                            text = it,
-                            onTextChange = { viewModel.updateTitle(it) },
-                            label = stringResource(id = R.string.title)
-                        )
-                    }
+                    TextArea(
+                        text = uiState.title,
+                        onTextChange = { viewModel.updateTitle(it) },
+                        label = stringResource(id = R.string.title)
+                    )
                 }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                 Box {
@@ -596,17 +656,287 @@ fun DayPlanDialogContent(
                     }) {
                         Text(
                             text =
-                                stringResource(id = R.string.set_time)
-
+                               if(uiState.deadline.isBlank())
+                                    stringResource(id = R.string.set_time)
+                               else
+                                    uiState.deadline,
+                            modifier = Modifier.wrapContentSize(align = Alignment.Center)
                         )
                     }
                     if (showDatePickerDialog) {
-
+                        DateTimePicker(
+                            onDateTimeSelected = {
+                                viewModel.updateDeadline(it)
+                                showDatePickerDialog = false
+                            },
+                            showTimePicker = showDatePickerDialog,
+                            onHideTimePicker = {
+                                showDatePickerDialog = false
+                            }
+                        )
                     }
                 }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                HeaderTitle(title = stringResource(id = R.string.priority))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                Box {
+                    PriorityDropDown(
+                        uiState = uiState,
 
+                    )
+                }
+                if(uiState.hasError)
+                {
+                    Log.d("DialogContent", "Error: ${uiState.errorMessage}")
+                    Text(
+                        text = uiState.errorMessage!!
+                        , color = MaterialTheme.colorScheme.error)
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.End),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(onClick = {
+                        Log.d("DialogContent", "Cancel button clicked")
+                        onCancel()
+                    }) {
+                        Text(text = stringResource(id = R.string.cancel))
+                    }
+
+                    TextButton(
+                        onClick = {
+                            Log.d("DialogContent", "Confirm button clicked")
+                            onConfirm()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.confirm),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
             }
         }
 
     }
+}
+
+@Composable
+fun PriorityDropDown(
+    modifier: Modifier = Modifier,
+    onLowPriorityClicked: () -> Unit = {},
+    onMediumPriorityClicked: () -> Unit = {},
+    onHighPriorityClicked: () -> Unit = {},
+    uiState: DayPlanItemUiState
+){
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = modifier
+        .wrapContentSize(Alignment.Center),
+        contentAlignment = Alignment.Center
+    ) {
+        TextButton(onClick = {expanded = true}) {
+            Text(
+                text =  if(uiState.priority == Priority.NONE)
+                    stringResource(id = R.string.select_priority)
+                else stringResource(
+                    id = R.string.priority) +": ${uiState.priority.name}"
+            )
+
+        }
+        Box(
+            modifier =  modifier.align(Alignment.TopCenter)
+        )
+        {
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.priority_low)) },
+                    onClick = {
+                        onLowPriorityClicked()
+                        expanded = false
+                    },
+
+                    )
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.priority_medium)) },
+                    onClick = {
+                        onMediumPriorityClicked()
+                        expanded = false
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = R.string.priority_high)) },
+                    onClick = {
+                        onHighPriorityClicked()
+                        expanded = false
+                    },
+                )
+            }
+        }
+
+    }
+}
+
+@Composable
+fun DateTimePicker(
+    onDateTimeSelected: (Date) -> Unit,
+    showTimePicker: Boolean = false,
+    onHideTimePicker: () -> Unit = {}
+) {
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+    Log.d("DatetimePicker","DateTimePicker $showTimePicker")
+    if (showTimePicker) {
+        TimePickerDialog(
+            context,
+            { _, hourOfDay, minute ->
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                calendar.set(Calendar.MINUTE, minute)
+                calendar.set(Calendar.SECOND, 0)
+                onDateTimeSelected(calendar.time)
+
+            },
+            calendar.get(Calendar.HOUR_OF_DAY),
+            calendar.get(Calendar.MINUTE),
+            true
+        ).show()
+    }
+
+}
+
+@Composable
+fun HorizontalScrollbar(scrollState: ScrollState) {
+    val scrollPercentage = scrollState.value / scrollState.maxValue.toFloat()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(8.dp)
+            .background(Color.Gray.copy(alpha = 0.5f))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(50.dp)
+                .offset(x = (scrollPercentage * (scrollState.maxValue - 50)).dp)
+                .background(Color.DarkGray)
+        )
+    }
+}
+
+@Composable
+fun DayPlanDialogContent(
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+    onProgressChange: (Int) -> Unit,
+    onLowPriorityClicked: () -> Unit = {},
+    onMediumPriorityClicked: () -> Unit = {},
+    onHighPriorityClicked: () -> Unit = {},
+    uiState: DayPlanItemUiState = DayPlanItemUiState(),
+) {
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    ElevatedCard(
+        shape = MaterialTheme.shapes.extraLarge
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = uiState.title,
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            Text(
+                text = uiState.description,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.created_at),
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Text(
+                        text = dateFormat.format(uiState.creationDate),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    Text(
+                        text = stringResource(id = R.string.due_date),
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Text(
+                        text = uiState.deadline,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.priority),
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Box(modifier = Modifier.wrapContentSize()) {
+                        PriorityDropDown(
+                            onLowPriorityClicked = onLowPriorityClicked,
+                            onMediumPriorityClicked = onMediumPriorityClicked,
+                            onHighPriorityClicked = onHighPriorityClicked,
+                            uiState = uiState
+                        )
+                    }
+                    Text(
+                        text = stringResource(id = R.string.progress),
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    BasicTextField(
+                        value = uiState.progress.toString(),
+                        onValueChange = {
+                            onProgressChange(it.toIntOrNull() ?: 0)
+                        },
+                        modifier = Modifier
+                            .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = MaterialTheme.shapes.small
+                        ),
+                        textStyle = MaterialTheme.typography.bodyMedium,
+                        maxLines = 1,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                TextButton(onClick = onCancel) {
+                    Text(text = stringResource(id = R.string.cancel), color = MaterialTheme.colorScheme.primary)
+                }
+                TextButton(onClick = onConfirm) {
+                    Text(text = stringResource(id = R.string.confirm), color = MaterialTheme.colorScheme.primary)
+                }
+            }
+        }
+    }
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DayPlanDialogPreview() {
+    DayPlanDialogContent(
+        onCancel = {},
+        onConfirm = {},
+        onProgressChange = {},
+    )
 }

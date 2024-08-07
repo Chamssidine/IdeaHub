@@ -95,8 +95,6 @@ class GoalScreenViewModel : ViewModel() {
     }
 
 
-
-
     private fun setGoals() {
         if (goalData.isNotEmpty()) {
             val nonDeletedGoals = goalData.filterNot { it.delete }

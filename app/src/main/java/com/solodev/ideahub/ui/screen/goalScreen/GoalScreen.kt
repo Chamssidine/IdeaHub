@@ -11,19 +11,14 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,11 +28,9 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -48,6 +41,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -60,7 +54,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -72,17 +65,20 @@ import com.solodev.ideahub.R
 import com.solodev.ideahub.model.goalTabItems
 import com.solodev.ideahub.ui.screen.CustomSearchBar
 import com.solodev.ideahub.ui.screen.components.DayPlanDialog
+import com.solodev.ideahub.ui.screen.components.EditDayPlanDialog
 import com.solodev.ideahub.ui.screen.components.GoalCreationDialog
 import com.solodev.ideahub.ui.screen.components.MenuSample
 import kotlinx.coroutines.delay
-import java.time.LocalDate
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @Composable
 fun GoalScreen(
     modifier: Modifier = Modifier,
     selectedIndex: Int = 0,
-    goalScreenViewModel: GoalScreenViewModel
+    goalScreenViewModel: GoalScreenViewModel,
+    dayPlanViewModel: DayPlanViewModel,
 ) {
     var customIndex by remember { mutableStateOf(selectedIndex) }
     LazyColumn(
@@ -108,7 +104,6 @@ fun GoalScreen(
         }
 
         item {
-            val scrollState = rememberScrollState()
             LazyRow(
                 modifier = modifier
                     .padding(
@@ -135,11 +130,10 @@ fun GoalScreen(
                 modifier = modifier.padding(start = dimensionResource(id = R.dimen.padding_medium),end = dimensionResource(id = R.dimen.padding_medium)),
                 selectedTabIndex = customIndex,
                 tabTitle = "MyGoal",
-                goalScreenViewModel = goalScreenViewModel
+                goalScreenViewModel = goalScreenViewModel,
+                dayPlanViewModel =  dayPlanViewModel
             )
         }
-
-
     }
 }
 
@@ -149,13 +143,15 @@ fun MainTabScreen(
     selectedTabIndex: Int = 0,
     tabTitle: String,
     goalScreenViewModel: GoalScreenViewModel,
+    dayPlanViewModel: DayPlanViewModel
 
 ) {
     Log.d("MainTabScreen", "selectedTabIndex: $selectedTabIndex, tabTitle: $tabTitle")
     var showDialog by remember { mutableStateOf(false) }
 
     when (selectedTabIndex) {
-        0 -> {
+        0 ->
+            {
             Column(
                 modifier = modifier
                     .fillMaxSize()
@@ -211,12 +207,12 @@ fun MainTabScreen(
             }
         }
         1 -> {
-            Box(modifier = modifier.wrapContentSize())
-            {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+            ) {
                 DayPlan(
-                    onAddButtonClicked = {
-                        showDialog = true
-                    }
+                    viewModel = dayPlanViewModel
                 )
                 if (showDialog) {
                     goalScreenViewModel.clearUiState()
@@ -224,11 +220,32 @@ fun MainTabScreen(
                     DayPlanDialog(
                         modifier = Modifier,
                         showDialog = showDialog,
-                        onConfirm = {},
-                        onDismiss = {showDialog = false}
+                        onConfirm = {
+                            val dayPlanItem = dayPlanViewModel.createDayPlanItem()
+                            if (dayPlanItem != null) {
+                                dayPlanViewModel.addDayPlanItem(dayPlanItem)
+                                showDialog = false
+                            }
+
+                        },
+                        onDismiss = {showDialog = false},
+                        dayPlanViewModel = dayPlanViewModel
                     )
                 }
+                Spacer(modifier = modifier.weight(1f))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally),
+                    contentAlignment = Alignment.BottomEnd
+                )
+                {
+                    FloatingButton(onClick = {
+                        showDialog = true
+                    })
+                }
             }
+
         }
         2 -> {
             Box(modifier = modifier.wrapContentSize())
@@ -524,8 +541,8 @@ fun GoalItem(
                 }
                 MenuSample(
                     modifier = Modifier.weight(1f),
-                    onDeleteClicked = onDelete,
-                    onMarkAsCompletedClicked = onMarkAsCompleted,
+                    onDelete = onDelete,
+                    onMarkAsCompleted = onMarkAsCompleted,
                     onEditClicked = onEdit,
                     isCompleted = iAchievedSection
                 )
@@ -571,114 +588,167 @@ fun FloatingButton(
 @Composable
 fun DayPlan(
     modifier: Modifier = Modifier,
-    viewModel: DayPlanViewModel = DayPlanViewModel(),
-    onAddButtonClicked: () -> Unit = {}
+    viewModel: DayPlanViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
+    val dayPlanUiState by viewModel.dayPlanDialogUIState.collectAsState()
+    var openEditDialog by remember { mutableStateOf(false) }
     Column(
-        modifier = modifier.wrapContentWidth()
+        modifier = modifier.fillMaxSize()
     ) {
         uiState.dayPlans.forEachIndexed { index, dayPlanItemUiState ->
-            dayPlanItemUiState.title?.let {
-                dayPlanItemUiState.creationDate?.let { it1 ->
-                    dayPlanItemUiState.deadline?.let { it2 ->
-                        DayPlanItem(
-                            title = it,
-                            description = dayPlanItemUiState.description,
-                            creationDate = it1,
-                            deadline = it2,
-                            priority = dayPlanItemUiState.priority,
-                            progress = dayPlanItemUiState.progress,
-                            isCompleted = dayPlanItemUiState.isCompleted,
-                            onChecked = { viewModel.toggleCompletion(index) }
-                        )
-                    }
+            DayPlanItem(
+                title = uiState.dayPlans[index].title,
+                description = uiState.dayPlans[index].description,
+                creationDate = uiState.dayPlans[index].creationDate.time,
+                deadline = uiState.dayPlans[index].deadline,
+                priority = uiState.dayPlans[index].priority,
+                progress = uiState.dayPlans[index].progress,
+                isCompleted = uiState.dayPlans[index].isCompleted,
+                onChecked = { viewModel.toggleCompletion(index) },
+                onEdit = {
+                    viewModel.onEditGoal(dayPlanItemUiState)
+                    openEditDialog = true
                 }
-            }
+            )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
         }
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            FloatingButton(onClick = onAddButtonClicked)
+
+        if (openEditDialog) {
+            EditDayPlanDialog(
+                onCancel = { openEditDialog = false },
+                onConfirm = {
+                    openEditDialog = false
+                },
+                onProgressChange = {viewModel.updateProgress(it)},
+                showDialog = openEditDialog,
+                dayPlanItemUiState = dayPlanUiState
+            )
         }
+
     }
 }
 
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DayPlanItem(
     modifier: Modifier = Modifier,
     isCompleted: Boolean = false,
     onChecked: () -> Unit = {},
-    title: String = "My Goal",
-    description: String = "",
-    creationDate: Date = Date(),
-    deadline: Date = Date(),
-    priority: Priority = Priority.LOW,
-    progress: Int = 3
-)  {
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-    ) {
-        Row(
-            modifier = modifier.padding(dimensionResource(id = R.dimen.padding_small)),
-            verticalAlignment = Alignment.CenterVertically
+    title: String = "App creation",
+    description: String = "This is an important project for me",
+    creationDate: Long = Date().time,
+    deadline: String = "29/03/2024",
+    priority: Priority = Priority.HIGH,
+    progress: Int = 70,
+    delete: Boolean = false,
+    onDelete: () -> Unit = {},
+    onEdit: () -> Unit = {}
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var visible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = Unit) {
+        delay(600L)
+        visible = true
+    }
+
+    if (!delete) {
+        ElevatedCard(
+            onClick = { expanded = !expanded },
+            modifier = modifier
+                .fillMaxWidth()
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ),
+            shape = MaterialTheme.shapes.medium,
         ) {
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-                if (description.isNotEmpty()) {
+            Row(
+                modifier = modifier
+                    .padding(dimensionResource(id = R.dimen.padding_small)),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Text(
-                        text = description,
-                        style = MaterialTheme.typography.bodySmall
+                        text = title,
+                        style = MaterialTheme.typography.bodyMedium,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                    Text(
+                        text = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(creationDate)),
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-                Text(
-                    text = creationDate.toString(),
-                    style = MaterialTheme.typography.labelSmall,
-                    modifier = Modifier.align(Alignment.End)
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Column {
-                Text(
-                    text = "Deadline: ${deadline}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                Text(
-                    text = "Priority: ${priority.name}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            if (progress > 0) {
-                CircularProgressIndicator(
-                    progress = progress / 100f,
-                    modifier = Modifier.size(dimensionResource(id = R.dimen.progress_indicator_size))
-                )
-            }
-            ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small))) {
-                IconButton(onClick = onChecked) {
-                    Icon(
-                        Icons.Filled.Done,
-                        contentDescription = "icon_done",
-                        tint = if (isCompleted) Color.Gray else MaterialTheme.colorScheme.primary
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Priority",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                    Text(
+                        text = priority.name,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                        .wrapContentWidth(),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.due_date),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                    Text(
+                        text = deadline,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                Box(
+                    modifier = modifier
+                        .wrapContentWidth(),
+                ) {
+                    CircularProgressIndicator(
+                        progress = progress / 100f,
+                        modifier = modifier.size(20.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                }
+                MenuSample(
+                    onDelete = onDelete,
+                    onEditClicked = onEdit,
+
+                )
             }
         }
     }
 }
+
 
 
 @Composable
@@ -848,31 +918,10 @@ fun ActiveDiscussionItem(
   }
 }
 
-@Composable
-fun HorizontalScrollbar(scrollState: ScrollState) {
-    val scrollPercentage = scrollState.value / scrollState.maxValue.toFloat()
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(8.dp)
-            .background(Color.Gray.copy(alpha = 0.5f))
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(50.dp)
-                .offset(x = (scrollPercentage * (scrollState.maxValue - 50)).dp)
-                .background(Color.DarkGray)
-        )
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
-fun GoalItemPreview() {
-    Box(modifier = Modifier.height(60.dp))
-    {
-        DayPlanItem(modifier = Modifier)
-    }
+fun DayPlanPreview() {
+    DayPlanItem(
 
+    )
 }
