@@ -22,9 +22,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -560,6 +562,9 @@ fun EditDayPlanDialog(
     onConfirm: () -> Unit,
     dayPlanItemUiState: DayPlanItemUiState,
     onProgressChange: (Int) -> Unit,
+    onLowPriorityClicked: () -> Unit = {},
+    onMediumPriorityClicked: () -> Unit = {},
+    onHighPriorityClicked: () -> Unit = {},
 ) {
     var animateIn by remember { mutableStateOf(false) }
     LaunchedEffect(showDialog) {
@@ -591,6 +596,10 @@ fun EditDayPlanDialog(
                         onCancel = onCancel,
                         onConfirm = onConfirm,
                         onProgressChange = onProgressChange,
+                        uiState = dayPlanItemUiState,
+                        onLowPriorityClicked = onLowPriorityClicked,
+                        onMediumPriorityClicked = onMediumPriorityClicked,
+                        onHighPriorityClicked = onHighPriorityClicked
                     )
                 }
             }
@@ -656,10 +665,10 @@ fun OpenDayPlanDialogContent(
                     }) {
                         Text(
                             text =
-                               if(uiState.deadline.isBlank())
-                                    stringResource(id = R.string.set_time)
-                               else
-                                    uiState.deadline,
+                            if(uiState.deadline.isBlank())
+                                stringResource(id = R.string.set_time)
+                            else
+                                uiState.deadline,
                             modifier = Modifier.wrapContentSize(align = Alignment.Center)
                         )
                     }
@@ -670,9 +679,7 @@ fun OpenDayPlanDialogContent(
                                 showDatePickerDialog = false
                             },
                             showTimePicker = showDatePickerDialog,
-                            onHideTimePicker = {
-                                showDatePickerDialog = false
-                            }
+
                         )
                     }
                 }
@@ -682,8 +689,10 @@ fun OpenDayPlanDialogContent(
                 Box {
                     PriorityDropDown(
                         uiState = uiState,
-
-                    )
+                        onLowPriorityClicked = { viewModel.updatePriority(Priority.LOW) },
+                        onMediumPriorityClicked = { viewModel.updatePriority(Priority.MEDIUM) },
+                        onHighPriorityClicked = { viewModel.updatePriority(Priority.HIGH) }
+                        )
                 }
                 if(uiState.hasError)
                 {
@@ -726,30 +735,27 @@ fun OpenDayPlanDialogContent(
 
 @Composable
 fun PriorityDropDown(
-    modifier: Modifier = Modifier,
     onLowPriorityClicked: () -> Unit = {},
     onMediumPriorityClicked: () -> Unit = {},
     onHighPriorityClicked: () -> Unit = {},
     uiState: DayPlanItemUiState
 ){
     var expanded by remember { mutableStateOf(false) }
-    Box(modifier = modifier
-        .wrapContentSize(Alignment.Center),
-        contentAlignment = Alignment.Center
+    TextButton(
+        onClick = { expanded = true },
+        contentPadding = PaddingValues(0.dp),
     ) {
-        TextButton(onClick = {expanded = true}) {
+        Box{
             Text(
-                text =  if(uiState.priority == Priority.NONE)
+                text = if (uiState.priority == Priority.NONE)
                     stringResource(id = R.string.select_priority)
-                else stringResource(
-                    id = R.string.priority) +": ${uiState.priority.name}"
+                else stringResource(id = R.string.priority) + ": ${uiState.priority.name}",
+                style = MaterialTheme.typography.labelMedium,
+                textAlign = TextAlign.End
             )
-
         }
-        Box(
-            modifier =  modifier.align(Alignment.TopCenter)
-        )
-        {
+    }
+    Box {
             DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                 DropdownMenuItem(
                     text = { Text(stringResource(id = R.string.priority_low)) },
@@ -776,14 +782,12 @@ fun PriorityDropDown(
             }
         }
 
-    }
 }
 
 @Composable
 fun DateTimePicker(
     onDateTimeSelected: (Date) -> Unit,
     showTimePicker: Boolean = false,
-    onHideTimePicker: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -833,7 +837,7 @@ fun DayPlanDialogContent(
     onLowPriorityClicked: () -> Unit = {},
     onMediumPriorityClicked: () -> Unit = {},
     onHighPriorityClicked: () -> Unit = {},
-    uiState: DayPlanItemUiState = DayPlanItemUiState(),
+    uiState: DayPlanItemUiState ,
 ) {
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     ElevatedCard(
@@ -878,20 +882,23 @@ fun DayPlanDialogContent(
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
-                Column {
+                Column (
+                    modifier = Modifier.wrapContentSize(align = Alignment.CenterEnd),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Center
+
+                ){
                     Text(
                         text = stringResource(id = R.string.priority),
                         style = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
-                    Box(modifier = Modifier.wrapContentSize()) {
-                        PriorityDropDown(
-                            onLowPriorityClicked = onLowPriorityClicked,
-                            onMediumPriorityClicked = onMediumPriorityClicked,
-                            onHighPriorityClicked = onHighPriorityClicked,
-                            uiState = uiState
-                        )
-                    }
+                    PriorityDropDown(
+                        onLowPriorityClicked = onLowPriorityClicked,
+                        onMediumPriorityClicked = onMediumPriorityClicked,
+                        onHighPriorityClicked = onHighPriorityClicked,
+                        uiState = uiState
+                    )
                     Text(
                         text = stringResource(id = R.string.progress),
                         style = MaterialTheme.typography.labelMedium,
@@ -907,7 +914,7 @@ fun DayPlanDialogContent(
                             width = 1.dp,
                             color = MaterialTheme.colorScheme.secondaryContainer,
                             shape = MaterialTheme.shapes.small
-                        ),
+                        ).padding(2.dp).width(50.dp),
                         textStyle = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -938,5 +945,6 @@ fun DayPlanDialogPreview() {
         onCancel = {},
         onConfirm = {},
         onProgressChange = {},
+        uiState = DayPlanItemUiState()
     )
 }

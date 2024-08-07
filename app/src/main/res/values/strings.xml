@@ -155,7 +155,7 @@
     <string name="goal_screen_tab_item_4">Active Discussions</string>
     <string name="estimatedTime">Estimated Time</string>
     <string name="set_time">Set Time</string>
-    <string name="select_priority">Select Priority</string>
+    <string name="select_priority">    Select Priority</string>
     <string name="progress">Progress</string>
     <string name="due_date">Due date</string>
 

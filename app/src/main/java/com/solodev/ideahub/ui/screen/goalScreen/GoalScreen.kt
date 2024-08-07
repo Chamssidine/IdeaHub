@@ -618,11 +618,19 @@ fun DayPlan(
             EditDayPlanDialog(
                 onCancel = { openEditDialog = false },
                 onConfirm = {
-                    openEditDialog = false
+                    viewModel.updateDayPlanList()
+                    if(!viewModel.dayPlanDialogUIState.value.hasError)
+                    {
+                        openEditDialog = false
+                    }
+
                 },
                 onProgressChange = {viewModel.updateProgress(it)},
                 showDialog = openEditDialog,
-                dayPlanItemUiState = dayPlanUiState
+                dayPlanItemUiState = dayPlanUiState,
+                onHighPriorityClicked = { viewModel.updatePriority(Priority.HIGH) },
+                onLowPriorityClicked = { viewModel.updatePriority(Priority.LOW) },
+                onMediumPriorityClicked = { viewModel.updatePriority(Priority.MEDIUM) }
             )
         }
 
@@ -699,8 +707,9 @@ fun DayPlanItem(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Priority",
-                        style = MaterialTheme.typography.bodyMedium
+                        text = stringResource(id = R.string.priority),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                     Text(
@@ -711,7 +720,8 @@ fun DayPlanItem(
                 }
 
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
                         .wrapContentWidth(),
                     horizontalAlignment = Alignment.End,
                     verticalArrangement = Arrangement.Center
@@ -742,7 +752,7 @@ fun DayPlanItem(
                 MenuSample(
                     onDelete = onDelete,
                     onEditClicked = onEdit,
-
+                    onMarkAsCompleted = onChecked
                 )
             }
         }

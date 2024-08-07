@@ -30,6 +30,24 @@ class DayPlanViewModel : ViewModel() {
         _uiState.value = _uiState.value.copy(dayPlans = _uiState.value.dayPlans + item)
     }
 
+     fun updateDayPlanList() {
+        confirmDayPlanUpdate(_dayPlanDialogUiState.value)
+    }
+
+    private fun confirmDayPlanUpdate(updatedGoal: DayPlanItemUiState) {
+        if (validateInputs()) {
+            _uiState.update { state ->
+                state.copy(
+                    dayPlans = state.dayPlans.map { item ->
+                        if (item.title == updatedGoal.title) updatedGoal else item
+                    }
+                )
+            }
+        }
+        else
+            Log.d("GoalScreenViewModel", "The goal is not found in the list")
+    }
+
     fun toggleCompletion(index: Int) {
         val updatedItems = _uiState.value.dayPlans.toMutableList()
         updatedItems[index] = updatedItems[index].copy(isCompleted = !updatedItems[index].isCompleted)
@@ -72,7 +90,12 @@ class DayPlanViewModel : ViewModel() {
                     priority =  toEdit.priority,
                     progress = toEdit.progress,
 
+
                 )
+        }
+        if(validateInputs())
+        {
+
         }
 
     }
