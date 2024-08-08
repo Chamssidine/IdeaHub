@@ -2,13 +2,13 @@ package com.solodev.ideahub.ui.screen.goalScreen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.solodev.ideahub.util.Tools.Companion.convertLongToTime
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
 
@@ -19,15 +19,18 @@ class DayPlanViewModel : ViewModel() {
     val dayPlanDialogUIState: StateFlow<DayPlanItemUiState> = _dayPlanDialogUiState.asStateFlow()
 
     fun createDayPlanItem():DayPlanItemUiState? {
+
         if (validateInputs()) {
-            return dayPlanDialogUIState.value
-        }
-        else
-            return null
+            dayPlanDialogUIState.value.copy(id = System.currentTimeMillis())
+            return  dayPlanDialogUIState.value
+        } else
+            return  null
 
     }
+
     fun addDayPlanItem(item: DayPlanItemUiState) {
         _uiState.value = _uiState.value.copy(dayPlans = _uiState.value.dayPlans + item)
+        dayPlans.toMutableList().add(item)
     }
 
      fun updateDayPlanList() {
@@ -39,18 +42,32 @@ class DayPlanViewModel : ViewModel() {
             _uiState.update { state ->
                 state.copy(
                     dayPlans = state.dayPlans.map { item ->
-                        if (item.title == updatedGoal.title) updatedGoal else item
+                        if (item.id == updatedGoal.id) {
+                            updatedGoal
+                        } else item
                     }
                 )
+            }
+            dayPlans.toMutableList().replaceAll {
+                if (it.id == updatedGoal.id) {
+                    updatedGoal
+                } else it
             }
         }
         else
             Log.d("GoalScreenViewModel", "The goal is not found in the list")
     }
 
+    fun clearUiState() {
+        _dayPlanDialogUiState.value = DayPlanItemUiState()
+    }
+
     fun toggleCompletion(index: Int) {
         val updatedItems = _uiState.value.dayPlans.toMutableList()
-        updatedItems[index] = updatedItems[index].copy(isCompleted = !updatedItems[index].isCompleted)
+        updatedItems[index] = updatedItems[index].copy(
+            isCompleted = !updatedItems[index].isCompleted,
+            progress = 100
+        )
         _uiState.value = _uiState.value.copy(dayPlans = updatedItems)
     }
 
@@ -68,6 +85,7 @@ class DayPlanViewModel : ViewModel() {
                     state -> state.copy(priority = priority)
                 }
     }
+
     fun updateDeadline( deadline: Date) {
         val dateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
         val formattedDate = dateFormat.format(deadline)
@@ -75,10 +93,18 @@ class DayPlanViewModel : ViewModel() {
            state -> state.copy(deadline = formattedDate)
        }
     }
+
     fun updateProgress(progress: Int) {
-        _dayPlanDialogUiState.update {
-                state -> state.copy(progress = progress)
+        if(progress < 0 || progress > 100)
+            _dayPlanDialogUiState.update {
+                state -> state.copy(hasError = true, errorMessage = "Progress must be between 0 and 100")
+            }
+        else {
+            _dayPlanDialogUiState.update {
+                    state -> state.copy(progress = progress)
+            }
         }
+
     }
 
     fun onEditGoal(toEdit: DayPlanItemUiState) {
@@ -89,15 +115,8 @@ class DayPlanViewModel : ViewModel() {
                     deadline = toEdit.deadline,
                     priority =  toEdit.priority,
                     progress = toEdit.progress,
-
-
                 )
         }
-        if(validateInputs())
-        {
-
-        }
-
     }
     private fun validateInputs(): Boolean {
         val state = _dayPlanDialogUiState.value
@@ -133,14 +152,45 @@ class DayPlanViewModel : ViewModel() {
             false
         }
     }
+
+    private  fun fetchDayPlans(): List<DayPlanItemUiState> {
+        Log.d("DayPlanViewModel", "fetchDayPlans called ${dayPlans.size}")
+        return dayPlans
+    }
+
+    fun deletePlan(dayPlan: DayPlanItemUiState){
+        setItemAsDeleted(dayPlan.id)
+        _uiState.update {
+            state -> state.copy(dayPlans = state.dayPlans.filterNot { it.id == dayPlan.id })
+        }
+    }
+
+    private fun setItemAsDeleted(id: Long) {
+        viewModelScope.launch {
+            dayPlans.find { it.id == id }?.delete = true
+        }
+    }
+
+    init {
+        setDayPlansData()
+    }
+
+    private fun  setDayPlansData() {
+        _uiState.update {
+            state -> state.copy(dayPlans = fetchDayPlans())
+        }
+    }
 }
+
+val dayPlans = mutableListOf<DayPlanItemUiState>()
 
 data class DayPlanUiState(
     val dayPlans: List<DayPlanItemUiState> = emptyList(),
     val hasError: Boolean = false,
 )
 
-data class DayPlanItemUiState(
+data class DayPlanItemUiState (
+    val id: Long = 0,
     val title: String = "",
     val description: String = "",
     val creationDate: Date = Date(),
@@ -150,7 +200,8 @@ data class DayPlanItemUiState(
     val isCompleted: Boolean = false,
     val progress: Int = 0,
     val hasError: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    var delete: Boolean = false,
 )
 
 

@@ -215,7 +215,7 @@ fun MainTabScreen(
                     viewModel = dayPlanViewModel
                 )
                 if (showDialog) {
-                    goalScreenViewModel.clearUiState()
+                    dayPlanViewModel.clearUiState()
                     Log.d("GoalCreationScreen", "Showing dialog")
                     DayPlanDialog(
                         modifier = Modifier,
@@ -596,22 +596,31 @@ fun DayPlan(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        uiState.dayPlans.forEachIndexed { index, dayPlanItemUiState ->
-            DayPlanItem(
-                title = uiState.dayPlans[index].title,
-                description = uiState.dayPlans[index].description,
-                creationDate = uiState.dayPlans[index].creationDate.time,
-                deadline = uiState.dayPlans[index].deadline,
-                priority = uiState.dayPlans[index].priority,
-                progress = uiState.dayPlans[index].progress,
-                isCompleted = uiState.dayPlans[index].isCompleted,
-                onChecked = { viewModel.toggleCompletion(index) },
-                onEdit = {
-                    viewModel.onEditGoal(dayPlanItemUiState)
-                    openEditDialog = true
-                }
+        if(uiState.dayPlans.isEmpty()) {
+            Text(
+                text = stringResource(id = R.string.no_day_plans),
+                style = MaterialTheme.typography.bodyMedium
             )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+        }
+        else {
+            uiState.dayPlans.forEachIndexed { index, dayPlanItemUiState ->
+                DayPlanItem(
+                    title = dayPlanItemUiState.title,
+                    description = dayPlanItemUiState.description,
+                    creationDate = dayPlanItemUiState.creationDate.time,
+                    deadline = dayPlanItemUiState.deadline,
+                    priority = dayPlanItemUiState.priority,
+                    progress = dayPlanItemUiState.progress,
+                    isCompleted = dayPlanItemUiState.isCompleted,
+                    onEdit = {
+                        viewModel.onEditGoal(dayPlanItemUiState)
+                        openEditDialog = true
+                    },
+                    onDelete = { viewModel.deletePlan(dayPlanItemUiState) },
+                    onMarkAsCompleted = { viewModel.toggleCompletion(index) }
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+            }
         }
 
         if (openEditDialog) {
@@ -644,16 +653,16 @@ fun DayPlan(
 fun DayPlanItem(
     modifier: Modifier = Modifier,
     isCompleted: Boolean = false,
-    onChecked: () -> Unit = {},
     title: String = "App creation",
     description: String = "This is an important project for me",
     creationDate: Long = Date().time,
     deadline: String = "29/03/2024",
     priority: Priority = Priority.HIGH,
-    progress: Int = 70,
+    progress: Int = 0,
     delete: Boolean = false,
     onDelete: () -> Unit = {},
-    onEdit: () -> Unit = {}
+    onEdit: () -> Unit = {},
+    onMarkAsCompleted: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     var visible by remember { mutableStateOf(false) }
@@ -737,22 +746,33 @@ fun DayPlanItem(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-                Box(
+                Box (
                     modifier = modifier
                         .wrapContentWidth(),
-                ) {
-                    CircularProgressIndicator(
-                        progress = progress / 100f,
-                        modifier = modifier.size(20.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth,
-                        trackColor = MaterialTheme.colorScheme.surfaceVariant
-                    )
+                ){
+                    if(progress in 1..99) {
+
+                        CircularProgressIndicator (
+                            progress = progress / 100f,
+                            modifier = modifier.size(20.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth,
+                            trackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    }
+                    if(isCompleted || progress == 100) {
+                       Icon(
+                           Icons.Filled.CheckCircle,
+                           contentDescription ="icon_completed",
+                           modifier = modifier.size(20.dp)
+                       )
+                    }
                 }
+
                 MenuSample(
                     onDelete = onDelete,
                     onEditClicked = onEdit,
-                    onMarkAsCompleted = onChecked
+                    onMarkAsCompleted = onMarkAsCompleted
                 )
             }
         }
@@ -932,6 +952,6 @@ fun ActiveDiscussionItem(
 @Composable
 fun DayPlanPreview() {
     DayPlanItem(
-
+        onMarkAsCompleted = {}
     )
 }
