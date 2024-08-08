@@ -607,7 +607,7 @@ fun DayPlan(
                 DayPlanItem(
                     title = dayPlanItemUiState.title,
                     description = dayPlanItemUiState.description,
-                    creationDate = dayPlanItemUiState.creationDate.time,
+                    creationDate = dayPlanItemUiState.creationDate,
                     deadline = dayPlanItemUiState.deadline,
                     priority = dayPlanItemUiState.priority,
                     progress = dayPlanItemUiState.progress,
@@ -655,7 +655,7 @@ fun DayPlanItem(
     isCompleted: Boolean = false,
     title: String = "App creation",
     description: String = "This is an important project for me",
-    creationDate: Long = Date().time,
+    creationDate: String = "01/01/2023",
     deadline: String = "29/03/2024",
     priority: Priority = Priority.HIGH,
     progress: Int = 0,
@@ -671,7 +671,7 @@ fun DayPlanItem(
         delay(600L)
         visible = true
     }
-
+    Log.d("DayPlanItem", "DayPlanItem called:${progress}")
     if (!delete) {
         ElevatedCard(
             onClick = { expanded = !expanded },
@@ -704,7 +704,7 @@ fun DayPlanItem(
                     )
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                     Text(
-                        text = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(creationDate)),
+                        text = creationDate,
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.fillMaxWidth()
                     )

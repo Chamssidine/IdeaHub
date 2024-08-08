@@ -11,5 +11,9 @@ class Tools {
             val format = SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault())
             return  format.format(date)
         }
+        fun getCurrentDate(): String {
+            val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            return format.format(Date())
+        }
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationUiState
+import com.solodev.ideahub.util.Tools.Companion.getCurrentDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -258,10 +259,7 @@ class GoalScreenViewModel : ViewModel() {
         }
     }
     // Get the current date in the required format
-    private fun getCurrentDate(): String {
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return format.format(Date())
-    }
+
 }
 
 data class GoalScreenUIState(

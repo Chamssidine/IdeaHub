@@ -867,7 +867,7 @@ fun DayPlanDialogContent(
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                     Text(
-                        text = dateFormat.format(uiState.creationDate),
+                        text = uiState.creationDate,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
