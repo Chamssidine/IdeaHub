@@ -73,6 +73,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.4")
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.firestore)
     // Remove the following line
     // implementation(libs.androidx.foundation.desktop)
     testImplementation(libs.junit)

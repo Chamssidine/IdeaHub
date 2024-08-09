@@ -68,6 +68,7 @@ import com.solodev.ideahub.ui.screen.components.DayPlanDialog
 import com.solodev.ideahub.ui.screen.components.EditDayPlanDialog
 import com.solodev.ideahub.ui.screen.components.GoalCreationDialog
 import com.solodev.ideahub.ui.screen.components.MenuSample
+import com.solodev.ideahub.ui.screen.popularGroupScreen.PopularGroupScreen
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -79,6 +80,7 @@ fun GoalScreen(
     selectedIndex: Int = 0,
     goalScreenViewModel: GoalScreenViewModel,
     dayPlanViewModel: DayPlanViewModel,
+    showCongratulationTextAfterFirstGoalCreation: Boolean = false,
 ) {
     var customIndex by remember { mutableStateOf(selectedIndex) }
     LazyColumn(
@@ -94,15 +96,21 @@ fun GoalScreen(
         }
 
         item {
-            Box(modifier = modifier.padding(start = dimensionResource(id = R.dimen.padding_medium),end = dimensionResource(id = R.dimen.padding_medium))) {
-                Text(
-                    text = stringResource(id = R.string.congratulations_message),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+            if(showCongratulationTextAfterFirstGoalCreation) {
+                Box(
+                    modifier = modifier.padding(
+                        start = dimensionResource(id = R.dimen.padding_medium),
+                        end = dimensionResource(id = R.dimen.padding_medium)
+                    )
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.congratulations_message),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
             }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         }
-
         item {
             LazyRow(
                 modifier = modifier
@@ -250,7 +258,7 @@ fun MainTabScreen(
         2 -> {
             Box(modifier = modifier.wrapContentSize())
             {
-                PopularGroupSection()
+                PopularGroupScreen()
             }
         }
         3 -> {
@@ -780,106 +788,6 @@ fun DayPlanItem(
 }
 
 
-
-@Composable
-fun PopularGroupSection(
-    modifier: Modifier = Modifier,
-    title: String = "Science",
-){
-    Column {
-        repeat(3)
-        {
-            GroupSection(sectionName = title)
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-        }
-    }
-}
-
-@Composable
-fun GroupSection(
-    modifier: Modifier = Modifier,
-    sectionName: String = "Group",
-    groupCont: Int = 3,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-    )
-    {
-        Text(text = sectionName,
-            style = MaterialTheme.typography.displayMedium
-        )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-        LazyRow(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween)
-        {
-            items(groupCont)
-            {
-                GroupItem()
-                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.padding_small)))
-            }
-        }
-    }
-
-}
-
-@Composable
-fun GroupItem(
-    modifier: Modifier = Modifier,
-    groupName: String = "Group Name",
-    description: String = "Description",
-    onlikeClicked: () -> Unit = {},
-    onJoinClicked:() -> Unit = {},
-    onAddToFavoriteClicked:() -> Unit = {},
-) {
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-    ) {
-        Column(
-            modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
-        ) {
-            Text(
-                groupName,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-            Text(description)
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-            Row(
-
-            ){
-                ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
-                {
-                    IconButton(onClick = onlikeClicked) {
-                        Icon(painter = painterResource(
-                            id = R.drawable.thumb_up_24px),
-                            contentDescription = "icon_like",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-                ElevatedButton(
-                    onClick = {},
-                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
-                {
-                   Text(
-                       text = stringResource(R.string.join),
-                       style = MaterialTheme.typography.labelMedium
-                   )
-                }
-                ElevatedCard(modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small)))
-                {
-                    IconButton(onClick = onlikeClicked) {
-                        Icon(
-                            Icons.Filled.FavoriteBorder,
-                            contentDescription = "icon_favorite",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun ActiveDiscussionSection(

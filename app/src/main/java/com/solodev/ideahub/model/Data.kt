@@ -3,6 +3,7 @@ package com.solodev.ideahub.model
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.solodev.ideahub.R
+import java.util.UUID
 
 data class BottomNavigationItem (
     val title: String,
@@ -39,6 +40,15 @@ data class CommunityCategory(
     val groupList: List<GroupItemData> = emptyList(),
 
     )
+
+data class GroupItemData (
+    val groupId: String = UUID.randomUUID().toString(),
+    val groupName: String,
+    val groupDescription: String,
+    val groupImage: String,
+    val memberList: List<User> = emptyList(),
+)
+
 data class ConversationMessage(
     val aiMessage: AiMessage,
     val userMessage: UserMessage,
@@ -53,13 +63,6 @@ data class AiMessage(
 data class UserMessage(
     val message: String,
     val time: String
-)
-
-data class GroupItemData    (
-    val groupName: String,
-    val groupDescription: String,
-    val groupImage: String,
-    val memberList: List<User> = emptyList(),
 )
 
 
