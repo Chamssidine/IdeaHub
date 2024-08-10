@@ -297,7 +297,7 @@ fun CommunityGroupDropDown(
     }
     if(showCommunityCreateDialog) {
         CommunityCategoryCreateDialog (
-            viewModel = PopularGroupViewModel(),
+            viewModel = viewModel,
             showDialog = showCommunityCreateDialog,
             onDismiss = { showCommunityCreateDialog = false },
             onConfirm = {

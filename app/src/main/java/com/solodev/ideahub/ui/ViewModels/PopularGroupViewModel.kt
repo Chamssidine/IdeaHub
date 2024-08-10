@@ -169,7 +169,9 @@ class PopularGroupViewModel @Inject constructor(
             state.copy(groupName = it)
         }
     }
-
+    fun getCommunityList(): List<CommunityCategoryUiState> {
+        return _uiState.value.communityCategories
+    }
     private fun validateInputs(): Boolean {
         val state = _groupItemUIState.value
         return when {

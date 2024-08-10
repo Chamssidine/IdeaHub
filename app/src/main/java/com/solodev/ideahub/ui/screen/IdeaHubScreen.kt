@@ -2,6 +2,7 @@
 
 import com.solodev.ideahub.ui.screen.login.LoginViewModel
 import MailConfirmationScreen
+import PopularGroupViewModel
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -46,7 +47,6 @@ import com.solodev.ideahub.ui.screen.welcomeScreen.WelcomeScreen
 @Composable
 fun IdeaHubScreen(
     modifier: Modifier = Modifier,
-    loginViewModel: LoginViewModel = hiltViewModel(),
     screenManagerVM: ScreenManagerVM = hiltViewModel(),
     navController: NavHostController = rememberNavController()
 ) {
@@ -143,7 +143,8 @@ fun IdeaHubScreen(
             composable(Routes.Home.name){
                 GoalScreen(
                     goalScreenViewModel = GoalScreenViewModel(),
-                    dayPlanViewModel = DayPlanViewModel()
+                    dayPlanViewModel = DayPlanViewModel(),
+                    popularGroupScreenViewModel = hiltViewModel()
                 )
             }
             composable(Routes.GoalCreation.name) {
