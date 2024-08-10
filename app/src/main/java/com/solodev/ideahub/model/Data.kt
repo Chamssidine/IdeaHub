@@ -34,7 +34,7 @@ data class ThreadItem(
 )
 
 data class CommunityCategory(
-    val categoryName: String,
+    var categoryName: String,
     val categoryImage: String?,
     val memberCount: Int,
     val groupList: List<GroupItemData> = emptyList(),

@@ -5,11 +5,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.solodev.ideahub.model.CommunityCategory
 import com.solodev.ideahub.model.GroupItemData
+import com.solodev.ideahub.util.service.FireStoreService
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class GroupItemUiState(
     val groupId: String,
@@ -23,9 +26,9 @@ data class GroupItemUiState(
 )
 
 data class CommunityCategoryUiState(
-    val categoryName: String,
-    val categoryImage: String?,
-    val memberCount: Int,
+    val categoryName: String = "",
+    val categoryImage: String? = null,
+    val memberCount: Int = 0,
     val groupList: List<GroupItemUiState> = emptyList()
 )
 
@@ -33,54 +36,49 @@ data class PopularGroupUiState(
     val communityCategories: List<CommunityCategoryUiState> = emptyList()
 )
 
-class PopularGroupViewModel : ViewModel() {
+@HiltViewModel
+class PopularGroupViewModel @Inject constructor(
+    private val fireStoreService: FireStoreService
+): ViewModel() {
 
-    private val firestore = FirebaseFirestore.getInstance()
     private val _uiState = MutableStateFlow(PopularGroupUiState())
-    private  val _groupItemUIState = MutableStateFlow(GroupItemUiState("","",""))
+    private val _categoryUIState = MutableStateFlow(CommunityCategoryUiState())
+    private  val _groupItemUIState = MutableStateFlow(GroupItemUiState("", "", ""))
     val uiState: StateFlow<PopularGroupUiState> = _uiState.asStateFlow()
     val groupItemUIState: StateFlow<GroupItemUiState> = _groupItemUIState.asStateFlow()
+    val categoryUIState: StateFlow<CommunityCategoryUiState> = _categoryUIState.asStateFlow()
+
+    init {
+        loadGroups()
+        Log.d("PopularGroupScreen", "PopularGroupViewModel initialized")
+    }
 
     private fun loadGroups() {
         viewModelScope.launch {
-            firestore.collection("communityCategories")
-                .get()
-                .addOnSuccessListener { result ->
-                    val categories = result.map { document ->
-                        val category = document.toObject<CommunityCategory>()
-                        CommunityCategoryUiState(
-                            categoryName = category.categoryName,
-                            categoryImage = category.categoryImage,
-                            memberCount = category.memberCount,
-                            groupList = category.groupList.map { group ->
-                                GroupItemUiState(
-                                    groupId = group.groupId,
-                                    groupName = group.groupName,
-                                    groupDescription = group.groupDescription
-                                )
-                            }
-                        )
-                    }
+            try {
+                val result = fireStoreService.getCommunityCategories()
+                if (result.isSuccess) {
+                    val categories = result.getOrNull() ?: emptyList()
                     _uiState.value = PopularGroupUiState(communityCategories = categories)
+                } else {
+                    val error = result.exceptionOrNull()
+                    Log.e("PopularGroupScreen", "Error loading groups", error)
                 }
+            } catch (e: Exception) {
+                Log.e("PopularGroupScreen", "Error loading groups", e)
+            }
         }
     }
 
+
     fun joinGroup(groupId: String) {
         viewModelScope.launch {
-            val userId = getCurrentUserId()
-            val groupDocRef = firestore.collection("groups").document(groupId)
-
-            firestore.runTransaction { transaction ->
-                val groupSnapshot = transaction.get(groupDocRef)
-                val members = groupSnapshot.get("memberList") as? List<String> ?: emptyList()
-
-                if (!members.contains(userId)) {
-                    val updatedMembers = members + userId
-                    transaction.update(groupDocRef, "memberList", updatedMembers)
-                }
-            }.addOnSuccessListener {
+            try {
+                val userId = getCurrentUserId()
+                fireStoreService.joinGroup(groupId, userId)
                 updateGroupState(groupId) { it.copy(isJoined = true) }
+            } catch (e: Exception) {
+                Log.e("PopularGroupScreen", "Error joining group", e)
             }
         }
     }
@@ -93,32 +91,31 @@ class PopularGroupViewModel : ViewModel() {
         updateGroupState(groupId) { it.copy(isFavorite = !it.isFavorite) }
     }
 
-    private fun createGroup(
-        categoryId: String,
-        groupName: String,
-        groupDescription: String
-    ) {
-        viewModelScope.launch {
-            val groupId = firestore.collection("groups").document().id // Generate a new group ID
-            val newGroup = GroupItemData(
-                groupId = groupId,
-                groupName = groupName,
-                groupDescription = groupDescription,
-                groupImage = "", // Placeholder for group image
-                memberList = emptyList()
-            )
+    fun createGroup() {
+        if (validateInputs()) {
+            viewModelScope.launch {
+                try {
+                    val categoryId = System.currentTimeMillis().toString()
+                    val groupName = _groupItemUIState.value.groupName
+                    val groupDescription = _groupItemUIState.value.groupDescription
 
-            firestore.collection("groups")
-                .document(groupId)
-                .set(newGroup)
-                .addOnSuccessListener {
-                    // Update the UI state after successfully creating the group
-                    addGroupToCategory(categoryId, newGroup)
-                    Log.d("GroupCreation", "Group created successfully: $groupId")
+                    fireStoreService.createGroup(categoryId, groupName, groupDescription)
+                    Log.d("PopularGroupScreen", "Group created successfully")
+
+                    addGroupToCategory(
+                        categoryId = categoryId,
+                        newGroup = GroupItemData(
+                            groupId = categoryId,
+                            groupName = groupName,
+                            groupDescription = groupDescription,
+                            groupImage = "", // Placeholder for group image
+                            memberList = emptyList()
+                        )
+                    )
+                } catch (e: Exception) {
+                    Log.e("PopularGroupScreen", "Failed to create group", e)
                 }
-                .addOnFailureListener { exception ->
-                    Log.e("GroupCreation", "Failed to create group", exception)
-                }
+            }
         }
     }
 
@@ -157,33 +154,22 @@ class PopularGroupViewModel : ViewModel() {
         return "currentUserId"
     }
 
-    init {
-        loadGroups()
+    fun checkInputs(): Boolean {
+        return validateInputs()
     }
-     fun checkInputs(): Boolean {
-         return  validateInputs()
-     }
-    fun createGroup(){
-        createGroup(
-            categoryId = System.currentTimeMillis().toString(),
-            groupName = _groupItemUIState.value.groupName,
-            groupDescription = _groupItemUIState.value.groupDescription
-        )
-    }
+
     fun updateDescription(it: String) {
-        _groupItemUIState.update {
-            state -> state.copy(
-            groupDescription = it
-            )
+        _groupItemUIState.update { state ->
+            state.copy(groupDescription = it)
         }
     }
+
     fun updateGroupName(it: String) {
-        _groupItemUIState.update {
-                state -> state.copy(
-            groupName = it
-        )
+        _groupItemUIState.update { state ->
+            state.copy(groupName = it)
         }
     }
+
     private fun validateInputs(): Boolean {
         val state = _groupItemUIState.value
         return when {
@@ -218,4 +204,32 @@ class PopularGroupViewModel : ViewModel() {
             }
         }
     }
+
+    fun createCategory() {
+        Log.d("PopularGroupScreen", "Category created: ${_categoryUIState.value.categoryName}")
+        if (categoryUIState.value.categoryName.isNotBlank()) {
+            val category = CommunityCategoryUiState(
+                categoryName = categoryUIState.value.categoryName,
+                categoryImage = "",
+                memberCount = 0,
+                groupList = emptyList()
+            )
+            _uiState.update { currentState ->
+                currentState.copy(
+                    communityCategories = currentState.communityCategories + category
+                )
+            }
+            Log.d("PopularGroupScreen", "Category created: ${category.categoryName}")
+        }
+    }
+
+    fun updateCategoryNameOnCreate(it: String) {
+        _categoryUIState.update { state ->
+            state.copy(categoryName = it)
+        }
+        Log.d("PopularGroupScreen", "Category created: ${_categoryUIState.value.categoryName}")
+    }
 }
+
+
+val community = CommunityCategory("", "", 0,)

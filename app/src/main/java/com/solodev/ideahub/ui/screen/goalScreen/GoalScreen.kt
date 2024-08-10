@@ -1,6 +1,7 @@
 package com.solodev.ideahub.ui.screen.goalScreen
 
 
+import PopularGroupViewModel
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -258,7 +259,9 @@ fun MainTabScreen(
         }
         2 -> {
             Box(modifier = modifier.wrapContentSize()) {
-                PopularGroupScreen()
+                PopularGroupScreen(
+                    viewModel = PopularGroupViewModel()
+                )
             }
         }
         3 -> {

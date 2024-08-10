@@ -1,10 +1,15 @@
 package com.solodev.ideahub.ui.screen.popularGroupScreen
 
+import CommunityCategoryUiState
 import GroupItemUiState
 import PopularGroupViewModel
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.solodev.ideahub.R
@@ -169,10 +175,14 @@ fun CreateGroupDialog(
     onConfirm: () -> Unit,
 ){
     val uiState by viewModel.groupItemUIState.collectAsState()
+    var expanded by remember { mutableStateOf(false) }
     if(showDialog) {
         Dialog(onDismissRequest = onDismiss) {
-            ElevatedCard() {
-                Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))  {
+            ElevatedCard {
+                Column(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+
+                )  {
                     Text(
                         text = stringResource(id = R.string.create_group)
                     , style = MaterialTheme.typography.headlineMedium
@@ -198,6 +208,28 @@ fun CreateGroupDialog(
                         )
                     }
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+
+                    Text(
+                        text = stringResource(id = R.string.community_group_select),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    IconButton(onClick = {
+                        expanded = !expanded
+                    }) {
+                        Icon(
+                            if(!expanded)Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                            contentDescription = "ico_select_community",
+
+                        )
+                    }
+                    if(expanded) {
+                        CommunityGroupDropDown(
+                            communities = viewModel.getCommunityList(),
+                            onItemSelected = { expanded = false },
+                            viewModel = viewModel
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
@@ -217,3 +249,125 @@ fun CreateGroupDialog(
     }
 }
 
+@Composable
+fun CommunityGroupDropDown(
+    modifier: Modifier = Modifier,
+    onItemSelected: ()-> Unit = {},
+    communities: List<CommunityCategoryUiState> = emptyList(),
+    viewModel: PopularGroupViewModel
+){
+    var expanded by remember { mutableStateOf(false) }
+    var showCommunityCreateDialog by remember { mutableStateOf(false) }
+    if(communities.isNotEmpty()) {
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ){
+            communities.forEach {
+                    community -> CommunityGroupItem (
+                            communityName = community.categoryName,
+                            onItemSelected = onItemSelected
+                    )
+            }
+            DropdownMenuItem(
+                text = { Text(stringResource(id = R.string.create_community)) },
+                onClick = { showCommunityCreateDialog != showCommunityCreateDialog },
+                leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = null) }
+            )
+        }
+
+
+    }
+    else {
+
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+
+            Text(
+                text = stringResource(id = R.string.no_communities),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            TextButton(onClick = {showCommunityCreateDialog =  true}) {
+                Text(text = stringResource(id = R.string.community_create_a_new_one))
+            }
+        }
+    }
+    if(showCommunityCreateDialog) {
+        CommunityCategoryCreateDialog (
+            viewModel = PopularGroupViewModel(),
+            showDialog = showCommunityCreateDialog,
+            onDismiss = { showCommunityCreateDialog = false },
+            onConfirm = {
+                viewModel.createCategory()
+                showCommunityCreateDialog = false
+
+            },
+        )
+    }
+
+}
+
+
+@Composable
+fun CommunityGroupItem(
+    modifier: Modifier = Modifier,
+    communityName: String = "",
+    onItemSelected: ()-> Unit = {}
+) {
+    DropdownMenuItem(
+        text = { Text(communityName, style = MaterialTheme.typography.labelMedium) },
+        onClick = onItemSelected,
+        leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = null) }
+    )
+}
+
+@Composable
+fun CommunityCategoryCreateDialog(
+    viewModel: PopularGroupViewModel,
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    if(showDialog) {
+
+        val uiState by viewModel.categoryUIState.collectAsState()
+        Dialog(onDismissRequest = onDismiss) {
+            ElevatedCard {
+                Column(
+                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+
+                )  {
+                    Text(
+                        text = stringResource(id = R.string.create_community)
+                        , style = MaterialTheme.typography.headlineMedium
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                    InputContainer(
+                        inputValue = uiState.categoryName,
+                        labelValue = stringResource(id = R.string.community_name),
+                        onInputValueChange = {viewModel.updateCategoryNameOnCreate(it)}
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = onDismiss) {
+                            Text(text = stringResource(id = R.string.cancel))
+                        }
+                        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.padding_small)))
+                        Button(onClick = onConfirm) {
+                            Text(text = stringResource(id = R.string.create))
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+}
