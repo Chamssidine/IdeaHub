@@ -2,27 +2,36 @@ package com.solodev.ideahub.ui.screen.popularGroupScreen
 
 import GroupItemUiState
 import PopularGroupViewModel
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.solodev.ideahub.R
+import com.solodev.ideahub.ui.screen.InputContainer
+import com.solodev.ideahub.ui.screen.components.FloatingButton
 
 @Composable
 fun PopularGroupScreen(
     viewModel: PopularGroupViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
-    Column(modifier = Modifier.fillMaxSize().padding(dimensionResource(id = R.dimen.padding_medium))) {
+    var showDialog by remember { mutableStateOf(false) }
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(dimensionResource(id = R.dimen.padding_medium))) {
         uiState.communityCategories.forEach { category ->
             GroupSection(
                 sectionName = category.categoryName,
@@ -33,6 +42,21 @@ fun PopularGroupScreen(
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         }
+        if(showDialog) {
+            Log.d("PopularGroupScreen", "Showing dialog")
+            CreateGroupDialog(
+                viewModel = viewModel,
+                showDialog = showDialog,
+                onDismiss = { showDialog = false },
+                onConfirm = {
+                    if(viewModel.checkInputs()) {
+                        viewModel.createGroup()
+                        showDialog = false
+                    }
+                },
+                )
+        }
+        FloatingButton(onClick = { showDialog = true })
     }
 }
 
@@ -135,3 +159,61 @@ fun GroupItem(
         }
     }
 }
+
+
+@Composable
+fun CreateGroupDialog(
+    viewModel: PopularGroupViewModel,
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+){
+    val uiState by viewModel.groupItemUIState.collectAsState()
+    if(showDialog) {
+        Dialog(onDismissRequest = onDismiss) {
+            ElevatedCard() {
+                Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)))  {
+                    Text(
+                        text = stringResource(id = R.string.create_group)
+                    , style = MaterialTheme.typography.headlineMedium
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                    InputContainer(
+                        inputValue = uiState.groupName,
+                        labelValue = stringResource(id = R.string.group_name),
+                        onInputValueChange = {viewModel.updateGroupName(it)}
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                    InputContainer(
+                        inputValue = uiState.groupDescription,
+                        labelValue = stringResource(id = R.string.group_description),
+                        maxLines = 5,
+                        onInputValueChange = {viewModel.updateDescription(it)}
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                    if(uiState.hasError) {
+                        Text(
+                            text = uiState.errorMessage ?: "",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(onClick = onDismiss) {
+                            Text(text = stringResource(id = R.string.cancel))
+                        }
+                        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.padding_small)))
+                        Button(onClick = onConfirm) {
+                            Text(text = stringResource(id = R.string.create))
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+}
+

@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
@@ -6,6 +7,8 @@ import com.solodev.ideahub.model.CommunityCategory
 import com.solodev.ideahub.model.GroupItemData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class GroupItemUiState(
@@ -14,7 +17,9 @@ data class GroupItemUiState(
     val groupDescription: String,
     val isLiked: Boolean = false,
     val isJoined: Boolean = false,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val hasError: Boolean = false,
+    val errorMessage: String? = null
 )
 
 data class CommunityCategoryUiState(
@@ -32,9 +37,11 @@ class PopularGroupViewModel : ViewModel() {
 
     private val firestore = FirebaseFirestore.getInstance()
     private val _uiState = MutableStateFlow(PopularGroupUiState())
-    val uiState: StateFlow<PopularGroupUiState> = _uiState
+    private  val _groupItemUIState = MutableStateFlow(GroupItemUiState("","",""))
+    val uiState: StateFlow<PopularGroupUiState> = _uiState.asStateFlow()
+    val groupItemUIState: StateFlow<GroupItemUiState> = _groupItemUIState.asStateFlow()
 
-    fun loadGroups() {
+    private fun loadGroups() {
         viewModelScope.launch {
             firestore.collection("communityCategories")
                 .get()
@@ -86,7 +93,7 @@ class PopularGroupViewModel : ViewModel() {
         updateGroupState(groupId) { it.copy(isFavorite = !it.isFavorite) }
     }
 
-    fun createGroup(
+    private fun createGroup(
         categoryId: String,
         groupName: String,
         groupDescription: String
@@ -107,6 +114,10 @@ class PopularGroupViewModel : ViewModel() {
                 .addOnSuccessListener {
                     // Update the UI state after successfully creating the group
                     addGroupToCategory(categoryId, newGroup)
+                    Log.d("GroupCreation", "Group created successfully: $groupId")
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("GroupCreation", "Failed to create group", exception)
                 }
         }
     }
@@ -144,5 +155,67 @@ class PopularGroupViewModel : ViewModel() {
     private fun getCurrentUserId(): String {
         // Implement logic to retrieve the current user's ID (e.g., FirebaseAuth.currentUser?.uid)
         return "currentUserId"
+    }
+
+    init {
+        loadGroups()
+    }
+     fun checkInputs(): Boolean {
+         return  validateInputs()
+     }
+    fun createGroup(){
+        createGroup(
+            categoryId = System.currentTimeMillis().toString(),
+            groupName = _groupItemUIState.value.groupName,
+            groupDescription = _groupItemUIState.value.groupDescription
+        )
+    }
+    fun updateDescription(it: String) {
+        _groupItemUIState.update {
+            state -> state.copy(
+            groupDescription = it
+            )
+        }
+    }
+    fun updateGroupName(it: String) {
+        _groupItemUIState.update {
+                state -> state.copy(
+            groupName = it
+        )
+        }
+    }
+    private fun validateInputs(): Boolean {
+        val state = _groupItemUIState.value
+        return when {
+            state.groupName.isBlank() -> {
+                _groupItemUIState.update { state ->
+                    state.copy(
+                        hasError = true,
+                        errorMessage = "The title is empty"
+                    )
+                }
+                false
+            }
+
+            state.groupDescription.isBlank() -> {
+                _groupItemUIState.update { state ->
+                    state.copy(
+                        hasError = true,
+                        errorMessage = "The description is empty"
+                    )
+                }
+                false
+            }
+
+            else -> {
+                _groupItemUIState.update { state ->
+                    state.copy(
+                        hasError = false,
+                        errorMessage = null
+                    )
+                }
+                true
+            }
+        }
     }
 }

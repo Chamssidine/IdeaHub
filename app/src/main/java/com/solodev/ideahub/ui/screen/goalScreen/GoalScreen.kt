@@ -66,6 +66,7 @@ import com.solodev.ideahub.model.goalTabItems
 import com.solodev.ideahub.ui.screen.CustomSearchBar
 import com.solodev.ideahub.ui.screen.components.DayPlanDialog
 import com.solodev.ideahub.ui.screen.components.EditDayPlanDialog
+import com.solodev.ideahub.ui.screen.components.FloatingButton
 import com.solodev.ideahub.ui.screen.components.GoalCreationDialog
 import com.solodev.ideahub.ui.screen.components.MenuSample
 import com.solodev.ideahub.ui.screen.popularGroupScreen.PopularGroupScreen
@@ -256,14 +257,12 @@ fun MainTabScreen(
 
         }
         2 -> {
-            Box(modifier = modifier.wrapContentSize())
-            {
+            Box(modifier = modifier.wrapContentSize()) {
                 PopularGroupScreen()
             }
         }
         3 -> {
-            Box(modifier = modifier.wrapContentSize())
-            {
+            Box(modifier = modifier.wrapContentSize()) {
                 ActiveDiscussionSection()
             }
         }
@@ -580,18 +579,7 @@ fun GoalScreenTab(
 
 }
 
-@Composable
-fun FloatingButton(
-    onClick: () -> Unit
-) {
-    FloatingActionButton(onClick = onClick) {
-        IconButton(onClick = onClick) {
-            Icon(Icons.Filled.Add,
-                contentDescription = "icon_add_goal",
-            )
-        }
-    }
-}
+
 
 @Composable
 fun DayPlan(

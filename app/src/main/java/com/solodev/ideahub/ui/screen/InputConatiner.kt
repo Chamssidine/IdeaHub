@@ -59,6 +59,7 @@ fun InputContainer(
     isError: Boolean = false,
     onKeyboardDone: () -> Unit = {},
     showLabel: Boolean = true,
+    maxLines: Int = 1,
 
     ){
         Box(
