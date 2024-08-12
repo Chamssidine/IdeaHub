@@ -1,8 +1,5 @@
-package com.solodev.ideahub.ui.screen.popularGroupScreen
+package com.solodev.ideahub.ui.screen.popularGroup
 
-import CommunityCategoryUiState
-import GroupItemUiState
-import PopularGroupViewModel
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -24,14 +21,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.InputContainer
 import com.solodev.ideahub.ui.screen.components.FloatingButton
 
 @Composable
 fun PopularGroupScreen(
-    viewModel: PopularGroupViewModel = hiltViewModel()
+    viewModel: PopularGroupViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
@@ -175,6 +171,7 @@ fun CreateGroupDialog(
     onConfirm: () -> Unit,
 ){
     val uiState by viewModel.groupItemUIState.collectAsState()
+    val communitiesUiState by viewModel.uiState.collectAsState()
     var expanded by remember { mutableStateOf(false) }
     if(showDialog) {
         Dialog(onDismissRequest = onDismiss) {
@@ -210,7 +207,11 @@ fun CreateGroupDialog(
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
 
                     Text(
-                        text = stringResource(id = R.string.community_group_select),
+                        text =  if(communitiesUiState.selectedCategory != null)
+                                    "Category:${communitiesUiState.selectedCategory!!.categoryName}"
+                                else
+                                    stringResource(id = R.string.community_group_select)
+                        ,
                         style = MaterialTheme.typography.bodyMedium
                     )
                     IconButton(onClick = {
@@ -224,9 +225,13 @@ fun CreateGroupDialog(
                     }
                     if(expanded) {
                         CommunityGroupDropDown(
-                            communities = viewModel.getCommunityList(),
-                            onItemSelected = { expanded = false },
-                            viewModel = viewModel
+                            expanded = expanded,
+                            communities = communitiesUiState.communityCategories,
+                            onItemSelected = {
+                                expanded = false
+                            },
+                            viewModel = viewModel,
+                            onDismiss = {expanded = false}
                         )
                     }
                     Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
@@ -252,26 +257,32 @@ fun CreateGroupDialog(
 @Composable
 fun CommunityGroupDropDown(
     modifier: Modifier = Modifier,
-    onItemSelected: ()-> Unit = {},
+    expanded: Boolean = false,
+    onItemSelected: ()-> Unit,
+    onDismiss: () -> Unit,
     communities: List<CommunityCategoryUiState> = emptyList(),
     viewModel: PopularGroupViewModel
 ){
-    var expanded by remember { mutableStateOf(false) }
+
     var showCommunityCreateDialog by remember { mutableStateOf(false) }
     if(communities.isNotEmpty()) {
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = {onDismiss}
         ){
             communities.forEach {
                     community -> CommunityGroupItem (
                             communityName = community.categoryName,
-                            onItemSelected = onItemSelected
+                            onItemSelected = {
+                                viewModel.updateSelectedCategoryOnGroupCreation(community)
+                                onItemSelected()
+                            }
                     )
             }
+            Divider()
             DropdownMenuItem(
                 text = { Text(stringResource(id = R.string.create_community)) },
-                onClick = { showCommunityCreateDialog != showCommunityCreateDialog },
+                onClick = { showCommunityCreateDialog  = true },
                 leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = null) }
             )
         }
@@ -313,9 +324,8 @@ fun CommunityGroupDropDown(
 
 @Composable
 fun CommunityGroupItem(
-    modifier: Modifier = Modifier,
     communityName: String = "",
-    onItemSelected: ()-> Unit = {}
+    onItemSelected: ()-> Unit
 ) {
     DropdownMenuItem(
         text = { Text(communityName, style = MaterialTheme.typography.labelMedium) },

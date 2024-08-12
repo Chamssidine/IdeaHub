@@ -36,10 +36,12 @@ data class ThreadItem(
 data class CommunityCategory(
     var categoryName: String,
     val categoryImage: String?,
+    val categoryId: String ="",
     val memberCount: Int,
     val groupList: List<GroupItemData> = emptyList(),
-
-    )
+    ) {
+    constructor() : this("", "",    "",0,emptyList())
+}
 
 data class GroupItemData (
     val groupId: String = UUID.randomUUID().toString(),

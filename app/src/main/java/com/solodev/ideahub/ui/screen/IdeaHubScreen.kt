@@ -1,8 +1,6 @@
  package com.solodev.ideahub.ui.screen
 
-import com.solodev.ideahub.ui.screen.login.LoginViewModel
 import MailConfirmationScreen
-import PopularGroupViewModel
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -37,6 +35,7 @@ import com.solodev.ideahub.ui.screen.goalScreen.DayPlanViewModel
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreen
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenViewModel
 import com.solodev.ideahub.ui.screen.login.LoginScreen
+import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupViewModel
 import com.solodev.ideahub.ui.screen.sign_up.SignUpScreen
 import com.solodev.ideahub.ui.screen.userProfileScreen.UserProfileScreen
 import com.solodev.ideahub.ui.screen.welcomeScreen.WelcomeScreen
@@ -144,7 +143,7 @@ fun IdeaHubScreen(
                 GoalScreen(
                     goalScreenViewModel = GoalScreenViewModel(),
                     dayPlanViewModel = DayPlanViewModel(),
-                    popularGroupScreenViewModel = hiltViewModel()
+                    popularGroupScreenViewModel = hiltViewModel<PopularGroupViewModel>()
                 )
             }
             composable(Routes.GoalCreation.name) {
@@ -169,13 +168,15 @@ fun IdeaHubScreen(
             composable(Routes.Thread.name){
                 GoalScreen(
                     goalScreenViewModel = GoalScreenViewModel(),
-                    dayPlanViewModel = DayPlanViewModel()
+                    dayPlanViewModel = DayPlanViewModel(),
+                    popularGroupScreenViewModel = hiltViewModel<PopularGroupViewModel>()
                 )
             }
             composable(Routes.ThreadHistory.name) {
                 GoalScreen(
                     goalScreenViewModel = GoalScreenViewModel(),
-                    dayPlanViewModel = DayPlanViewModel()
+                    dayPlanViewModel = DayPlanViewModel(),
+                    popularGroupScreenViewModel = hiltViewModel<PopularGroupViewModel>()
                 )
             }
         }

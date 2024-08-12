@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
+
 class SignUpViewModel @Inject constructor(
     private val accountService: AccountService
 ): ViewModel() {

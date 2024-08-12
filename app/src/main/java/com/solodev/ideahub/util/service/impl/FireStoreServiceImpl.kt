@@ -1,7 +1,8 @@
 package com.solodev.ideahub.util.service.impl
 
-import CommunityCategoryUiState
-import GroupItemUiState
+import android.util.Log
+import com.solodev.ideahub.ui.screen.popularGroup.CommunityCategoryUiState
+import com.solodev.ideahub.ui.screen.popularGroup.GroupItemUiState
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.solodev.ideahub.model.CommunityCategory
@@ -39,12 +40,14 @@ class FireStoreServiceImpl @Inject constructor(
 
     override suspend fun createGroupCategory(
         categoryName: String,
-        categoryImage: String
+        categoryImage: String,
+        categoryId: String
     ): Result<Unit> {
         return try {
             val newCategory = mapOf(
                 "categoryName" to categoryName,
                 "categoryImage" to categoryImage,
+                "categoryId" to categoryId,
                 "memberCount" to 0,
                 "groupList" to emptyList<GroupItemData>()
             )
@@ -117,6 +120,7 @@ class FireStoreServiceImpl @Inject constructor(
                 CommunityCategoryUiState(
                     categoryName = category.categoryName,
                     categoryImage = category.categoryImage,
+                    categoryId = category.categoryId,
                     memberCount = category.memberCount,
                     groupList = category.groupList.map { group ->
                         GroupItemUiState(
@@ -134,20 +138,28 @@ class FireStoreServiceImpl @Inject constructor(
         }
     }
 
-    private suspend fun addGroupToCategory(
-        categoryId: String,
-        newGroup: GroupItemData
-    ) {
-        try {
-            val categoryRef = firestore.collection("communityCategories").document(categoryId)
+    override suspend fun addGroupToCategory(categoryId: String, newGroup: GroupItemData): Result<Unit> {
+        Log.d("PopularGroupScreen", "Adding group to category: $categoryId with new group: ${newGroup.groupName}")
+        return try {
+            val categoryRef = firestore.collection("communityCategories").document("xJKB6W9Um75hOMhxUYDb")
             firestore.runTransaction { transaction ->
-                val snapshot = transaction.get(categoryRef)
-                val groupList = snapshot.get("groupList") as? List<GroupItemData> ?: emptyList()
-                val updatedGroupList = groupList + newGroup
-                transaction.update(categoryRef, "groupList", updatedGroupList)
+                val categorySnapshot = transaction.get(categoryRef)
+                if (categorySnapshot.exists()) {
+                    val communityCategory = categorySnapshot.toObject(CommunityCategory::class.java)
+                    val groupList = communityCategory?.groupList?.toMutableList() ?: mutableListOf()
+                    groupList.add(newGroup)
+                    transaction.update(categoryRef, "groupList", groupList)
+                } else {
+                    Log.e("PopularGroupScreen", "Category does not exist: $categoryId")
+                    throw Exception("Category not found")
+                }
             }.await()
+            Log.d("PopularGroupScreen", "Group added successfully to category: $categoryId")
+            Result.success(Unit)
         } catch (e: Exception) {
-            // Handle the exception if needed
+            Log.e("PopularGroupScreen", "Error adding group to category: $categoryId", e)
+            Result.failure(e)
         }
     }
+
 }

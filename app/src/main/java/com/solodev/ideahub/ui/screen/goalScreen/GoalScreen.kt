@@ -1,7 +1,7 @@
 package com.solodev.ideahub.ui.screen.goalScreen
 
 
-import PopularGroupViewModel
+import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupViewModel
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -30,17 +30,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
@@ -72,11 +68,8 @@ import com.solodev.ideahub.ui.screen.components.EditDayPlanDialog
 import com.solodev.ideahub.ui.screen.components.FloatingButton
 import com.solodev.ideahub.ui.screen.components.GoalCreationDialog
 import com.solodev.ideahub.ui.screen.components.MenuSample
-import com.solodev.ideahub.ui.screen.popularGroupScreen.PopularGroupScreen
+import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupScreen
 import kotlinx.coroutines.delay
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun GoalScreen(
@@ -84,7 +77,7 @@ fun GoalScreen(
     selectedIndex: Int = 0,
     goalScreenViewModel: GoalScreenViewModel,
     dayPlanViewModel: DayPlanViewModel,
-    popularGroupScreenViewModel:PopularGroupViewModel =  hiltViewModel<PopularGroupViewModel>(),
+    popularGroupScreenViewModel: PopularGroupViewModel,
     showCongratulationTextAfterFirstGoalCreation: Boolean = false,
 ) {
     var customIndex by remember { mutableIntStateOf(selectedIndex) }
@@ -160,7 +153,7 @@ fun MainTabScreen(
     dayPlanViewModel: DayPlanViewModel,
     popularGroupScreenViewModel: PopularGroupViewModel,
 
-) {
+    ) {
     Log.d("MainTabScreen", "selectedTabIndex: $selectedTabIndex, tabTitle: $tabTitle")
     var showDialog by remember { mutableStateOf(false) }
 
