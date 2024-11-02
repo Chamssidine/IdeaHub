@@ -156,119 +156,125 @@ fun MainTabScreen(
     ) {
     Log.d("MainTabScreen", "selectedTabIndex: $selectedTabIndex, tabTitle: $tabTitle")
     var showDialog by remember { mutableStateOf(false) }
-
-    when (selectedTabIndex) {
-        0 ->
-            {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-            ) {
-                Text(
-                    text = tabTitle,
-                    style = MaterialTheme.typography.displayMedium
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                UnAchievedGoal(
-                    goalScreenViewModel =  goalScreenViewModel
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-
-                AchievedGoal(
-                    goalScreenViewModel =  goalScreenViewModel
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.BottomEnd
-                )
-                {
-                    FloatingButton(onClick = {
-                        showDialog = true
-                    })
-                }
-                if (showDialog) {
-                    goalScreenViewModel.clearUiState()
-                    Log.d("GoalCreationScreen", "Showing dialog")
-                    GoalCreationDialog(
-                        showDialog = showDialog,
-                        onConfirm = {
-                            Log.d("GoalCreationDialog", "DialogContent onConfirm called")
-                            val newGoal = goalScreenViewModel.createGoal()
-                            if (newGoal != null) {
-                                Log.d("GoalCreationDialog", "Goal created: ${newGoal.id} ${newGoal.title}")
-                                goalScreenViewModel.onGoalCreated(newGoal)
-                                goalScreenViewModel.refreshGoals()
-                                showDialog = false
-                            }
-
-                        },
-
-                        onDismissButtonClicked = {
-                            Log.d("GoalCreationScreen", "Dialog dismissed")
-                            showDialog = false
-                        },
-                        goalScreenViewModel = goalScreenViewModel,
-                    )
-                }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-            }
-        }
-        1 -> {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-            ) {
-                DayPlan(
-                    viewModel = dayPlanViewModel
-                )
-                if (showDialog) {
-                    dayPlanViewModel.clearUiState()
-                    Log.d("GoalCreationScreen", "Showing dialog")
-                    DayPlanDialog(
-                        modifier = Modifier,
-                        showDialog = showDialog,
-                        onConfirm = {
-                            val dayPlanItem = dayPlanViewModel.createDayPlanItem()
-                            if (dayPlanItem != null) {
-                                dayPlanViewModel.addDayPlanItem(dayPlanItem)
-                                showDialog = false
-                            }
-
-                        },
-                        onDismiss = {showDialog = false},
-                        dayPlanViewModel = dayPlanViewModel
-                    )
-                }
-                Spacer(modifier = modifier.weight(1f))
-                Box(
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = tabTitle,
+            style = MaterialTheme.typography.displayMedium
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+        when (selectedTabIndex) {
+            0 -> {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally),
-                    contentAlignment = Alignment.BottomEnd
-                )
-                {
-                    FloatingButton(onClick = {
-                        showDialog = true
-                    })
+                        .fillMaxSize()
+                ) {
+
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                    UnAchievedGoal(
+                        goalScreenViewModel =  goalScreenViewModel
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+
+                    AchievedGoal(
+                        goalScreenViewModel =  goalScreenViewModel
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.BottomEnd
+                    )
+                    {
+                        FloatingButton(onClick = {
+                            showDialog = true
+                        })
+                    }
+                    if (showDialog) {
+                        goalScreenViewModel.clearUiState()
+                        Log.d("GoalCreationScreen", "Showing dialog")
+                        GoalCreationDialog(
+                            showDialog = showDialog,
+                            onConfirm = {
+                                Log.d("GoalCreationDialog", "DialogContent onConfirm called")
+                                val newGoal = goalScreenViewModel.createGoal()
+                                if (newGoal != null) {
+                                    Log.d("GoalCreationDialog", "Goal created: ${newGoal.id} ${newGoal.title}")
+                                    goalScreenViewModel.onGoalCreated(newGoal)
+                                    goalScreenViewModel.refreshGoals()
+                                    showDialog = false
+                                }
+
+                            },
+
+                            onDismissButtonClicked = {
+                                Log.d("GoalCreationScreen", "Dialog dismissed")
+                                showDialog = false
+                            },
+                            goalScreenViewModel = goalScreenViewModel,
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+                }
+            }
+            1 -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    DayPlan(
+                        viewModel = dayPlanViewModel
+                    )
+                    if (showDialog) {
+                        dayPlanViewModel.clearUiState()
+                        Log.d("GoalCreationScreen", "Showing dialog")
+                        DayPlanDialog(
+                            modifier = modifier,
+                            showDialog = showDialog,
+                            onConfirm = {
+                                val dayPlanItem = dayPlanViewModel.createDayPlanItem()
+                                if (dayPlanItem != null) {
+                                    dayPlanViewModel.addDayPlanItem(dayPlanItem)
+                                    showDialog = false
+                                }
+
+                            },
+                            onDismiss = {showDialog = false},
+                            dayPlanViewModel = dayPlanViewModel
+                        )
+                    }
+                    Spacer(modifier = modifier.weight(1f))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterHorizontally),
+                        contentAlignment = Alignment.BottomEnd
+                    )
+                    {
+                        FloatingButton(onClick = {
+                            showDialog = true
+                        })
+                    }
+                }
+
+            }
+            2 -> {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    PopularGroupScreen(
+                        viewModel = popularGroupScreenViewModel
+                    )
+                }
+            }
+            3 -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    ActiveDiscussionSection()
                 }
             }
 
         }
-        2 -> {
-            Box(modifier = modifier.wrapContentSize()) {
-                PopularGroupScreen(
-                    viewModel = popularGroupScreenViewModel
-                )
-            }
-        }
-        3 -> {
-            Box(modifier = modifier.wrapContentSize()) {
-                ActiveDiscussionSection()
-            }
-        }
-
     }
+
+
 }
 
 @Composable
@@ -279,6 +285,8 @@ fun AchievedGoal(
 
     val goalScreenUIState by goalScreenViewModel.uiState.collectAsState()
     var defaultItemCount by rememberSaveable { mutableStateOf(3) }
+
+
     Column(
         modifier = modifier
             .wrapContentHeight()
@@ -288,7 +296,8 @@ fun AchievedGoal(
                 )
             )
     ) {
-        Text(text = stringResource(id = R.string.achieved))
+        if(goalScreenUIState.achievedGoalList.isNotEmpty())
+            Text(text = stringResource(id = R.string.achieved))
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
         Log.d("AchievedGoal", "GoalList size: ${goalScreenUIState.achievedGoalList.size}")
         Log.d("AchievedGoal", "GoalList: ${goalScreenUIState.achievedGoalList}")
@@ -327,17 +336,16 @@ fun AchievedGoal(
 
 @Composable
 fun UnAchievedGoal(
-    modifier: Modifier = Modifier,
     goalScreenViewModel: GoalScreenViewModel,
 ) {
     val goalScreenUIState by goalScreenViewModel.uiState.collectAsState()
     var isShowingAll by rememberSaveable { mutableStateOf(false) }
     var openDialog by rememberSaveable { mutableStateOf(false) }
-
+    var goalAvailable by remember { mutableStateOf(false)}
     val itemCount = if (isShowingAll) goalScreenUIState.unAchievedGoalList.size else minOf(3, goalScreenUIState.unAchievedGoalList.size)
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .animateContentSize(
                 animationSpec = spring(
@@ -345,7 +353,8 @@ fun UnAchievedGoal(
                 )
             )
     ) {
-        Text(text = stringResource(id = R.string.unachieved))
+        if(goalAvailable)
+            Text(text = stringResource(id = R.string.unachieved))
         Column {
             val itemsToShow = goalScreenUIState.unAchievedGoalList.take(itemCount)
             if(itemsToShow.isEmpty())
@@ -354,9 +363,10 @@ fun UnAchievedGoal(
                     style = MaterialTheme.typography.bodyMedium
                 )
             else{
-                itemsToShow.forEach { goal ->
+                goalAvailable = true
+                goalScreenUIState.unAchievedGoalList.forEach { goal ->
                     GoalItem(
-                        modifier,
+                        Modifier,
                         title = goal.title,
                         creationDate = goal.creationDate,
                         deadLine = goal.deadline,
@@ -568,13 +578,16 @@ fun GoalScreenTab(
 ) {
     if(selected) {
 
-        Button(onClick = onSelected) {
+        TextButton(onClick = onSelected) {
             Text(text = tabTitle)
         }
     }
     else {
         TextButton(onClick = onSelected) {
-            Text(text = tabTitle)
+            Text(
+                text = tabTitle,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+            )
         }
     }
 
@@ -584,14 +597,13 @@ fun GoalScreenTab(
 
 @Composable
 fun DayPlan(
-    modifier: Modifier = Modifier,
     viewModel: DayPlanViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val dayPlanUiState by viewModel.dayPlanDialogUIState.collectAsState()
     var openEditDialog by remember { mutableStateOf(false) }
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         if(uiState.dayPlans.isEmpty()) {
             Text(

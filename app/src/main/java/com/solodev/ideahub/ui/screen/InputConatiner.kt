@@ -96,6 +96,7 @@ fun CustomSearchBar(
     modifier:Modifier = Modifier,
 ) {
     SearchBar(
+        modifier = modifier,
         leadingIcon = {Icon(imageVector = Icons.Default.Search, contentDescription = null)},
        query = "Search",
        onQueryChange = {},

@@ -3,7 +3,9 @@ package com.solodev.ideahub.ui.screen.popularGroup
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.solodev.ideahub.model.CommunityCategory
 import com.solodev.ideahub.model.GroupItemData
+import com.solodev.ideahub.model.communityCategories
 import com.solodev.ideahub.util.service.FireStoreService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,10 +31,33 @@ class PopularGroupViewModel @Inject constructor(
     val categoryUIState: StateFlow<CommunityCategoryUiState> = _categoryUIState.asStateFlow()
 
     init {
+        //val communities = communityCategories
+        //CreateMock(communities)
         loadGroups()
         Log.d("PopularGroupScreen", "com.solodev.ideahub.ui.screen.popularGroup.PopularGroupViewModel initialized")
     }
 
+    private fun CreateMock(communities: List<CommunityCategory>) {
+
+        viewModelScope.launch {
+            try {
+                communities.forEach { community -> fireStoreService.createGroupCategory(
+                    community.categoryName,
+                    community.categoryImage,
+                    System.currentTimeMillis().toString(),
+                    community.groupList
+
+                     )
+                    Log.d("PopularGroupScreen  ", "List: ${community.groupList.size}" )
+                }
+
+            }catch (
+                ex: Exception
+            ) {
+                Log.e("PopularGroupScreen", "Failed to create category: ${ex.message}", ex.cause )
+            }
+        }
+    }
     private fun loadGroups() {
         viewModelScope.launch {
             try {
@@ -75,14 +100,14 @@ class PopularGroupViewModel @Inject constructor(
     }
 
     fun createGroup() {
-        if (validateInputs()) {
             viewModelScope.launch {
                 try {
                     val categoryId = _uiState.value.selectedCategory?.categoryId ?: ""
                     val groupName = _groupItemUIState.value.groupName
                     val groupDescription = _groupItemUIState.value.groupDescription
 
-                    fireStoreService.createGroup(categoryId, groupName, groupDescription)
+
+                    //fireStoreService.createGroup(categoryId, groupName, groupDescription)
                     Log.d("PopularGroupScreen", "Group created successfully")
 
                     addGroupToCategory(
@@ -91,7 +116,7 @@ class PopularGroupViewModel @Inject constructor(
                             groupId = categoryId,
                             groupName = groupName,
                             groupDescription = groupDescription,
-                            groupImage = "", // Placeholder for group image
+                            groupImage = "",
                             memberList = emptyList()
                         )
                     )
@@ -99,7 +124,7 @@ class PopularGroupViewModel @Inject constructor(
                     Log.e("PopularGroupScreen", "Failed to create group", e)
                 }
             }
-        }
+
     }
 
     private fun addGroupToCategory(categoryId: String, newGroup: GroupItemData) {
@@ -237,7 +262,12 @@ class PopularGroupViewModel @Inject constructor(
             }
             viewModelScope.launch {
                 try {
-                    fireStoreService.createGroupCategory(_categoryUIState.value.categoryName, categoryId = _categoryUIState.value.categoryId, categoryImage = "")
+                    fireStoreService.createGroupCategory(
+                        _categoryUIState.value.categoryName,
+                        categoryId = _categoryUIState.value.categoryId,
+                        categoryImage = "",
+                        groupList = emptyList()
+                    )
                     Log.d("PopularGroupScreen", "Category created: ${_categoryUIState.value.categoryName}")
                 }catch (
                     ex: Exception

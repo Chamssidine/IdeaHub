@@ -41,7 +41,8 @@ class FireStoreServiceImpl @Inject constructor(
     override suspend fun createGroupCategory(
         categoryName: String,
         categoryImage: String,
-        categoryId: String
+        categoryId: String?,
+        groupList: List<GroupItemData>?
     ): Result<Unit> {
         return try {
             val newCategory = mapOf(
@@ -49,7 +50,7 @@ class FireStoreServiceImpl @Inject constructor(
                 "categoryImage" to categoryImage,
                 "categoryId" to categoryId,
                 "memberCount" to 0,
-                "groupList" to emptyList<GroupItemData>()
+                "groupList" to groupList
             )
             firestore.collection("communityCategories").add(newCategory).await()
             Result.success(Unit)
@@ -139,25 +140,38 @@ class FireStoreServiceImpl @Inject constructor(
     }
 
     override suspend fun addGroupToCategory(categoryId: String, newGroup: GroupItemData): Result<Unit> {
-        Log.d("PopularGroupScreen", "Adding group to category: $categoryId with new group: ${newGroup.groupName}")
+        Log.d("PopularGroupScreen", "Adding group to category with categoryId: $categoryId")
         return try {
-            val categoryRef = firestore.collection("communityCategories").document("xJKB6W9Um75hOMhxUYDb")
+            // Query the collection to find the document with the matching `categoryId` field
+            val querySnapshot = firestore.collection("communityCategories")
+                .whereEqualTo("categoryId", categoryId)
+                .get()
+                .await()
+
+            // Check if we found the document
+            if (querySnapshot.isEmpty) {
+                Log.e("PopularGroupScreen", "Category with categoryId $categoryId does not exist")
+                return Result.failure(Exception("Category not found"))
+            }
+
+            // Use the first matching document
+            val categoryDoc = querySnapshot.documents.first()
+            val categoryRef = categoryDoc.reference
+
             firestore.runTransaction { transaction ->
                 val categorySnapshot = transaction.get(categoryRef)
-                if (categorySnapshot.exists()) {
-                    val communityCategory = categorySnapshot.toObject(CommunityCategory::class.java)
-                    val groupList = communityCategory?.groupList?.toMutableList() ?: mutableListOf()
-                    groupList.add(newGroup)
-                    transaction.update(categoryRef, "groupList", groupList)
-                } else {
-                    Log.e("PopularGroupScreen", "Category does not exist: $categoryId")
-                    throw Exception("Category not found")
-                }
+                val communityCategory = categorySnapshot.toObject(CommunityCategory::class.java)
+
+                val groupList = communityCategory?.groupList?.toMutableList() ?: mutableListOf()
+                groupList.add(newGroup)
+
+                transaction.update(categoryRef, "groupList", groupList)
             }.await()
+
             Log.d("PopularGroupScreen", "Group added successfully to category: $categoryId")
             Result.success(Unit)
         } catch (e: Exception) {
-            Log.e("PopularGroupScreen", "Error adding group to category: $categoryId", e)
+            Log.e("PopularGroupScreen", "Error adding group to category with categoryId: $categoryId", e)
             Result.failure(e)
         }
     }

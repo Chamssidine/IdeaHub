@@ -9,6 +9,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.solodev.ideahub.ui.screen.HomeScreen
 import com.solodev.ideahub.ui.screen.IdeaHubScreen
 import com.solodev.ideahub.ui.screen.communityScreen.CommunityScreen
 import com.solodev.ideahub.ui.screen.gemini_chat.GeminiChatScreen
@@ -32,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    IdeaHubScreen()
+                    HomeScreen()
                 }
             }
         }

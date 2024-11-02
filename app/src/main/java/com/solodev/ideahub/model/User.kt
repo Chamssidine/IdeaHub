@@ -7,4 +7,6 @@ data class User(
     val password: String = "",
     val photo: String?,
     val contributionCount: Int,
-)
+) {
+    constructor() : this("","","","","", 0)
+}

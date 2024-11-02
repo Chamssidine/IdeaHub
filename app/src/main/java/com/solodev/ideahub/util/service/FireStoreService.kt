@@ -13,7 +13,8 @@ interface FireStoreService {
     suspend fun createGroupCategory(
         categoryName: String,
         categoryImage: String,
-        categoryId: String,
+        categoryId: String?,
+        groupList: List<GroupItemData>?
     ): Result<Unit>
 
     suspend fun joinGroup(groupId: String, userId: String): Result<Unit>

@@ -35,7 +35,7 @@ data class ThreadItem(
 
 data class CommunityCategory(
     var categoryName: String,
-    val categoryImage: String?,
+    val categoryImage: String,
     val categoryId: String ="",
     val memberCount: Int,
     val groupList: List<GroupItemData> = emptyList(),
@@ -49,7 +49,9 @@ data class GroupItemData (
     val groupDescription: String,
     val groupImage: String,
     val memberList: List<User> = emptyList(),
-)
+) {
+    constructor() : this("", "",    "","",emptyList())
+}
 
 data class ConversationMessage(
     val aiMessage: AiMessage,
@@ -452,7 +454,8 @@ val goalTabItems = listOf(
     ),
     GoalScreenTabItem(
         R.string.goal_screen_tab_item_4,false
-    )
+    ),
+
 )
 val bottomNavigationItems = listOf(
     BottomNavigationItem(

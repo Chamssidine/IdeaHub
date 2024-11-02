@@ -17,9 +17,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.InputContainer
@@ -31,34 +31,46 @@ fun PopularGroupScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(dimensionResource(id = R.dimen.padding_medium))) {
+
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        // Display each group category
         uiState.communityCategories.forEach { category ->
             GroupSection(
                 sectionName = category.categoryName,
                 groups = category.groupList,
                 onJoinClicked = { groupId -> viewModel.joinGroup(groupId) },
-                onLikeClicked = { groupId -> viewModel.likeGroup(groupId) },
-                onAddToFavoriteClicked = { groupId -> viewModel.addToFavorites(groupId) }
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
         }
-        if(showDialog) {
+
+        // Show dialog when required
+        if (showDialog) {
             Log.d("PopularGroupScreen", "Showing dialog")
             CreateGroupDialog(
                 viewModel = viewModel,
                 showDialog = showDialog,
                 onDismiss = { showDialog = false },
                 onConfirm = {
-                    if(viewModel.checkInputs()) {
+                    if (viewModel.checkInputs()) {
+                        Log.d("PopularGroupScreen", "On confirm in create group dialog called!")
                         viewModel.createGroup()
                         showDialog = false
                     }
                 },
-                )
+            )
         }
-        FloatingButton(onClick = { showDialog = true })
+    }
+
+    // Floating action button positioned at the bottom end
+    Box(modifier = Modifier
+        .fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+        FloatingButton(
+            onClick = { showDialog = true }
+        )
     }
 }
 
@@ -67,8 +79,6 @@ fun GroupSection(
     sectionName: String,
     groups: List<GroupItemUiState>,
     onJoinClicked: (String) -> Unit,
-    onLikeClicked: (String) -> Unit,
-    onAddToFavoriteClicked: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -76,25 +86,25 @@ fun GroupSection(
             style = MaterialTheme.typography.displayMedium
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_medium)))
-        LazyRow(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            items(groups.size) { index ->
-                val group = groups[index]
-                GroupItem(
-                    groupName = group.groupName,
-                    description = group.groupDescription,
-                    isLiked = group.isLiked,
-                    isJoined = group.isJoined,
-                    isFavorite = group.isFavorite,
-                    onJoinClicked = { onJoinClicked(group.groupId) },
-                    onLikeClicked = { onLikeClicked(group.groupId) },
-                    onAddToFavoriteClicked = { onAddToFavoriteClicked(group.groupId) }
-                )
-                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.padding_small)))
+        Box(modifier = Modifier.fillMaxWidth()) {
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(), // Ensure LazyRow has full width
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.spacing_medium)),
+            ) {
+                items(groups.size) { index ->
+                    val group = groups[index]
+                    GroupItem(
+                        groupName = group.groupName,
+                        description = group.groupDescription,
+                        isJoined = group.isJoined,
+                        onJoinClicked = { onJoinClicked(group.groupId) },
+                    )
+                }
             }
         }
+
+
     }
 }
 
@@ -102,64 +112,52 @@ fun GroupSection(
 fun GroupItem(
     groupName: String,
     description: String,
-    isLiked: Boolean,
     isJoined: Boolean,
-    isFavorite: Boolean,
     onJoinClicked: () -> Unit,
-    onLikeClicked: () -> Unit,
-    onAddToFavoriteClicked: () -> Unit
 ) {
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .height(250.dp)
+            .width(180.dp),
         shape = MaterialTheme.shapes.medium,
     ) {
-        Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))) {
+        Column(
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
                 groupName,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth()
             )
+            Spacer(modifier = Modifier
+                .weight(1f)
+                .height(dimensionResource(id = R.dimen.padding_small)))
+            Text(
+                description, modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.weight(1f))
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-            Text(description)
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-            Row {
-                IconButton(
-                    onClick = onLikeClicked,
-                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small))
-                ) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (isLiked) R.drawable.thumb_up_24px_filled else R.drawable.thumb_up_24px_outlined
-                        ),
-                        contentDescription = "icon_like",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.padding_small)))
-                ElevatedButton(
-                    onClick = onJoinClicked,
-                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small))
-                ) {
-                    Text(
-                        text = if (isJoined) stringResource(R.string.joined) else stringResource(R.string.join),
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
-                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.padding_small)))
-                IconButton(
-                    onClick = onAddToFavoriteClicked,
-                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small))
-                ) {
-                    Icon(
-                        painter = painterResource(
-                            id = if (isFavorite) R.drawable.favorite_24px_filled else R.drawable.favorite_24px_outlined
-                        ),
-                        contentDescription = "icon_favorite",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
+
+
+          Box(
+              modifier = Modifier.align(Alignment.End),
+
+              contentAlignment = Alignment.BottomEnd) {
+              ElevatedButton(
+                  onClick = onJoinClicked,
+                  modifier = Modifier.fillMaxWidth()
+              ) {
+                  Text(
+                      text = if (isJoined) stringResource(R.string.joined) else stringResource(R.string.join),
+                      style = MaterialTheme.typography.labelMedium
+                  )
+              }
+              Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.padding_small)))
+          }
+          }
         }
-    }
+
 }
 
 
@@ -243,9 +241,13 @@ fun CreateGroupDialog(
                             Text(text = stringResource(id = R.string.cancel))
                         }
                         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.padding_small)))
-                        Button(onClick = onConfirm) {
+                        Button(onClick = {
+                            onConfirm()
+                           // Log.d("PopularGroupScreen", "On confirm in create group dialog called!")
+                        }) {
                             Text(text = stringResource(id = R.string.create))
                         }
+
 
                     }
                 }
@@ -381,3 +383,4 @@ fun CommunityCategoryCreateDialog(
         }
     }
 }
+
