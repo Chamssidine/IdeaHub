@@ -140,14 +140,14 @@ fun IdeaHubScreen(
                 UserProfileScreen()
             }
             composable(Routes.Home.name){
-                GoalScreen(
-                    goalScreenViewModel = GoalScreenViewModel(),
+                HomeScreen(
                     dayPlanViewModel = DayPlanViewModel(),
                     popularGroupScreenViewModel = hiltViewModel<PopularGroupViewModel>()
                 )
             }
             composable(Routes.GoalCreation.name) {
                 GoalCreationScreen(
+                    goalScreenViewModel = hiltViewModel<GoalScreenViewModel>(),
                     onGoalCreated = {
                         Log.d("IdeaHubScreen", "Goal created callback")
                         screenManagerVM.showBottomNavigationBar(true)
@@ -167,14 +167,14 @@ fun IdeaHubScreen(
             }
             composable(Routes.Thread.name){
                 GoalScreen(
-                    goalScreenViewModel = GoalScreenViewModel(),
+                    goalScreenViewModel = hiltViewModel<GoalScreenViewModel>(),
                     dayPlanViewModel = DayPlanViewModel(),
                     popularGroupScreenViewModel = hiltViewModel<PopularGroupViewModel>()
                 )
             }
             composable(Routes.ThreadHistory.name) {
                 GoalScreen(
-                    goalScreenViewModel = GoalScreenViewModel(),
+                    goalScreenViewModel = hiltViewModel<GoalScreenViewModel>(),
                     dayPlanViewModel = DayPlanViewModel(),
                     popularGroupScreenViewModel = hiltViewModel<PopularGroupViewModel>()
                 )

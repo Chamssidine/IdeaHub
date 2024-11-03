@@ -1,11 +1,12 @@
 package com.solodev.ideahub.ui.screen.goalScreen
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.solodev.ideahub.data.GoalItem
+import com.solodev.ideahub.data.GoalsRepository
 import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationUiState
 import com.solodev.ideahub.util.Tools.Companion.getCurrentDate
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,56 +15,56 @@ import kotlinx.coroutines.launch
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-class GoalScreenViewModel : ViewModel() {
+@HiltViewModel
+class GoalScreenViewModel @Inject constructor(
+    private val goalsRepository: GoalsRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(GoalScreenUIState())
     private  val _goalCreationUiState = MutableStateFlow(GoalCreationUiState())
     val uiState: StateFlow<GoalScreenUIState> = _uiState.asStateFlow()
     val goalCreationUiState: StateFlow<GoalCreationUiState> = _goalCreationUiState.asStateFlow()
-    var goal: LiveData<Goal?> =  MutableLiveData(null)
 
 
-    private fun addGoal(goal: Goal) {
-        _uiState.update { state ->
-            state.copy(achievedGoalList = state.achievedGoalList + goal)
+
+    private fun moveGoalToAchievedGoalList(goalItem: GoalItem) {
+        viewModelScope.launch {
+            goalsRepository.updateGoal(goalItem)
+
         }
+       fetchGoals()
     }
 
 
-    fun deleteGoal(goal: Goal) {
-        setItemAsDeleted(goal.id)
-        Log.d("GoalScreenViewModel", "goalData size: ${goalData.size}")
-        _uiState.update { state ->
-            state.copy(achievedGoalList = state.achievedGoalList.filterNot { it.id == goal.id })
+    fun deleteGoal(goalItem: GoalItem) {
+
+        viewModelScope.launch {
+            goalsRepository.deleteGoal(goalItem)
         }
-        Log.d("GoalScreenViewModel", "deleting goal: ${goal.title}")
-    }
-    fun deleteGoalFromAchievedList(goal: Goal) {
-        _uiState.update { state ->
-            state.copy(achievedGoalList = state.achievedGoalList.filterNot {it.id == goal.id })
-        }
+
     }
 
-    fun deleteGoalFromUnAchievedList(goal: Goal) {
+
+    fun deleteGoalFromUnAchievedList(goalItem: GoalItem) {
+        var newAchievedGoalList = _uiState.value.achievedGoalItemLists
+
         _uiState.update { state ->
-            state.copy(unAchievedGoalList = state.unAchievedGoalList.filterNot { it.id == goal.id })
+            state.copy(
+                unAchievedGoalItemLists = (state.unAchievedGoalItemLists.filterNot { it.id == goalItem.id }).toMutableList()
+            )
+
         }
-        goalData.remove(goal)
+
     }
     fun refreshGoals() {
-        setGoals()
+        fetchGoals()
     }
 
-    private fun setItemAsDeleted(id: Long) {
-        viewModelScope.launch {
-            goalData.find { it.id == id }?.delete = true
-        }
-    }
 
-    fun onEditGoal(toEdit: Goal) {
+    fun onEditGoal(toEdit: GoalItem) {
         _goalCreationUiState.update {
             state -> state.copy(
             title = toEdit.title,
@@ -81,13 +82,13 @@ class GoalScreenViewModel : ViewModel() {
     }
 
 
-    private fun confirmGoalUpdate(updatedGoal: Goal) {
+    private fun confirmGoalUpdate(updatedGoalItem: GoalItem) {
         if (validateInputs()) {
             _uiState.update { state ->
                 state.copy(
-                    unAchievedGoalList = state.unAchievedGoalList.map { goal ->
-                        if (goal.id == updatedGoal.id) updatedGoal else goal
-                    }
+                    unAchievedGoalItemLists = (state.unAchievedGoalItemLists.map { goal ->
+                        if (goal.id == updatedGoalItem.id) updatedGoalItem else goal
+                    }).toMutableList()
                 )
             }
         }
@@ -96,33 +97,34 @@ class GoalScreenViewModel : ViewModel() {
     }
 
 
-    private fun setGoals() {
-        if (goalData.isNotEmpty()) {
-            val nonDeletedGoals = goalData.filterNot { it.delete }
-            val achievedGoals = nonDeletedGoals.filter { it.isCompleted }
-            val unAchievedGoals = nonDeletedGoals.filter { !it.isCompleted }
-            _uiState.update { state ->
-                state.copy(
-                    achievedGoalList = achievedGoals,
-                    unAchievedGoalList = unAchievedGoals,
-                    refresh = true,
-                    refresherData = System.currentTimeMillis()
-                )
+    private fun fetchGoals() {
+
+        viewModelScope.launch {
+            goalsRepository.getGoalsStream().collect{
+                goals ->
+                _uiState.update { state ->
+                    state.copy(
+
+                        achievedGoalItemLists = goals.filter { item-> item.isCompleted },
+                        unAchievedGoalItemLists = goals.filter { item-> !item.isCompleted },
+                        refresh = true,
+                        refresherData = System.currentTimeMillis()
+                    )
+                }
             }
-        } else {
-            Log.d("GoalScreenViewModel", "No goals found")
+
         }
     }
 
 
-    fun markGoalAsCompleted(goal: Goal) {
-        addGoal(goal.copy(isCompleted = true))
-        deleteGoalFromUnAchievedList(goal)
+    fun markGoalAsCompleted(goalItem: GoalItem) {
+        moveGoalToAchievedGoalList(goalItem.copy(isCompleted = true))
+        deleteGoalFromUnAchievedList(goalItem)
 
     }
 
     init {
-        setGoals()
+        fetchGoals()
     }
     fun updateTitle(newTitle: String) {
         _goalCreationUiState.value = _goalCreationUiState.value.copy(title = newTitle)
@@ -139,10 +141,10 @@ class GoalScreenViewModel : ViewModel() {
 
     // Validate input fields
     private fun validateInputs(): Boolean {
-        val state = _goalCreationUiState.value  ?: return false
+        val state = _goalCreationUiState.value
         return when {
             state.title.isBlank() -> {
-                _goalCreationUiState.update { state-> state.copy(hasError = true, errorMessage = "The title is empty")}
+                _goalCreationUiState.update { state -> state.copy(hasError = true, errorMessage = "The title is empty")}
                 Log.d("com.solodev.ideahub.ui.screen.login.ConnectionViewModel", "Error: ${_goalCreationUiState.value.errorMessage}")
                 false
             }
@@ -198,38 +200,9 @@ class GoalScreenViewModel : ViewModel() {
     fun clearUiState() {
         _goalCreationUiState.value = GoalCreationUiState()
     }
-    private  fun copyGoalDataFromState(isUpdate: Boolean = false):Goal {
-        val state = _goalCreationUiState.value
-        if(!isUpdate)
-        {
-            val newGoal = Goal(
-                title = state.title,
-                description = state.description,
-                deadline = state.deadline,
-                reminderFrequency = state.reminderFrequency,
-                creationDate = getCurrentDate(),
-                id = System.currentTimeMillis(),
-                isCompleted = false,
-                delete = false
-            )
-            return newGoal
-        }
-        else {
-            val newGoal = Goal(
-                title = state.title,
-                description = state.description,
-                deadline = state.deadline,
-                reminderFrequency = state.reminderFrequency,
-                creationDate = state.creationDate,
-                id = state.id,
-                isCompleted = false,
-                delete = false
-                )
-            return newGoal
-        }
-    }
+
     // Create a new goal
-    fun createGoal() :Goal? {
+    fun createGoal() :GoalItem? {
 
         if (validateInputs()) {
             val newGoal = copyGoalDataFromState()
@@ -240,14 +213,42 @@ class GoalScreenViewModel : ViewModel() {
         }
 
     }
-
-    fun onGoalCreated(goal: Goal) {
-        _uiState.update { state ->
-            state.copy(
-                unAchievedGoalList = state.unAchievedGoalList + goal,
+    private  fun copyGoalDataFromState(isUpdate: Boolean = false):GoalItem {
+        val state = _goalCreationUiState.value
+        if(!isUpdate)
+        {
+            val newGoalItem = GoalItem(
+                title = state.title,
+                description = state.description,
+                deadline = state.deadline,
+                reminderFrequency = state.reminderFrequency,
+                creationDate = getCurrentDate(),
+                id = System.currentTimeMillis(),
+                isCompleted = false,
+                delete = false
             )
+            return newGoalItem
         }
-        goalData.add(goal)
+        else {
+            val newGoalItem = GoalItem(
+                title = state.title,
+                description = state.description,
+                deadline = state.deadline,
+                reminderFrequency = state.reminderFrequency,
+                creationDate = state.creationDate,
+                id = state.id,
+                isCompleted = false,
+                delete = false
+            )
+            return newGoalItem
+        }
+    }
+
+    fun onGoalCreated(goalItem: GoalItem) {
+        viewModelScope.launch {
+            goalsRepository.insertGoal(goalItem)
+        }
+
     }
 
     fun onConfirmDatePickingDialog(date: String){
@@ -258,26 +259,15 @@ class GoalScreenViewModel : ViewModel() {
         )
         }
     }
-    // Get the current date in the required format
+
 
 }
 
 data class GoalScreenUIState(
-    val achievedGoalList: List<Goal> = emptyList(),
-    val unAchievedGoalList: List<Goal> = emptyList(),
+    val achievedGoalItemLists: List<GoalItem> = emptyList(),
+    val unAchievedGoalItemLists: List<GoalItem> = emptyList(),
     val refresh: Boolean = false,
     val refresherData: Long = 0,
 )
 
-data class Goal(
-    val title: String,
-    val description: String,
-    val deadline: String,
-    val reminderFrequency: String,
-    val creationDate: String,
-    val id: Long,
-    var isCompleted: Boolean,
-    var delete: Boolean,
-)
 
-val goalData = mutableListOf<Goal>()

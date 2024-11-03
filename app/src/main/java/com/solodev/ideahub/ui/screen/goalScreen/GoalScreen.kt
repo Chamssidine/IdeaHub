@@ -24,14 +24,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
@@ -75,7 +73,7 @@ import kotlinx.coroutines.delay
 fun GoalScreen(
     modifier: Modifier = Modifier,
     selectedIndex: Int = 0,
-    goalScreenViewModel: GoalScreenViewModel,
+    goalScreenViewModel: GoalScreenViewModel = hiltViewModel<GoalScreenViewModel>(),
     dayPlanViewModel: DayPlanViewModel,
     popularGroupScreenViewModel: PopularGroupViewModel,
     showCongratulationTextAfterFirstGoalCreation: Boolean = false,
@@ -296,14 +294,14 @@ fun AchievedGoal(
                 )
             )
     ) {
-        if(goalScreenUIState.achievedGoalList.isNotEmpty())
+        if(goalScreenUIState.achievedGoalItemLists.isNotEmpty())
             Text(text = stringResource(id = R.string.achieved))
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-        Log.d("AchievedGoal", "GoalList size: ${goalScreenUIState.achievedGoalList.size}")
-        Log.d("AchievedGoal", "GoalList: ${goalScreenUIState.achievedGoalList}")
+        Log.d("AchievedGoal", "GoalList size: ${goalScreenUIState.achievedGoalItemLists.size}")
+        Log.d("AchievedGoal", "GoalList: ${goalScreenUIState.achievedGoalItemLists}")
 
         Column {
-            goalScreenUIState.achievedGoalList.forEachIndexed { index, goal ->
+            goalScreenUIState.achievedGoalItemLists.forEachIndexed { index, goal ->
                 Log.d("AchievedGoal", "Goal: ${goal.title}")
                 Log.d("AchievedGoal", "Goal: ${goal.creationDate}")
                 GoalItem(
@@ -342,7 +340,7 @@ fun UnAchievedGoal(
     var isShowingAll by rememberSaveable { mutableStateOf(false) }
     var openDialog by rememberSaveable { mutableStateOf(false) }
     var goalAvailable by remember { mutableStateOf(false)}
-    val itemCount = if (isShowingAll) goalScreenUIState.unAchievedGoalList.size else minOf(3, goalScreenUIState.unAchievedGoalList.size)
+    val itemCount = if (isShowingAll) goalScreenUIState.unAchievedGoalItemLists.size else minOf(3, goalScreenUIState.unAchievedGoalItemLists.size)
 
     Column(
         modifier = Modifier
@@ -356,7 +354,7 @@ fun UnAchievedGoal(
         if(goalAvailable)
             Text(text = stringResource(id = R.string.unachieved))
         Column {
-            val itemsToShow = goalScreenUIState.unAchievedGoalList.take(itemCount)
+            val itemsToShow = goalScreenUIState.unAchievedGoalItemLists.take(itemCount)
             if(itemsToShow.isEmpty())
                 Text(
                     text = stringResource(id = R.string.no_unachieved_goals),
@@ -364,7 +362,7 @@ fun UnAchievedGoal(
                 )
             else{
                 goalAvailable = true
-                goalScreenUIState.unAchievedGoalList.forEach { goal ->
+                itemsToShow.forEach { goal ->
                     GoalItem(
                         Modifier,
                         title = goal.title,
@@ -413,7 +411,7 @@ fun UnAchievedGoal(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.BottomEnd
         ) {
-            if(goalScreenUIState.unAchievedGoalList.size > 3)
+            if(goalScreenUIState.unAchievedGoalItemLists.size > 3)
             {
                 TextButton(
                     onClick = {

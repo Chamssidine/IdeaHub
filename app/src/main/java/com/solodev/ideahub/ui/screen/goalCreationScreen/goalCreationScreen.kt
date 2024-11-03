@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.solodev.ideahub.R
 import com.solodev.ideahub.ui.screen.components.CreateGoalButton
 import com.solodev.ideahub.ui.screen.components.GoalDialogContent
@@ -30,7 +31,7 @@ import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenViewModel
 fun GoalCreationScreen(
     modifier: Modifier = Modifier,
     onGoalCreated: () -> Unit = {},
-    goalScreenViewModel: GoalScreenViewModel = GoalScreenViewModel()
+    goalScreenViewModel: GoalScreenViewModel = hiltViewModel<GoalScreenViewModel>()
 ) {
     var showDialog by remember { mutableStateOf(false) }
     Log.d("GoalCreationScreen", "Entering GoalCreationScreen")
@@ -110,5 +111,5 @@ fun GoalCreationScreen(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun WelcomeScreenPreview(){
-    GoalDialogContent(viewModel = GoalScreenViewModel(), onConfirm = {}, onCancel = {})
+    GoalDialogContent(viewModel = hiltViewModel<GoalScreenViewModel>(), onConfirm = {}, onCancel = {})
 }
