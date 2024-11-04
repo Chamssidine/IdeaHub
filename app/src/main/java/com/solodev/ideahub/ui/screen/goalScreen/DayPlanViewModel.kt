@@ -36,11 +36,9 @@ class DayPlanViewModel @Inject constructor(private  val dayPlansRepository: DayP
     }
 
     fun addDayPlanItem(item: DayPlanItem) {
-
-        _uiState.update {  state ->
-            state.copy(dayPlans = state.dayPlans + item)
+        viewModelScope.launch {
+            dayPlansRepository.insertDayPlan(item)
         }
-        dayPlans.add(item)
     }
 
      fun updateDayPlanList() {
@@ -51,23 +49,10 @@ class DayPlanViewModel @Inject constructor(private  val dayPlansRepository: DayP
         Log.d("DayPlanViewModel", "confirmDayPlanUpdate called with updatedGoal: ${updatedGoal.id}")
 
         if (validateInputs()) {
-            _uiState.update { state ->
-                state.copy(
-                    dayPlans = state.dayPlans.map { item ->
-                        if (item.id == updatedGoal.id) {
-                            updatedGoal
-                        } else item
-                    }
-                )
-            }
-            dayPlans.toMutableList().replaceAll {
-                if (it.id == updatedGoal.id) {
-                    updatedGoal
-                } else it
-            }
+           viewModelScope.launch {
+               dayPlansRepository.updateDayPlan(updatedGoal)
+           }
         }
-        else
-            Log.d("GoalScreenViewModel", "The goal is not found in the list")
     }
 
     fun clearUiState() {
@@ -209,18 +194,11 @@ class DayPlanViewModel @Inject constructor(private  val dayPlansRepository: DayP
     }
 
     fun deletePlan(dayPlan: DayPlanItem){
-        setItemAsDeleted(dayPlan.id)
-        _uiState.update {
-            state -> state.copy(dayPlans = state.dayPlans.filterNot { it.id == dayPlan.id })
-        }
-        dayPlans.remove(dayPlan)
+       viewModelScope.launch {
+           dayPlansRepository.deleteDayPlan(dayPlan)
+       }
     }
 
-    private fun setItemAsDeleted(id: Long) {
-        viewModelScope.launch {
-            dayPlans.find { it.id == id }?.delete = true
-        }
-    }
 
     init {
         setDayPlansData()

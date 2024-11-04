@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DayPlanDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertDayPlan(dayPlan: DayPlanItem)
 
     @Delete
@@ -19,10 +19,10 @@ interface DayPlanDao {
     @Update
     suspend fun updateDayPlan(dayPlan: DayPlanItem)
 
-    @Query("SELECT * FROM DayPlanItem")
+    @Query("SELECT * from dayPlanItem ORDER BY title ASC")
     fun getAllDayPlans(): Flow<List<DayPlanItem>>
 
-    @Query("SELECT * FROM DayPlanItem WHERE id = :id")
+    @Query("SELECT * FROM dayPlanItem WHERE id = :id")
     fun getDayPlanById(id: Long): Flow<DayPlanItem?>
 
 

@@ -9,7 +9,6 @@ import androidx.room.RoomDatabase
 abstract class GoalDataBase:RoomDatabase() {
 
     abstract fun goalItemDao(): GoalItemDao
-    abstract fun dayPlanDao(): DayPlanDao
 
     companion object {
         @Volatile

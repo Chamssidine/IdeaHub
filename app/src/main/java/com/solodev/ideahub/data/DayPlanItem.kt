@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.solodev.ideahub.ui.screen.goalScreen.Priority
 
-@Entity
+@Entity(tableName = "dayPlanItem")
 data class DayPlanItem (
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
