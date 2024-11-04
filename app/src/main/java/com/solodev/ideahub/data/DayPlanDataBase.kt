@@ -1,27 +1,23 @@
 package com.solodev.ideahub.data
 
 import android.content.Context
-import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [GoalItem::class], version = 1, exportSchema = false)
-abstract class GoalDataBase:RoomDatabase() {
+abstract class DayPlanDataBase: RoomDatabase()    {
 
-    abstract fun goalItemDao(): GoalItemDao
     abstract fun dayPlanDao(): DayPlanDao
 
     companion object {
         @Volatile
-        private var Instance: GoalDataBase? = null;
+        private var Instance: DayPlanDataBase? = null
 
-        fun getDataBase(context: Context): GoalDataBase {
+        fun getDataBase(context: Context): DayPlanDataBase {
             return Instance ?: synchronized(this) {
-
                 Room.databaseBuilder(
                     context,
-                    GoalDataBase::class.java,
-                    "goal_database"
+                    DayPlanDataBase::class.java,
+                    "day_plan_database"
                 ).build().also { Instance = it }
             }
         }

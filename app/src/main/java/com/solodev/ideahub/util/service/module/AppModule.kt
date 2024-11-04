@@ -1,6 +1,9 @@
 package com.solodev.ideahub.util.service.module
 
 import android.content.Context
+import com.solodev.ideahub.data.DayPlanDao
+import com.solodev.ideahub.data.DayPlansRepository
+import com.solodev.ideahub.data.DayPlansRepositoryImpl
 import com.solodev.ideahub.data.GoalDataBase
 import com.solodev.ideahub.data.GoalItemDao
 import com.solodev.ideahub.data.GoalsRepository
@@ -31,5 +34,22 @@ object AppModule {
     @Singleton
     fun provideGoalsRepository(goalItemDao: GoalItemDao): GoalsRepository {
         return OfflineGoalsRepository(goalItemDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDayPlanDatabase(@ApplicationContext context: Context): GoalDataBase {
+        return GoalDataBase.getDataBase(context)
+    }
+
+    @Provides
+    fun provideDayPlanDao(database: GoalDataBase): DayPlanDao {
+        return database.dayPlanDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDayPlansRepository(dayPlanDao: DayPlanDao): DayPlansRepository {
+        return DayPlansRepositoryImpl(dayPlanDao)
     }
 }
