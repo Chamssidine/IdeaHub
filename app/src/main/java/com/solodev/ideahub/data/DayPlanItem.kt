@@ -2,7 +2,7 @@ package com.solodev.ideahub.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.solodev.ideahub.ui.screen.goalScreen.Priority
+import com.solodev.ideahub.ui.screen.dayplanScreen.Priority
 
 @Entity(tableName = "dayPlanItem")
 data class DayPlanItem (

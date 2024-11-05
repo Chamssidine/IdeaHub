@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -84,11 +83,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.solodev.ideahub.R
-import com.solodev.ideahub.ui.screen.goalScreen.DayPlanItemUiState
-import com.solodev.ideahub.ui.screen.goalScreen.DayPlanViewModel
+import com.solodev.ideahub.ui.screen.dayplanScreen.DayPlanItemUiState
+import com.solodev.ideahub.ui.screen.dayplanScreen.DayPlanViewModel
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenViewModel
 
-import com.solodev.ideahub.ui.screen.goalScreen.Priority
+import com.solodev.ideahub.ui.screen.dayplanScreen.Priority
 import com.solodev.ideahub.util.Tools
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
@@ -520,7 +519,7 @@ fun DayPlanDialog (
         Log.d("GoalCreationDialog", "LaunchedEffect triggered with showDialog = $showDialog")
         animateIn = showDialog
     }
-    if (showDialog) {
+    if (showDialog)                                        {
         Log.d("GoalCreationDialog", "Dialog is visible")
         Dialog(onDismissRequest = onDismiss) {
             AnimatedVisibility(
@@ -839,7 +838,7 @@ fun DayPlanDialogContent(
     onLowPriorityClicked: () -> Unit = {},
     onMediumPriorityClicked: () -> Unit = {},
     onHighPriorityClicked: () -> Unit = {},
-    uiState: DayPlanItemUiState ,
+    uiState: DayPlanItemUiState,
 ) {
     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     ElevatedCard(

@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import androidx.room.TypeConverter
-import com.solodev.ideahub.ui.screen.goalScreen.Priority
+import com.solodev.ideahub.ui.screen.dayplanScreen.Priority
 
 class Tools {
     companion object {

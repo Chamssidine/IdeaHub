@@ -2,6 +2,7 @@ package com.solodev.ideahub.util.service.module
 
 import android.content.Context
 import com.solodev.ideahub.data.DayPlanDao
+import com.solodev.ideahub.data.DayPlanDataBase
 import com.solodev.ideahub.data.DayPlansRepository
 import com.solodev.ideahub.data.DayPlansRepositoryImpl
 import com.solodev.ideahub.data.GoalDataBase
@@ -38,12 +39,12 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDayPlanDatabase(@ApplicationContext context: Context): GoalDataBase {
-        return GoalDataBase.getDataBase(context)
+    fun provideDayPlanDatabase(@ApplicationContext context: Context): DayPlanDataBase {
+        return DayPlanDataBase.getDataBase(context)
     }
 
     @Provides
-    fun provideDayPlanDao(database: GoalDataBase): DayPlanDao {
+    fun provideDayPlanDao(database: DayPlanDataBase): DayPlanDao {
         return database.dayPlanDao()
     }
 

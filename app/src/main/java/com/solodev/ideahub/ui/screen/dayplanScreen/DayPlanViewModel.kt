@@ -1,4 +1,4 @@
-package com.solodev.ideahub.ui.screen.goalScreen
+package com.solodev.ideahub.ui.screen.dayplanScreen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -38,7 +38,9 @@ class DayPlanViewModel @Inject constructor(private  val dayPlansRepository: DayP
     fun addDayPlanItem(item: DayPlanItem) {
         viewModelScope.launch {
             dayPlansRepository.insertDayPlan(item)
+            fetchDayPlans()
         }
+
     }
 
      fun updateDayPlanList() {
@@ -52,6 +54,7 @@ class DayPlanViewModel @Inject constructor(private  val dayPlansRepository: DayP
            viewModelScope.launch {
                dayPlansRepository.updateDayPlan(updatedGoal)
            }
+            fetchDayPlans()
         }
     }
 
@@ -183,15 +186,7 @@ class DayPlanViewModel @Inject constructor(private  val dayPlansRepository: DayP
         }
     }
 
-    private  fun fetchDayPlans(): MutableList<DayPlanItem> {
-        viewModelScope.launch {
-            dayPlansRepository.getAllDayPlans().collect {
-                dayPlans.addAll(it)
-            }
 
-        }
-        return dayPlans
-    }
 
     fun deletePlan(dayPlan: DayPlanItem){
        viewModelScope.launch {
@@ -201,20 +196,29 @@ class DayPlanViewModel @Inject constructor(private  val dayPlansRepository: DayP
 
 
     init {
-        setDayPlansData()
+       fetchDayPlans()
     }
 
-    private fun  setDayPlansData() {
-        _uiState.update {
-            state -> state.copy(dayPlans = fetchDayPlans())
+    private  fun fetchDayPlans()  {
+        viewModelScope.launch {
+            dayPlansRepository.getAllDayPlans().collect { items ->
+                _uiState.update {
+                    state -> state.copy(
+                        dayPlans =  items
+                    )
+                }
+            }
+
         }
+
     }
+
 }
 
-val dayPlans = mutableListOf<DayPlanItem>()
+
 
 data class DayPlanUiState(
-    val dayPlans: List<DayPlanItem> = emptyList(),
+    var dayPlans: List<DayPlanItem> = emptyList(),
     val hasError: Boolean = false,
 )
 

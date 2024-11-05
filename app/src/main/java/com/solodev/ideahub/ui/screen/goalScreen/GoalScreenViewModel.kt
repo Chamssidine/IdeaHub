@@ -33,7 +33,6 @@ class GoalScreenViewModel @Inject constructor(
     private fun moveGoalToAchievedGoalList(goalItem: GoalItem) {
         viewModelScope.launch {
             goalsRepository.updateGoal(goalItem)
-
         }
        fetchGoals()
     }
@@ -43,22 +42,13 @@ class GoalScreenViewModel @Inject constructor(
 
         viewModelScope.launch {
             goalsRepository.deleteGoal(goalItem)
+            fetchGoals()
         }
 
     }
 
 
-    fun deleteGoalFromUnAchievedList(goalItem: GoalItem) {
-        var newAchievedGoalList = _uiState.value.achievedGoalItemLists
 
-        _uiState.update { state ->
-            state.copy(
-                unAchievedGoalItemLists = (state.unAchievedGoalItemLists.filterNot { it.id == goalItem.id }).toMutableList()
-            )
-
-        }
-
-    }
     fun refreshGoals() {
         fetchGoals()
     }
@@ -83,17 +73,10 @@ class GoalScreenViewModel @Inject constructor(
 
 
     private fun confirmGoalUpdate(updatedGoalItem: GoalItem) {
-        if (validateInputs()) {
-            _uiState.update { state ->
-                state.copy(
-                    unAchievedGoalItemLists = (state.unAchievedGoalItemLists.map { goal ->
-                        if (goal.id == updatedGoalItem.id) updatedGoalItem else goal
-                    }).toMutableList()
-                )
-            }
+        viewModelScope.launch {
+            goalsRepository.updateGoal(updatedGoalItem)
+            refreshGoals()
         }
-        else
-            Log.d("GoalScreenViewModel", "The goal is not found in the list")
     }
 
 
@@ -119,7 +102,6 @@ class GoalScreenViewModel @Inject constructor(
 
     fun markGoalAsCompleted(goalItem: GoalItem) {
         moveGoalToAchievedGoalList(goalItem.copy(isCompleted = true))
-        deleteGoalFromUnAchievedList(goalItem)
 
     }
 
