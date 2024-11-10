@@ -76,6 +76,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -222,7 +223,8 @@ fun TextArea(
     text: String,
     onTextChange: (String) -> Unit,
     singleLine: Boolean = true,
-    label: String = stringResource(id = R.string.description_example)
+    label: String = stringResource(id = R.string.description_example),
+    maxLines: Int = 1
 ) {
     Box(
         modifier = modifier.wrapContentSize(),
@@ -250,7 +252,11 @@ fun TextArea(
                     unfocusedContainerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
-                )
+                ),
+                maxLines = maxLines,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done
+                ),
             )
         }
     }

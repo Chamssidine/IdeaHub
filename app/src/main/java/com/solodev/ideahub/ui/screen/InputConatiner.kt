@@ -74,7 +74,9 @@ fun InputContainer(
                 onTextChange = onInputValueChange,
                 modifier = modifier.fillMaxWidth(),
                 singleLine = false,
-                label = labelValue
+                label = labelValue,
+                maxLines = maxLines
+
             )
         }
     }

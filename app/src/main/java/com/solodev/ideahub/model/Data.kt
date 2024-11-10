@@ -488,5 +488,21 @@ val bottomNavigationItems = listOf(
     ),
 
 
+
     )
 
+enum class PrivacyLevel {
+    PUBLIC, PRIVATE, PROTECTED, NONE
+}
+
+data class Privacy(
+   val privacy: MutableMap<PrivacyLevel, String>
+)
+
+val privacy = Privacy(
+    privacy = mutableMapOf(
+        PrivacyLevel.PUBLIC to "Anyone can join and view the group.",
+        PrivacyLevel.PRIVATE to "Only invited members can join and view the group.",
+        PrivacyLevel.PROTECTED to "The group is visible to everyone, but only invited members can join."
+    )
+)

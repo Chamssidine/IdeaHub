@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.solodev.ideahub.model.CommunityCategory
 import com.solodev.ideahub.model.GroupItemData
+import com.solodev.ideahub.model.Privacy
+import com.solodev.ideahub.model.PrivacyLevel
 import com.solodev.ideahub.model.communityCategories
 import com.solodev.ideahub.util.service.FireStoreService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -294,6 +296,14 @@ class PopularGroupViewModel @Inject constructor(
         Log.d("PopularGroupScreen", "Slected Category : ${_uiState.value.selectedCategory.categoryName}")
         Log.d("PopularGroupScreen", "Category created: ${_uiState.value.selectedCategory.categoryId}")
     }
+
+    fun updatePrivacy(privacy: PrivacyLevel) {
+        _groupItemUIState.update {
+            state -> state.copy(
+                privacy = privacy
+            )
+        }
+    }
 }
 
 
@@ -305,7 +315,8 @@ data class GroupItemUiState(
     val isJoined: Boolean = false,
     val isFavorite: Boolean = false,
     val hasError: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val privacy: PrivacyLevel? = null
 )
 
 data class CommunityCategoryUiState(
