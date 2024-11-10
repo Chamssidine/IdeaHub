@@ -166,13 +166,11 @@ fun IdeaHubScreen(
             composable(Routes.Thread.name){
                 GoalScreen(
                     goalScreenViewModel = hiltViewModel<GoalScreenViewModel>(),
-                    popularGroupScreenViewModel = hiltViewModel<PopularGroupViewModel>()
                 )
             }
             composable(Routes.ThreadHistory.name) {
                 GoalScreen(
                     goalScreenViewModel = hiltViewModel<GoalScreenViewModel>(),
-                    popularGroupScreenViewModel = hiltViewModel<PopularGroupViewModel>()
                 )
             }
         }

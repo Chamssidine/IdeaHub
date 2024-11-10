@@ -69,11 +69,11 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.firestore)
+    implementation(libs.androidx.material3.android)
     // Remove the following line
     // implementation(libs.androidx.foundation.desktop)
     testImplementation(libs.junit)
@@ -101,4 +101,6 @@ dependencies {
     //coil image
     implementation("io.coil-kt:coil:2.7.0")
     implementation("io.coil-kt:coil-compose:2.7.0")
+    //workmanager
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
 }

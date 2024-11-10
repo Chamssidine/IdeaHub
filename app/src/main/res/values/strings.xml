@@ -168,5 +168,7 @@
     <string name="community_create_a_new_one">Create a new One?</string>
     <string name="create_community">Create a new One?</string>
     <string name="community_name">Community name</string>
+    <string name="privacy_settings">Privacy Settings</string>
+    <string name="select_privacy">Select privacy</string>
 
 </resources>

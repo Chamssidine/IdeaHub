@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.solodev.ideahub.ui.screen.IdeaHubScreen
+import com.solodev.ideahub.ui.screen.popularGroup.CreateGroupScreen
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    IdeaHubScreen()
+                    CreateGroupScreen()
                 }
             }
         }

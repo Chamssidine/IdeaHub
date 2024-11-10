@@ -64,7 +64,10 @@ class PopularGroupViewModel @Inject constructor(
                 val result = fireStoreService.getCommunityCategories()
                 if (result.isSuccess) {
                     val categories = result.getOrNull() ?: emptyList()
-                    _uiState.value = PopularGroupUiState(communityCategories = categories)
+                    _uiState.value = PopularGroupUiState(communityCategories = categories.filter { item ->
+                        item.groupList.isNotEmpty()
+
+                    })
                     Log.d("PopularGroupScreen", "Groups loaded successfully")
                     Log.d("PopularGroupScreen", "Groups: ${categories.size}")
                     Log.d("PopularGroupScreen", "Groups: ${categories[0].categoryId}")
@@ -91,23 +94,14 @@ class PopularGroupViewModel @Inject constructor(
         }
     }
 
-    fun likeGroup(groupId: String) {
-        updateGroupState(groupId) { it.copy(isLiked = !it.isLiked) }
-    }
-
-    fun addToFavorites(groupId: String) {
-        updateGroupState(groupId) { it.copy(isFavorite = !it.isFavorite) }
-    }
 
     fun createGroup() {
             viewModelScope.launch {
                 try {
-                    val categoryId = _uiState.value.selectedCategory?.categoryId ?: ""
+                    val categoryId = _uiState.value.selectedCategory.categoryId ?: ""
                     val groupName = _groupItemUIState.value.groupName
                     val groupDescription = _groupItemUIState.value.groupDescription
 
-
-                    //fireStoreService.createGroup(categoryId, groupName, groupDescription)
                     Log.d("PopularGroupScreen", "Group created successfully")
 
                     addGroupToCategory(
@@ -200,7 +194,7 @@ class PopularGroupViewModel @Inject constructor(
     private fun validateInputs(): Boolean {
         val state = _groupItemUIState.value
         Log.d("PopularGroupScreen", "Slected Category : ${_uiState.value
-            .selectedCategory?.categoryId}")
+            .selectedCategory.categoryId}")
         return when {
             state.groupName.isBlank() -> {
                 _groupItemUIState.update {
@@ -222,7 +216,7 @@ class PopularGroupViewModel @Inject constructor(
                 false
             }
 
-            _uiState.value.selectedCategory?.categoryId?.isBlank() ?: true -> {
+            _uiState.value.selectedCategory.categoryId?.isBlank() ?: true -> {
                 _groupItemUIState.update {
                     it.copy(
                         hasError = true,

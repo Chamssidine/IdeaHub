@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.solodev.ideahub.R
+import com.solodev.ideahub.ui.screen.components.TextArea
 import com.solodev.ideahub.ui.theme.IdeaHubTheme
 
 @Composable
@@ -60,13 +61,29 @@ fun InputContainer(
     onKeyboardDone: () -> Unit = {},
     showLabel: Boolean = true,
     maxLines: Int = 1,
+    isTextArea: Boolean = true
 
     ){
+    if(isTextArea){
+        Box(
+            modifier = modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ){
+            TextArea(
+                text = inputValue,
+                onTextChange = onInputValueChange,
+                modifier = modifier.fillMaxWidth(),
+                singleLine = false,
+                label = labelValue
+            )
+        }
+    }
+    else {
         Box(
 
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center,
-            ){
+        ){
             OutlinedTextField(
                 value = inputValue,
                 onValueChange = onInputValueChange,
@@ -86,8 +103,10 @@ fun InputContainer(
                     imeAction = ImeAction.Done
                 ),
 
-            )
+                )
         }
+    }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
