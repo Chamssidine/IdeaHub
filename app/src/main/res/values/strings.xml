@@ -170,5 +170,9 @@
     <string name="community_name">Community name</string>
     <string name="privacy_settings">Privacy Settings</string>
     <string name="select_privacy">Select privacy</string>
+    <string name="view_group_details">View group details</string>
+    <string name="group_settings">Group settings</string>
+    <string name="max_members_count">Maximum members count</string>
+    <string name="community">Community</string>
 
 </resources>

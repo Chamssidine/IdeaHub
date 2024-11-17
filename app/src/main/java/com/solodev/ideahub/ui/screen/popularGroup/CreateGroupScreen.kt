@@ -1,6 +1,7 @@
 package com.solodev.ideahub.ui.screen.popularGroup
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 
 
@@ -44,6 +46,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,19 +58,22 @@ import com.solodev.ideahub.R
 import com.solodev.ideahub.model.PrivacyLevel
 import com.solodev.ideahub.model.privacy
 import com.solodev.ideahub.ui.screen.InputContainer
+import com.solodev.ideahub.ui.screen.components.CircleShape
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun CreateGroupScreen(
-    viewModel: PopularGroupViewModel = hiltViewModel()
+    viewModel: PopularGroupViewModel = hiltViewModel<PopularGroupViewModel>(),
+    onNextButtonCLicked: () -> Unit = {},
+    onBackPress: () -> Unit = {}
 ) {
     var showBottomSheet by remember {
         mutableStateOf(false)
     }
     val uiState by viewModel.groupItemUIState.collectAsState()
     Scaffold(
-        topBar = { CreateGroupTopAppBar(title = stringResource(id = R.string.create_group)) }
+        topBar = { CreateGroupTopAppBar(title = stringResource(id = R.string.create_group), onBackPress = onBackPress) }
     )
     { innerPadding ->
         val innerPadding = innerPadding
@@ -80,87 +86,81 @@ fun CreateGroupScreen(
            verticalArrangement = Arrangement.SpaceBetween,
            horizontalAlignment = Alignment.CenterHorizontally
        ){
-           ElevatedCard(
-               modifier = Modifier
-                   .padding(dimensionResource(id = R.dimen.padding_medium))
-                  ,
-               shape = MaterialTheme.shapes.medium
-
-           ) {
-               Column {
-                   Card(
-                       modifier = Modifier.fillMaxWidth(),
-                       shape = MaterialTheme.shapes.medium,
-
-                   ) {
-                       Box(
-                           modifier = Modifier
-                               .padding(dimensionResource(id = R.dimen.padding_medium))
-                               .fillMaxWidth()
-                               .height(120.dp),
-                           contentAlignment = Alignment.Center
-                       ) {
-                           IconButton(
-                               modifier = Modifier
-                                   .wrapContentSize()
-                                   .align(Alignment.Center),
-                               onClick = {
-
-                               }
-                           ){
-                               Icon( painter = painterResource(id = R.drawable.add_a_photo_24px), contentDescription = "null")
-                           }
-
-                       }
-
+           Column (
+               horizontalAlignment = Alignment.CenterHorizontally
+           ){
+               ElevatedCard(
+                   modifier = Modifier
+                       .wrapContentSize()
+                       .size(150.dp),
+                   shape = CircleShape (),
+                   onClick = {
 
                    }
-                   InputContainer(
-                       modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
-                       inputValue = uiState.groupName,
-                       labelValue = stringResource(id = R.string.group_name),
-                       onInputValueChange = {
-                            viewModel.updateGroupName(it)
-                       },
-                       maxLines = 1
-                   )
-                   InputContainer (
-                       modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
-                       inputValue = uiState.groupDescription,
-                       labelValue = stringResource(id = R.string.group_description),
-                       onInputValueChange = {
-                           viewModel.updateDescription(it)
-                       },
-                       maxLines = 2
-                   )
-                   Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
-                    Text(
-                        text = stringResource(id = R.string.privacy_settings),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-
-                    )
-                   Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
-                   ElevatedButton(
-                       onClick = {
-                           showBottomSheet = true
-                       },
+                   ) {
+                   Box(
                        modifier = Modifier
-                           .fillMaxWidth()
-                           .padding(dimensionResource(id = R.dimen.padding_medium))
-                           .height(50.dp),
-                   ){
-                       Text(text = if(uiState.privacy != null) uiState.privacy!!.name else stringResource(id =R.string.select_privacy))
+                        .fillMaxSize()
+                           ,
+                       contentAlignment = Alignment.Center
+                   ) {
+
+                       Icon( painter = painterResource(id = R.drawable.add_a_photo_24px), contentDescription = "null")
+
                    }
 
 
                }
+               InputContainer(
+                   modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
+                   inputValue = uiState.groupName,
+                   labelValue = stringResource(id = R.string.group_name),
+                   onInputValueChange = {
+                       viewModel.updateGroupName(it)
+                   },
+                   maxLines = 1,
+                   isError = true,
+               )
+               InputContainer (
+                   modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
+                   inputValue = uiState.groupDescription,
+                   labelValue = stringResource(id = R.string.group_description),
+                   onInputValueChange = {
+                       viewModel.updateDescription(it)
+                   },
+                   maxLines = 2,
+                   isError = uiState.hasError,
+               )
+               Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_medium)))
+               Text(
+                   text = stringResource(id = R.string.privacy_settings),
+                   style = MaterialTheme.typography.bodyLarge,
+                   modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
+
+               )
+               Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_small)))
+               TextButton(
+                   onClick = {
+                       showBottomSheet = true
+                   },
+                   modifier = Modifier
+                       .fillMaxWidth()
+                       .padding(dimensionResource(id = R.dimen.padding_medium))
+                       .height(50.dp),
+               ){
+                   Text(text = if(uiState.privacy != null) uiState.privacy!!.name else stringResource(id =R.string.select_privacy))
+               }
+
 
            }
+
            
            Spacer(modifier = Modifier.weight(1f))
            ElevatedButton(
-               onClick = { /*TODO*/ },
+               onClick = {
+                   if(viewModel.checkInputs())
+                       onNextButtonCLicked()
+               },
                modifier = Modifier
                    .fillMaxWidth()
                    .padding(16.dp)
@@ -193,19 +193,15 @@ fun CreateGroupTopAppBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(dimensionResource(id = R.dimen.padding_medium)),
+            .padding(start = dimensionResource(id = R.dimen.padding_medium)),
         verticalAlignment = Alignment.CenterVertically,
 
     ) {
-        ElevatedCard(
-            shape = MaterialTheme.shapes.extraLarge,
-            modifier = Modifier.size(50.dp),
-            onClick = onBackPress
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ){
+        Box(
+            modifier = Modifier.background(Color.Transparent),
+            contentAlignment = Alignment.Center
+        ){
+            IconButton(onClick = onBackPress) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "null",
@@ -301,7 +297,9 @@ fun PrivacyBottomSheet(
                                     }
                                 }
                         },
-                        modifier = Modifier.padding(start = dimensionResource(id = R.dimen.padding_small))
+                        modifier = Modifier
+                            .padding(dimensionResource(id = R.dimen.padding_medium))
+                            .fillMaxWidth()
                     ) {
                         Text(text = stringResource(id = R.string.confirm))
                     }
@@ -315,6 +313,7 @@ fun PrivacyBottomSheet(
 }
 
 @Preview(showBackground = true)
+
 @Composable
 fun CreateGroupScreenPreview() {
     CreateGroupScreen()

@@ -205,7 +205,9 @@ class PopularGroupViewModel @Inject constructor(
                         errorMessage = "The title is empty"
                     )
                 }
+
                 false
+
             }
 
             state.groupDescription.isBlank() -> {

@@ -44,6 +44,7 @@ import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupViewModel
     goalScreenViewModel: GoalScreenViewModel = hiltViewModel<GoalScreenViewModel>(),
     dayPlanViewModel: DayPlanViewModel =  hiltViewModel<DayPlanViewModel>(),
     popularGroupScreenViewModel: PopularGroupViewModel =  hiltViewModel<PopularGroupViewModel>(),
+    onCreateGroupButtonClicked: () -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
@@ -61,6 +62,9 @@ import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupViewModel
                 goalScreenViewModel,
                 dayPlanViewModel,
                 popularGroupScreenViewModel,
+                onCreateGroupButtonClicked = {
+                    onCreateGroupButtonClicked()
+                }
             )
         }
 
@@ -73,6 +77,7 @@ fun TabSection(
     goalScreenViewModel: GoalScreenViewModel,
     dayPlanViewModel: DayPlanViewModel,
     popularGroupScreenViewModel: PopularGroupViewModel,
+    onCreateGroupButtonClicked: () -> Unit = {}
 ) {
     val goalTabItems = goalTabItems
     var state by remember { mutableStateOf(0) }
@@ -101,7 +106,10 @@ fun TabSection(
             goalScreenViewModel = goalScreenViewModel,
             dayPlanViewModel = dayPlanViewModel,
             popularGroupScreenViewModel = popularGroupScreenViewModel,
-            selectedTabIndex = state
+            selectedTabIndex = state,
+            onCreateGroupButtonClicked = {
+                onCreateGroupButtonClicked()
+            }
         )
     }
 }
@@ -114,6 +122,7 @@ fun MainTabScreen(
     goalScreenViewModel: GoalScreenViewModel,
     dayPlanViewModel: DayPlanViewModel,
     popularGroupScreenViewModel: PopularGroupViewModel,
+    onCreateGroupButtonClicked: () -> Unit = {}
 
     ) {
 
@@ -174,7 +183,10 @@ fun MainTabScreen(
             2 -> {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     PopularGroupScreen(
-                        viewModel = popularGroupScreenViewModel
+                        viewModel = popularGroupScreenViewModel,
+                        onCreateGroupButtonCliked = {
+                           onCreateGroupButtonClicked()
+                        }
                     )
                 }
             }

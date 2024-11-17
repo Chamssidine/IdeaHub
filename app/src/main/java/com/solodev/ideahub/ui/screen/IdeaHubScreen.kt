@@ -34,6 +34,9 @@ import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationScreen
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreen
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenViewModel
 import com.solodev.ideahub.ui.screen.login.LoginScreen
+import com.solodev.ideahub.ui.screen.popularGroup.CreateGroupConfirmationScreen
+import com.solodev.ideahub.ui.screen.popularGroup.CreateGroupConfirmationScreenPreview
+import com.solodev.ideahub.ui.screen.popularGroup.CreateGroupScreen
 import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupViewModel
 import com.solodev.ideahub.ui.screen.sign_up.SignUpScreen
 import com.solodev.ideahub.ui.screen.userProfileScreen.UserProfileScreen
@@ -140,7 +143,11 @@ fun IdeaHubScreen(
             }
             composable(Routes.Home.name){
                 HomeScreen(
-                    popularGroupScreenViewModel = hiltViewModel<PopularGroupViewModel>()
+                    popularGroupScreenViewModel = hiltViewModel<PopularGroupViewModel>(),
+                    onCreateGroupButtonClicked = {
+                        navController.navigate(Routes.CreateGroup.name)
+                    }
+
                 )
             }
             composable(Routes.GoalCreation.name) {
@@ -173,6 +180,26 @@ fun IdeaHubScreen(
                     goalScreenViewModel = hiltViewModel<GoalScreenViewModel>(),
                 )
             }
+            composable(Routes.CreateGroup.name) {
+                CreateGroupScreen(
+                    onNextButtonCLicked = {
+                        navController.navigate(Routes.ConfirmCreateGoal.name)
+
+                    },
+                    onBackPress = {
+                        navController.navigateUp()
+                    }
+                )
+            }
+            composable(Routes.ConfirmCreateGoal.name) {
+                CreateGroupConfirmationScreen(
+                    onBackPress = {
+                        navController.navigateUp()
+                    }
+                )
+            }
+
+
         }
 
     }

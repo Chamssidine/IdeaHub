@@ -12,6 +12,8 @@ enum class Routes {
     ThreadHistory,
     GoalCreation,
     Welcome,
+    CreateGroup,
+    ConfirmCreateGoal
 
 
 

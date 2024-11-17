@@ -27,11 +27,11 @@ import com.solodev.ideahub.ui.screen.components.FloatingButton
 
 @Composable
 fun PopularGroupScreen(
-    viewModel: PopularGroupViewModel
+    viewModel: PopularGroupViewModel,
+    onCreateGroupButtonCliked: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
-
 
     Column(
         modifier = Modifier
@@ -50,18 +50,18 @@ fun PopularGroupScreen(
         // Show dialog when required
         if (showDialog) {
             Log.d("PopularGroupScreen", "Showing dialog")
-            CreateGroupDialog(
-                viewModel = viewModel,
-                showDialog = showDialog,
-                onDismiss = { showDialog = false },
-                onConfirm = {
-                    if (viewModel.checkInputs()) {
-                        Log.d("PopularGroupScreen", "On confirm in create group dialog called!")
-                        viewModel.createGroup()
-                        showDialog = false
-                    }
-                },
-            )
+//            CreateGroupDialog(
+//                viewModel = viewModel,
+//                showDialog = showDialog,
+//                onDismiss = { showDialog = false },
+//                onConfirm = {
+//                    if (viewModel.checkInputs()) {
+//                        Log.d("PopularGroupScreen", "On confirm in create group dialog called!")
+//                        viewModel.createGroup()
+//                        showDialog = false
+//                    }
+//                },
+//            )
         }
     }
 
@@ -69,7 +69,10 @@ fun PopularGroupScreen(
     Box(modifier = Modifier
         .fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
         FloatingButton(
-            onClick = { showDialog = true }
+            onClick = {
+                showDialog = true
+                onCreateGroupButtonCliked()
+            }
         )
     }
 }
@@ -281,7 +284,7 @@ fun CommunityGroupDropDown(
                             }
                     )
             }
-            Divider()
+            HorizontalDivider()
             DropdownMenuItem(
                 text = { Text(stringResource(id = R.string.create_community)) },
                 onClick = { showCommunityCreateDialog  = true },
