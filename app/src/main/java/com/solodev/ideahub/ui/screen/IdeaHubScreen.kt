@@ -3,6 +3,7 @@
 import MailConfirmationScreen
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Badge
@@ -26,19 +27,26 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.solodev.ideahub.R
+import com.solodev.ideahub.model.GoalScreenTabItem
 import com.solodev.ideahub.model.bottomNavigationItems
 import com.solodev.ideahub.ui.ViewModels.ScreenManagerVM
 import com.solodev.ideahub.ui.screen.communityScreen.CommunityScreen
+import com.solodev.ideahub.ui.screen.dayplanScreen.DayPlanScreen
+import com.solodev.ideahub.ui.screen.dayplanScreen.DayPlanViewModel
 import com.solodev.ideahub.ui.screen.gemini_chat.GeminiChatScreen
 import com.solodev.ideahub.ui.screen.goalCreationScreen.GoalCreationScreen
+import com.solodev.ideahub.ui.screen.goalScreen.ActiveDiscussionSection
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreen
 import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenViewModel
 import com.solodev.ideahub.ui.screen.login.LoginScreen
 import com.solodev.ideahub.ui.screen.popularGroup.CreateGroupConfirmationScreen
 import com.solodev.ideahub.ui.screen.popularGroup.CreateGroupConfirmationScreenPreview
 import com.solodev.ideahub.ui.screen.popularGroup.CreateGroupScreen
+import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupScreen
 import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupViewModel
 import com.solodev.ideahub.ui.screen.sign_up.SignUpScreen
+import com.solodev.ideahub.ui.screen.threadScreen.GeneralThreadListContent
 import com.solodev.ideahub.ui.screen.userProfileScreen.UserProfileScreen
 import com.solodev.ideahub.ui.screen.welcomeScreen.WelcomeScreen
 
@@ -53,6 +61,48 @@ fun IdeaHubScreen(
 ) {
     val uiState by screenManagerVM.uiState.collectAsState()
     var selectedItem by rememberSaveable { mutableStateOf(0) }
+
+    val goalTabItems = listOf(
+        GoalScreenTabItem(
+            title = R.string.general_thread,
+            selected = true,
+            showItem = true,
+            screenContent = { GeneralThreadListContent(
+                modifier =  Modifier.height(
+                    1000.dp
+                )
+                    .fillMaxWidth()
+            ) }
+        ),
+        GoalScreenTabItem(
+            title = R.string.goal_screen_tab_item_1,
+            selected = false,
+            showItem = false,
+            screenContent = { GoalScreen(goalScreenViewModel = hiltViewModel<GoalScreenViewModel>()) }
+        ),
+        GoalScreenTabItem(
+            title = R.string.goal_screen_tab_item_2,
+            selected = false,
+            showItem = false,
+            screenContent = { DayPlanScreen(viewModel = hiltViewModel<DayPlanViewModel>()) }
+        ),
+        GoalScreenTabItem(
+            title = R.string.goal_screen_tab_item_3,false, true,
+            screenContent = { PopularGroupScreen(
+                viewModel = hiltViewModel<PopularGroupViewModel>(),
+                onCreateGroupButtonCliked = {
+                    navController.navigate(Routes.CreateGroup.name)
+                }
+            ) }
+        ),
+        GoalScreenTabItem(
+            R.string.goal_screen_tab_item_4,false, true,
+            screenContent = {
+                ActiveDiscussionSection()
+            }
+        ),
+
+        )
     Scaffold(
         modifier = modifier.fillMaxSize(),
         bottomBar = {
@@ -143,11 +193,7 @@ fun IdeaHubScreen(
             }
             composable(Routes.Home.name){
                 HomeScreen(
-                    popularGroupScreenViewModel = hiltViewModel<PopularGroupViewModel>(),
-                    onCreateGroupButtonClicked = {
-                        navController.navigate(Routes.CreateGroup.name)
-                    }
-
+                    goalTabItems
                 )
             }
             composable(Routes.GoalCreation.name) {

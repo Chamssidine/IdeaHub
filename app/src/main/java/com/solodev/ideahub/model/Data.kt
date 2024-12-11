@@ -2,7 +2,26 @@ package com.solodev.ideahub.model
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.solodev.ideahub.R
+import com.solodev.ideahub.ui.screen.dayplanScreen.DayPlanScreen
+import com.solodev.ideahub.ui.screen.dayplanScreen.DayPlanViewModel
+import com.solodev.ideahub.ui.screen.goalScreen.ActiveDiscussionSection
+import com.solodev.ideahub.ui.screen.goalScreen.GoalScreen
+import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenViewModel
+import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupScreen
+import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupViewModel
+import com.solodev.ideahub.ui.screen.threadScreen.GeneralThreadListContent
+import com.solodev.ideahub.ui.screen.threadScreen.ThreadScreen
+
 import java.util.UUID
 
 data class BottomNavigationItem (
@@ -16,6 +35,8 @@ data class BottomNavigationItem (
 data class GoalScreenTabItem(
     @StringRes val title: Int,
     val selected: Boolean,
+    val showItem: Boolean = false,
+    val screenContent: @Composable () -> Unit = {}
 )
 data class CommunityTabItem(
     val title: String,
@@ -154,7 +175,7 @@ val userProfile = UserProfile(
 val threadItems = listOf(
     ThreadItem(
         threadTitle = "Understanding Kotlin Coroutines",
-        threadDescription = "A comprehensive guide to using coroutines in Kotlin for asynchronous programming.",
+        threadDescription = "A comprehensive guide to using coroutines in Kotlin for asynchronous programming.ajsjahsjhgdjhgajsdhgjsahdgjsashgdjhagdjsahgdjhagsjdhgsajdhgajsdgj",
         threadImage = "https://example.com/images/kotlin_coroutines.png",
         threadDate = "2023-06-15",
         contributionCount = 45,
@@ -440,23 +461,7 @@ val communityTabItems = listOf(
     ),
 )
 
-val goalTabItems = listOf(
-    GoalScreenTabItem(
-        title = R.string.goal_screen_tab_item_1,
-        selected = true
-    ),
-    GoalScreenTabItem(
-        title = R.string.goal_screen_tab_item_2,
-        selected = false
-    ),
-    GoalScreenTabItem(
-        title = R.string.goal_screen_tab_item_3,false
-    ),
-    GoalScreenTabItem(
-        R.string.goal_screen_tab_item_4,false
-    ),
 
-)
 val bottomNavigationItems = listOf(
     BottomNavigationItem(
         title = "Home",

@@ -174,5 +174,6 @@
     <string name="group_settings">Group settings</string>
     <string name="max_members_count">Maximum members count</string>
     <string name="community">Community</string>
+    <string name="general_thread">General</string>
 
 </resources>

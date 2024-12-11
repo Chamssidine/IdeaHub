@@ -147,9 +147,9 @@ fun MainGroupScreen(
             }
 
         }
-            threadItems.forEachIndexed { index, threadItem ->
+    threadItems.forEachIndexed { index, threadItem ->
                 ThreadItem(threadItem = threadItem)
-            }
+    }
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -291,5 +291,5 @@ fun CustomTab(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun CommunityScreenPreview(){
-    ExploreTabSection()
+    CommunityScreen()
 }

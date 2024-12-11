@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -116,17 +118,34 @@ fun InputContainer(
 fun CustomSearchBar(
     modifier:Modifier = Modifier,
 ) {
+    val onActiveChange = {}
+    val colors1 = SearchBarDefaults.colors()
     SearchBar(
+        inputField = {
+            SearchBarDefaults.InputField(
+                query = "Search",
+                onQueryChange = {},
+                onSearch = {},
+                expanded = false,
+                onExpandedChange = {onActiveChange()},
+                enabled = true,
+                placeholder = null,
+                leadingIcon = {Icon(imageVector = Icons.Default.Search, contentDescription = null)},
+                trailingIcon = null,
+                colors = colors1.inputFieldColors,
+                interactionSource = null,
+            )
+        },
+        expanded = false,
+        onExpandedChange = { onActiveChange() },
         modifier = modifier,
-        leadingIcon = {Icon(imageVector = Icons.Default.Search, contentDescription = null)},
-       query = "Search",
-       onQueryChange = {},
-       onSearch = {},
-       active = false,
-       onActiveChange = {}
-   ) {
-
-   }
+        shape = SearchBarDefaults.inputFieldShape,
+        colors = colors1,
+        tonalElevation = SearchBarDefaults.TonalElevation,
+        shadowElevation = SearchBarDefaults.ShadowElevation,
+        windowInsets = SearchBarDefaults.windowInsets,
+        content = {}
+    )
 }
 
 @Composable

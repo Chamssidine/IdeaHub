@@ -43,7 +43,7 @@ import com.solodev.ideahub.ui.screen.components.MenuSample
 import kotlinx.coroutines.delay
 
 @Composable
-fun DayPlan(
+fun DayPlanScreen(
     viewModel: DayPlanViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsState()

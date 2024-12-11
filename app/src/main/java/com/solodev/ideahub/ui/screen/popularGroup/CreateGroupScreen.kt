@@ -1,6 +1,7 @@
 package com.solodev.ideahub.ui.screen.popularGroup
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.scrollable
@@ -160,6 +161,8 @@ fun CreateGroupScreen(
                onClick = {
                    if(viewModel.checkInputs())
                        onNextButtonCLicked()
+                   else
+                       Log.d("CreateGroupScreen", "Inputs are not valid")
                },
                modifier = Modifier
                    .fillMaxWidth()
