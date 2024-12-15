@@ -19,7 +19,7 @@ interface ThreadItemRepository {
 class ThreadItemRepositoryImpl() : ThreadItemRepository {
 
     private var _threadItems: MutableList<ThreadItem> = threadItems.toMutableList()
-
+    private  var _selectedItem: ThreadItem? = null
 
     // Flow to observe the data changes
     private val _threadItemsFlow = MutableStateFlow<List<ThreadItem>>(emptyList())
@@ -41,7 +41,12 @@ class ThreadItemRepositoryImpl() : ThreadItemRepository {
     override suspend fun insertThreadItem(threadItem: ThreadItem) {
         addThreadItem(threadItem)
     }
-
+    fun setSelectedItem(threadItem: ThreadItem) {
+        _selectedItem = threadItem
+    }
+    fun getSelectedItem(): ThreadItem? {
+        return _selectedItem
+    }
     override suspend fun deleteThreadItem(threadItem: ThreadItem) {
         TODO("Not yet implemented")
     }

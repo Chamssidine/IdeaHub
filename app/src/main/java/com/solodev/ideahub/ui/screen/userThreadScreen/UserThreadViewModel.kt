@@ -23,6 +23,7 @@ class UserThreadViewModel @Inject constructor (
     fun addThreadItem(threadItem: ThreadItem) {
        viewModelScope.launch {
            dataHolder.insertThreadItem(threadItem)
+           dataHolder.setSelectedItem(threadItem)
        }
     }
     init {
@@ -31,6 +32,9 @@ class UserThreadViewModel @Inject constructor (
     // Fetch the ThreadItem by ID
     fun fetchThreadItem(id: String) {
         _threadItem.value = dataHolder.getThreadItemById(id)
+    }
+    fun getSelectedItem(): ThreadItem? {
+        return dataHolder.getSelectedItem()
     }
 }
 

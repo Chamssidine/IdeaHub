@@ -274,8 +274,7 @@ fun IdeaHubScreen(
                     threadId?.let { viewModel.fetchThreadItem(it) }
                 }
 
-                val threadItem by viewModel.threadItem.collectAsState()
-                UserThreadScreen(threadItem = threadItem)
+                UserThreadScreen(threadItem = viewModel.getSelectedItem()!!)
             }
 
 
