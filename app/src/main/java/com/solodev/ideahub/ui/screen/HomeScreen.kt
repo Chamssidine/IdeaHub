@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.solodev.ideahub.R
 import com.solodev.ideahub.model.GoalScreenTabItem
-import com.solodev.ideahub.ui.screen.goalScreen.GoalScreenTab
+import com.solodev.ideahub.ui.screen.goalScreen.TabItemScreen
 
 
 @Composable fun HomeScreen(
@@ -65,7 +65,7 @@ fun TabSection(
         ) {
             goalTabItems.forEachIndexed { index, item ->
 
-                GoalScreenTab(
+                TabItemScreen(
                     tabTitle = stringResource(id = item.title),
                     onSelected = { state = index ; tabtitle = item.title; content = item },
                     selected = index == state

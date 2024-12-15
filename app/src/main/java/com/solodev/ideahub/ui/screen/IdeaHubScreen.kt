@@ -1,6 +1,7 @@
  package com.solodev.ideahub.ui.screen
 
 import MailConfirmationScreen
+import UserThreadHistoryScreen
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,11 +26,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.solodev.ideahub.R
 import com.solodev.ideahub.model.GoalScreenTabItem
+import com.solodev.ideahub.model.ThreadItem
 import com.solodev.ideahub.model.bottomNavigationItems
 import com.solodev.ideahub.ui.ViewModels.ScreenManagerVM
 import com.solodev.ideahub.ui.screen.communityScreen.CommunityScreen
@@ -47,19 +52,27 @@ import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupScreen
 import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupViewModel
 import com.solodev.ideahub.ui.screen.sign_up.SignUpScreen
 import com.solodev.ideahub.ui.screen.threadScreen.GeneralThreadListContent
+import com.solodev.ideahub.ui.screen.threadScreen.ThreadItem
 import com.solodev.ideahub.ui.screen.userProfileScreen.UserProfileScreen
+import com.solodev.ideahub.ui.screen.userThreadScreen.UserThreadScreen
+import com.solodev.ideahub.ui.screen.userThreadScreen.UserThreadViewModel
 import com.solodev.ideahub.ui.screen.welcomeScreen.WelcomeScreen
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import kotlin.reflect.typeOf
 
 
-
-@ExperimentalMaterial3Api
+ @ExperimentalMaterial3Api
 @Composable
 fun IdeaHubScreen(
     modifier: Modifier = Modifier,
     screenManagerVM: ScreenManagerVM = hiltViewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
 ) {
     val uiState by screenManagerVM.uiState.collectAsState()
+
     var selectedItem by rememberSaveable { mutableStateOf(0) }
 
     val goalTabItems = listOf(
@@ -68,10 +81,15 @@ fun IdeaHubScreen(
             selected = true,
             showItem = true,
             screenContent = { GeneralThreadListContent(
-                modifier =  Modifier.height(
-                    1000.dp
-                )
-                    .fillMaxWidth()
+                modifier = Modifier
+                    .height(
+                        1000.dp
+                    )
+                    .fillMaxWidth(),
+                onThreadClick = { threadItem ->
+                    navController.navigate("${Routes.UserThreadScreen.name}/${threadItem.threadId}")
+                }
+
             ) }
         ),
         GoalScreenTabItem(
@@ -222,11 +240,11 @@ fun IdeaHubScreen(
                 )
             }
             composable(Routes.ThreadHistory.name) {
-                GoalScreen(
-                    goalScreenViewModel = hiltViewModel<GoalScreenViewModel>(),
-                )
+
+                    UserThreadHistoryScreen()
             }
-            composable(Routes.CreateGroup.name) {
+            composable(
+                Routes.CreateGroup.name) {
                 CreateGroupScreen(
                     onNextButtonCLicked = {
                         navController.navigate(Routes.ConfirmCreateGoal.name)
@@ -243,6 +261,21 @@ fun IdeaHubScreen(
                         navController.navigateUp()
                     }
                 )
+            }
+            composable(
+                route = "${Routes.UserThreadScreen.name}/{threadId}",
+                arguments = listOf(navArgument("threadId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val threadId = backStackEntry.arguments?.getString("threadId")
+                val viewModel: UserThreadViewModel = hiltViewModel()
+
+                // Fetch the thread item when the screen is shown
+                LaunchedEffect(threadId) {
+                    threadId?.let { viewModel.fetchThreadItem(it) }
+                }
+
+                val threadItem by viewModel.threadItem.collectAsState()
+                UserThreadScreen(threadItem = threadItem)
             }
 
 

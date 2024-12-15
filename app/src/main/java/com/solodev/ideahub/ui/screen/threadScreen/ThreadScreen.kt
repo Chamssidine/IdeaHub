@@ -35,6 +35,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.solodev.ideahub.R
 import com.solodev.ideahub.model.ThreadItem
 import com.solodev.ideahub.model.threadItems
@@ -43,6 +46,7 @@ import com.solodev.ideahub.ui.screen.components.ThreadContent
 
 import com.solodev.ideahub.ui.screen.components.UserProfile
 import com.solodev.ideahub.ui.screen.userThreadScreen.CommentSection
+import com.solodev.ideahub.ui.screen.userThreadScreen.UserThreadViewModel
 
 
 @Composable
@@ -69,7 +73,8 @@ fun ThreadScreen(
 
 @Composable
 fun GeneralThreadListContent(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onThreadClick:(ThreadItem) -> Unit = {}
 ){
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
@@ -77,7 +82,8 @@ fun GeneralThreadListContent(
         items(threadItems.size) { threadItem ->
             ThreadItem(
                 threadItem = threadItems[threadItem],
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                onThreadClick = onThreadClick
             )
         }
     }
@@ -86,8 +92,11 @@ fun GeneralThreadListContent(
 @Composable
 fun ThreadItem(
     modifier: Modifier = Modifier,
-    threadItem: ThreadItem
+    threadItem: ThreadItem,
+    userThreadViewModel: UserThreadViewModel = hiltViewModel<UserThreadViewModel>(),
+    onThreadClick:(ThreadItem) -> Unit = {}
 ) {
+
 
     var expanded by remember { mutableStateOf(false) }
     var lineCount by remember { mutableStateOf(3) }
@@ -103,6 +112,8 @@ fun ThreadItem(
                 defaultTextOverflowValue = TextOverflow.Ellipsis
                 lineCount = 3
             }
+            userThreadViewModel.addThreadItem(threadItem)
+            onThreadClick(threadItem)
 
     },
         shape = RoundedCornerShape(16.dp),

@@ -10,11 +10,14 @@ enum class Routes {
     Profile,
     Thread,
     ThreadHistory,
+    UserThreadScreen,
     GoalCreation,
     Welcome,
     CreateGroup,
-    ConfirmCreateGoal
+    ConfirmCreateGoal;
 
 
-
+    fun withArgs(vararg args: String): String {
+        return this.name + args.joinToString(separator = "/", prefix = "/")
+    }
 }

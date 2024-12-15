@@ -408,7 +408,7 @@ fun GoalItem(
 
 
 @Composable
-fun GoalScreenTab(
+fun TabItemScreen(
     tabTitle: String = "Tab",
     onSelected: () -> Unit = {},
     selected: Boolean = false

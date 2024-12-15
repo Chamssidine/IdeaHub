@@ -80,22 +80,22 @@ fun UserProfile(
 @Composable
 fun ThreadContent(
     modifier: Modifier = Modifier,
-    title: String = "Title",
-    threadContentText: String = "It seems like you've entered the classic placeholder text known as “Lorem Ipsum.” This text is commonly used in design and typesetting to fill space when the actual content isn't available yet. The phrase “Lorem Ipsum” itself doesn’t have any specific meaning; it’s just a jumble of Latin-like words.",
-    totalContributionCount: Int = 10,
+    title: String? = "Title",
+    threadContentText: String? = "It seems like you've entered the classic placeholder text known as “Lorem Ipsum.” This text is commonly used in design and typesetting to fill space when the actual content isn't available yet. The phrase “Lorem Ipsum” itself doesn’t have any specific meaning; it’s just a jumble of Latin-like words.",
+    totalContributionCount: Int? = 10,
     expanded: Boolean = false,
     lineCount: Int = 3,
     showContributeButton: Boolean = true,
     defaultTextOverflowValue: TextOverflow = TextOverflow.Ellipsis
 ){
     Text(
-        text = title,
+        text = title!!,
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurface
     )
     Spacer(modifier = modifier.height(8.dp))
     Text(
-        text = threadContentText,
+        text = threadContentText!!,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurface,
         maxLines = lineCount, // Set the maximum number of lines

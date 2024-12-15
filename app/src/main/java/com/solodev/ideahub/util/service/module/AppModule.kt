@@ -9,6 +9,7 @@ import com.solodev.ideahub.data.GoalDataBase
 import com.solodev.ideahub.data.GoalItemDao
 import com.solodev.ideahub.data.GoalsRepository
 import com.solodev.ideahub.data.OfflineGoalsRepository
+import com.solodev.ideahub.data.ThreadItemRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,5 +53,11 @@ object AppModule {
     @Singleton
     fun provideDayPlansRepository(dayPlanDao: DayPlanDao): DayPlansRepository {
         return DayPlansRepositoryImpl(dayPlanDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideThreadItemRepositoryImpl(): ThreadItemRepositoryImpl {
+        return ThreadItemRepositoryImpl()
     }
 }

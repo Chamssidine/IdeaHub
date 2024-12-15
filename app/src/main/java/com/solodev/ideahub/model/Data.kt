@@ -21,6 +21,7 @@ import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupScreen
 import com.solodev.ideahub.ui.screen.popularGroup.PopularGroupViewModel
 import com.solodev.ideahub.ui.screen.threadScreen.GeneralThreadListContent
 import com.solodev.ideahub.ui.screen.threadScreen.ThreadScreen
+import kotlinx.serialization.Serializable
 
 import java.util.UUID
 
@@ -43,15 +44,23 @@ data class CommunityTabItem(
     val selected: Boolean,
 )
 
-
+@Serializable
 data class ThreadItem(
-    val threadTitle: String,
-    val threadDescription: String,
-    val threadImage: String,
-    val threadDate: String,
-    val contributionCount: Int,
-    val category: String,
-    val userProfile: UserProfile
+    var threadId: String = UUID.randomUUID().toString(),
+    val threadTitle: String = "",
+    val threadDescription: String = "",
+    val threadImage: String = "",
+    val threadDate: String = "",
+    val contributionCount: Int = 0,
+    val category: String = "",
+    val userProfile: UserProfile = UserProfile(
+        name = "",
+        biography = "",
+        profileImage = "",
+        publicationTime = 0,
+        personalStatistics = PersonalStatistics(0, 0),
+        userSettings = UserSettings(false, "", ""),
+    )
 )
 
 data class CommunityCategory(
@@ -90,7 +99,7 @@ data class UserMessage(
     val time: String
 )
 
-
+@Serializable
 data class UserProfile(
     val name: String,
     val biography: String,
@@ -100,13 +109,13 @@ data class UserProfile(
     val userSettings: UserSettings
 )
 
-
+@Serializable
 data class PersonalStatistics(
     val reachedGoalPercentage: Int,
     val contributions: Int
 )
 
-
+@Serializable
 data class UserSettings(
     val notificationsEnabled: Boolean,
     val selectedLanguage: String,

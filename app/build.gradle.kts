@@ -9,6 +9,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     kotlin("plugin.compose")
+    kotlin("plugin.serialization") version "1.9.10"
 }
 
 android {
@@ -91,16 +92,18 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth-ktx")
-    implementation("com.google.android.material:material:1.12.0")
+    implementation(libs.material)
 
 
     //Room
     implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+
     //coil image
-    implementation("io.coil-kt:coil:2.7.0")
-    implementation("io.coil-kt:coil-compose:2.7.0")
-    //workmanager
-    implementation("androidx.work:work-runtime-ktx:2.8.1")
+    implementation(libs.coil.compose)
+
+    //Gson json converter
+    implementation(libs.kotlinx.serialization.json)
+
 }

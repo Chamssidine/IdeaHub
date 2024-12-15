@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.solodev.ideahub.R
+import com.solodev.ideahub.model.ThreadItem
 import com.solodev.ideahub.ui.screen.components.CommentSectionInput
 import com.solodev.ideahub.ui.screen.components.ThreadContent
 import com.solodev.ideahub.ui.screen.components.UserProfile
@@ -50,6 +51,7 @@ import com.solodev.ideahub.ui.screen.components.UserProfile
 @Composable
 fun UserThreadScreen(
     modifier: Modifier = Modifier,
+    threadItem: ThreadItem? = ThreadItem(),
 ) {
     Box(
         modifier = modifier.fillMaxSize()
@@ -72,7 +74,10 @@ fun UserThreadScreen(
                     modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
                     shape = MaterialTheme.shapes.small
                 ){
-                    UserThreadItem(modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)))
+                    UserThreadItem(
+                        modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+                        threadItem = threadItem
+                    )
                 }
             }
 
@@ -114,11 +119,16 @@ fun UserThreadScreen(
 @Composable
 fun UserThreadItem(
     modifier: Modifier = Modifier,
+    threadItem: ThreadItem?
 ) {
     Column (modifier = modifier){
         UserProfile()
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-        ThreadContent(showContributeButton = false)
+        ThreadContent(
+            title = threadItem?.threadTitle,
+            threadContentText = threadItem?.threadDescription,
+            totalContributionCount = threadItem?.contributionCount,
+            showContributeButton = false)
     }
 
 
