@@ -39,9 +39,9 @@ import com.solodev.ideahub.ui.screen.InputContainer
 @Composable
 fun UserProfile(
     modifier: Modifier = Modifier,
-    name: String = "Code",
-    image: String = "null",
-    publicationTime: Int = 0,
+    name: String? = "Code",
+    image: String? = "null",
+    publicationTime: Int? = 0,
 ){
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -63,7 +63,7 @@ fun UserProfile(
 
         Column() {
             Text(
-                text = name,
+                text = name!!,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )

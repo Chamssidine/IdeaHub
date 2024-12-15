@@ -122,7 +122,11 @@ fun UserThreadItem(
     threadItem: ThreadItem?
 ) {
     Column (modifier = modifier){
-        UserProfile()
+        UserProfile(
+           name = threadItem?.userProfile?.name,
+            image = threadItem?.userProfile?.profileImage,
+            publicationTime = threadItem?.userProfile?.publicationTime
+        )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
         ThreadContent(
             title = threadItem?.threadTitle,
