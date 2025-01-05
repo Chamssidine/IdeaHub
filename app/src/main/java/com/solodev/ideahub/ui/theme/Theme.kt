@@ -137,7 +137,7 @@ fun IdeaHubTheme(
             WindowCompat.getInsetsController(window, view).apply {
                 isAppearanceLightStatusBars = !darkTheme
 
-                hide(WindowInsetsCompat.Type.navigationBars())
+                show(WindowInsetsCompat.Type.navigationBars())
                 systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         }

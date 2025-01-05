@@ -60,8 +60,20 @@ data class ThreadItem(
         publicationTime = 0,
         personalStatistics = PersonalStatistics(0, 0),
         userSettings = UserSettings(false, "", ""),
-    )
+    ),
+    val comments: List<Comment> = mutableListOf()
 )
+
+@Serializable
+data class Comment(
+    val commentId: String = UUID.randomUUID().toString(),
+    val commentText: String = "",
+    val commentDate: String = "",
+    val userProfile: UserProfile = UserProfile()
+){
+    constructor(): this("", "", "", UserProfile())
+}
+
 
 data class CommunityCategory(
     var categoryName: String,
@@ -101,26 +113,34 @@ data class UserMessage(
 
 @Serializable
 data class UserProfile(
+    val id: String = UUID.randomUUID().toString(),
     val name: String,
     val biography: String,
     val profileImage: String,
     val publicationTime: Int,
     val personalStatistics: PersonalStatistics,
     val userSettings: UserSettings
-)
+){
+    constructor() : this("","","","",0,PersonalStatistics(0,0),UserSettings(false,"",""))
+}
 
 @Serializable
 data class PersonalStatistics(
     val reachedGoalPercentage: Int,
     val contributions: Int
-)
+){
+    constructor(): this(0,0)
+}
+
 
 @Serializable
 data class UserSettings(
     val notificationsEnabled: Boolean,
     val selectedLanguage: String,
     val selectedTheme: String
-)
+){
+    constructor() : this(false, "", "" )
+}
 
 
 val aiMessage1 = AiMessage(
@@ -172,6 +192,7 @@ val userSettings = UserSettings(
 
 // Données de profil utilisateur
 val userProfile = UserProfile(
+
     name = "CHRISTOPHER",
     biography = "Biographie",
     publicationTime = 20,

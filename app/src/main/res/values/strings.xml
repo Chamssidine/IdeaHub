@@ -103,7 +103,7 @@
     <string name="name">Name</string>
     <string name="title_and_description">Title and Description</string>
     <string name="title">Title</string>
-    <string name="contributions">20 Contributions</string>
+    <string name="contributions">Contributions</string>
     <string name="see_all">See All..</string>
     <string name="getstarted">Let\'s Go</string>
     <string name="description">Description\n</string>
@@ -175,5 +175,7 @@
     <string name="max_members_count">Maximum members count</string>
     <string name="community">Community</string>
     <string name="general_thread">General</string>
+    <string name="comment_placeholder">write a comment</string>
+    <string name="button_write_comment">comment</string>
 
 </resources>

@@ -1,22 +1,35 @@
 package com.solodev.ideahub.data
 
+import android.util.Log
+import com.google.firebase.firestore.FirebaseFirestore
+import com.solodev.ideahub.model.Comment
 import com.solodev.ideahub.model.ThreadItem
 import com.solodev.ideahub.model.threadItems
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.util.UUID
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
+const val  TAG = "ThreadImpl"
 interface ThreadItemRepository {
     suspend fun insertThreadItem(threadItem: ThreadItem)
     suspend fun deleteThreadItem(threadItem: ThreadItem)
-    suspend fun updateThreadItem(threadItem: ThreadItem)
+    suspend fun updateThreadItem(threadItem: ThreadItem):Result<Unit>
+    suspend fun  createThreadItem(threadItem: ThreadItem):Result<Unit>
     fun getThreadItemById(id: String): ThreadItem?
-    fun getAllThreadItems(): List<ThreadItem>
+    fun getAllThreadItems(): Flow<List<ThreadItem>>
+    fun getSelectedItem(): ThreadItem?
+    fun setSelectedItem(threadItem: ThreadItem)
+    suspend fun addNewComment(comment: Comment, threadId: String ):Result<Unit>
 
 }
 
-class ThreadItemRepositoryImpl() : ThreadItemRepository {
+class ThreadItemRepositoryImpl @Inject constructor(
+    private val firestore: FirebaseFirestore
+) : ThreadItemRepository {
 
     private var _threadItems: MutableList<ThreadItem> = threadItems.toMutableList()
     private  var _selectedItem: ThreadItem? = null
@@ -31,36 +44,121 @@ class ThreadItemRepositoryImpl() : ThreadItemRepository {
         _threadItemsFlow.value = _threadItems
     }
 
-    fun initialize() {
-        _threadItems = threadItems.toMutableList()
-        for (item in _threadItems) {
-            item.threadId = UUID.randomUUID().toString()
-        }
-    }
+
 
     override suspend fun insertThreadItem(threadItem: ThreadItem) {
         addThreadItem(threadItem)
+
     }
-    fun setSelectedItem(threadItem: ThreadItem) {
+    override fun setSelectedItem(threadItem: ThreadItem) {
         _selectedItem = threadItem
     }
-    fun getSelectedItem(): ThreadItem? {
+
+    override suspend fun addNewComment(comment: Comment, threadId: String): Result<Unit>{
+        return try {
+             val query = firestore.collection("threads").whereEqualTo("threadId",threadId).get().await()
+             if(query.isEmpty)
+                 return Result.failure(Exception("Thread not found"))
+
+             val threadDoc = query.documents.first()
+             val threadRef = threadDoc.reference
+
+             firestore.runTransaction { transaction ->
+                 val threadSnapshot = transaction.get(threadRef)
+                 val threads = threadSnapshot.toObject(ThreadItem::class.java)
+                 val comments = threads?.comments?.toMutableList() ?: mutableListOf()
+                 comments.add(comment)
+
+                 transaction.update(threadRef, "comments", comments)
+
+             }.await()
+
+            Result.success(Unit)
+         }catch (e: Exception){
+             return  Result.failure(e)
+         }
+    }
+
+    override fun getSelectedItem(): ThreadItem? {
         return _selectedItem
     }
     override suspend fun deleteThreadItem(threadItem: ThreadItem) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateThreadItem(threadItem: ThreadItem) {
-        TODO("Not yet implemented")
+    override suspend fun updateThreadItem(threadItem: ThreadItem): Result<Unit> {
+        return try {
+            val query = firestore.collection("threads").whereEqualTo("threadId", threadItem.threadId).get().await()
+
+            // Check if the query returned any documents
+            if (query.isEmpty) {
+                return Result.failure(Exception("Thread not found"))
+            }
+
+            val threadDoc = query.documents.first()
+            val threadRef = threadDoc.reference
+
+            // Run Firestore transaction to replace the entire thread document
+            firestore.runTransaction { transaction ->
+                val threadSnapshot = transaction.get(threadRef)
+                val currentThread = threadSnapshot.toObject(ThreadItem::class.java)
+
+                // If currentThread is null, return failure
+                if (currentThread == null) {
+                    throw Exception("Thread not found in the transaction")
+                }
+
+                // Replace the entire thread document with the new ThreadItem object
+                transaction.set(threadRef, threadItem)  // Overwrite the entire document with the new data
+
+            }.await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            // Log the error and return failure
+            Log.e("FirestoreError", "Failed to update thread: ${e.message}", e)
+            Result.failure(e)
+        }
     }
+
+
+    override suspend fun createThreadItem(threadItem: ThreadItem): Result<Unit> {
+        return try {
+            Log.d(TAG, "Début de createThreadItem")
+            firestore.collection("threads").add(threadItem).await()
+            Log.d(TAG, "Thread ajouté avec succès")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Erreur lors de l'ajout du thread : ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
 
     override fun getThreadItemById(id: String): ThreadItem? {
         return _threadItems.find { it.threadId == id }
     }
 
-    override fun getAllThreadItems(): List<ThreadItem> {
-        return _threadItems
+    override fun getAllThreadItems(): Flow<List<ThreadItem>> {
+        return flow {
+            // Emit an empty list initially
+            emit(emptyList())
+
+            // Fetch data from Firestore
+            val snapshot = firestore.collection("threads").get().await()
+
+            // Map Firestore documents to ThreadItem objects
+            val threadItems = snapshot.documents.mapNotNull { document ->
+                document.toObject(ThreadItem::class.java)
+            }
+            Log.d(TAG, "Thread items fetched from Firestore: $threadItems")
+            // Emit the fetched list
+            emit(threadItems)
+        }.catch { e ->
+            // Handle any exceptions and emit an empty list if needed
+            emit(emptyList())
+            Log.d(TAG,"Error fetching threads: ${e.message}")
+        }
     }
 
 }

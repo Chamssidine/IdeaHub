@@ -94,8 +94,6 @@ fun MainTabScreen(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-
-        //render the content based on the selected tab
         selectedContent()
     }
 

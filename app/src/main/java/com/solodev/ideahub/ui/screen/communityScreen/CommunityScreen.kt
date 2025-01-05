@@ -46,8 +46,8 @@ import com.solodev.ideahub.model.communityTabItems
 import com.solodev.ideahub.model.groupItemData
 import com.solodev.ideahub.model.threadItems
 import com.solodev.ideahub.ui.screen.CustomSearchBar
-import com.solodev.ideahub.ui.screen.threadScreen.ThreadItem
 import com.solodev.ideahub.ui.screen.goalScreen.ActiveDiscussionSection
+import com.solodev.ideahub.ui.screen.threadScreen.ThreadItemUI
 
 @Composable
 fun CommunityScreen(
@@ -148,7 +148,7 @@ fun MainGroupScreen(
 
         }
     threadItems.forEachIndexed { index, threadItem ->
-                ThreadItem(threadItem = threadItem)
+                ThreadItemUI(threadItem = threadItem)
     }
 }
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,60 +1,81 @@
 package com.solodev.ideahub.ui.screen.userThreadScreen
 
+import android.os.Build
+
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Arrangement
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+
+
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+ 
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
+
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
+ 
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerIcon.Companion.Text
+ 
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.solodev.ideahub.R
+import com.solodev.ideahub.data.ThreadItemRepositoryImpl
+import com.solodev.ideahub.data.ThreadItemRepositoryImpl_Factory
+import com.solodev.ideahub.model.Comment
 import com.solodev.ideahub.model.ThreadItem
+import com.solodev.ideahub.model.UserProfile
 import com.solodev.ideahub.ui.screen.components.CommentSectionInput
 import com.solodev.ideahub.ui.screen.components.ThreadContent
-import com.solodev.ideahub.ui.screen.components.UserProfile
+import com.solodev.ideahub.ui.screen.components.UserProfileUI
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun UserThreadScreen(
+fun ThreadDetailsScreen(
     modifier: Modifier = Modifier,
-    threadItem: ThreadItem? = ThreadItem(),
+    threadViewModel: UserThreadViewModel
 ) {
+    val uiState by threadViewModel.comments.collectAsStateWithLifecycle()
+    val threadUIState by threadViewModel.threadItemUiState.collectAsStateWithLifecycle()
+
+    //Log.d("UserThreadScreen", "Thread items size: ${threadUIState.threadItems.size} + $counter")
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
     ) {
         Column(modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -66,7 +87,8 @@ fun UserThreadScreen(
             )
         ) {
             Box(
-                modifier = modifier.fillMaxWidth()
+                modifier = modifier
+                    .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.primary)
 
             ) {
@@ -76,40 +98,66 @@ fun UserThreadScreen(
                 ){
                     UserThreadItem(
                         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
-                        threadItem = threadItem
+                        threadItem = threadUIState.selectedThread
                     )
                 }
             }
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
 
-            repeat(12){
-                CommentSection(
-                    modifier = modifier
-                        .padding(start = dimensionResource(id = R.dimen.padding_medium)
-                            , end = dimensionResource(id = R.dimen.padding_medium)
-                            , top = dimensionResource(id = R.dimen.padding_small)
-                        ).animateContentSize(
+            ){
+                threadUIState.selectedThread.comments.forEachIndexed { index, comment ->
+                    CommentItem(
+                        modifier = modifier
+                            .padding(
+                                start = dimensionResource(id = R.dimen.padding_medium),
+                                end = dimensionResource(id = R.dimen.padding_medium),
+                                top = dimensionResource(id = R.dimen.padding_small)
+                            )
+                            .animateContentSize(
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioNoBouncy,
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            ),
+                        showImage = false,
+                        comment = comment
+
+                    )
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                }
+
+            }
+
+
+        }
+        Box(
+            contentAlignment = Alignment.BottomCenter,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .height(50.dp)
+
+        ){
+            CommentSectionInput(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .animateContentSize(
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
                             stiffness = Spring.StiffnessLow
                         )
                     ),
-                    showImage = false
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-            }
+                value = uiState.commentText,
+                onValueChange = {
+                    threadViewModel.onCommentTyping(it)
+                },
+                onSendClick = {threadViewModel.publishComment(threadUIState.selectedThread, uiState.commentText)}
 
+            )
         }
-        Box(
-            modifier = modifier.align(Alignment.BottomCenter)
-        )
-        {
-            CommentSectionInput(modifier = modifier.fillMaxWidth().animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            ))
-        }
+
+
 
     }
 
@@ -122,35 +170,32 @@ fun UserThreadItem(
     threadItem: ThreadItem?
 ) {
     Column (modifier = modifier){
-        UserProfile(
+        UserProfileUI(
            name = threadItem?.userProfile?.name,
             image = threadItem?.userProfile?.profileImage,
-            publicationTime = threadItem?.userProfile?.publicationTime
+            publicationTime = threadItem?.userProfile?.publicationTime.toString()
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
         ThreadContent(
-            title = threadItem?.threadTitle,
-            threadContentText = threadItem?.threadDescription,
-            totalContributionCount = threadItem?.contributionCount,
-            showContributeButton = false)
+            threadItem = threadItem!!,
+            showContributeButton = false
+            )
     }
 
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentSection(
+fun CommentItem(
     modifier: Modifier = Modifier,
     showImage: Boolean = true,
-    image : String = "null",
+    comment: Comment = Comment(),
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var lineCount by remember { mutableStateOf(3) }
+    var lineCount by remember { mutableIntStateOf(3) }
     var defaultTextOverflowValue by remember { mutableStateOf(TextOverflow.Ellipsis) }
-    Box()
-    {
-        ElevatedCard(
+
+    ElevatedCard(
             modifier = modifier,
             onClick = {
                 expanded = !expanded
@@ -168,15 +213,17 @@ fun CommentSection(
 
                 horizontalAlignment = Alignment.Start,
             ){
-                UserProfile(modifier = Modifier.wrapContentSize())
+                UserProfileUI(
+                    modifier = Modifier.wrapContentSize(),
+                    name = comment.userProfile.name,
+                    image = comment.userProfile.profileImage,
+                    publicationTime = comment.commentDate
+                )
 
                 Text(
-                    modifier = modifier.padding( end = 16.dp, bottom = 28.dp),
-                    text = "the time before time, when the stars were young," +
-                            " the Elder Gods walked the earth" +
-                            " Whispers tell of a hidden city," +
-                            " shrouded in mist, where the veil " +
-                            "between worlds is thin",
+                    modifier = modifier.padding( end = 8.dp),
+                    text = comment.commentText,
+                    style = MaterialTheme.typography.bodyMedium,
                     maxLines = lineCount,
                     overflow = defaultTextOverflowValue,
                 )
@@ -189,31 +236,35 @@ fun CommentSection(
                         contentScale = ContentScale.Crop,
                     )
                 }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    TextButton(onClick = { /*TODO*/ }) {
+                        Text(text = "Like")
+                    }
+                    TextButton(onClick = { /*TODO*/ }) {
+                        Text(text = "Respond")
+                    }
+                    TextButton(onClick = { /*TODO*/ }) {
+                        Text(text = "Report")
+                    }
+
+                }
 
             }
 
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 20.dp, top = dimensionResource(id = R.dimen.padding_medium))
-                .wrapContentSize()
-        )
-        {
-            ElevatedButton(
-                onClick = { /*TODO*/ },
-                shape = MaterialTheme.shapes.medium
-            ) {
-                Icon(painter = painterResource(id = R.drawable.thumb_up_24px), contentDescription = "null")
 
-            }
-        }
-    }
+
+
+
 
 
 }
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showSystemUi = true)
 @Composable
 fun UserThreadScreenPreview() {
-    UserThreadScreen()
+    CommentItem()
 }

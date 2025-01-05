@@ -1,6 +1,7 @@
 package com.solodev.ideahub.util.service.module
 
 import android.content.Context
+import com.google.firebase.firestore.FirebaseFirestore
 import com.solodev.ideahub.data.DayPlanDao
 import com.solodev.ideahub.data.DayPlanDataBase
 import com.solodev.ideahub.data.DayPlansRepository
@@ -9,6 +10,7 @@ import com.solodev.ideahub.data.GoalDataBase
 import com.solodev.ideahub.data.GoalItemDao
 import com.solodev.ideahub.data.GoalsRepository
 import com.solodev.ideahub.data.OfflineGoalsRepository
+import com.solodev.ideahub.data.ThreadItemRepository
 import com.solodev.ideahub.data.ThreadItemRepositoryImpl
 import dagger.Module
 import dagger.Provides
@@ -57,7 +59,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideThreadItemRepositoryImpl(): ThreadItemRepositoryImpl {
-        return ThreadItemRepositoryImpl()
+    fun provideThreadItemRepositoryImpl(firestore: FirebaseFirestore): ThreadItemRepository {
+        return ThreadItemRepositoryImpl(firestore)
     }
 }
