@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -194,31 +195,27 @@ fun CommentSectionInput(
     }
 
 
-    Row(
-        modifier = modifier.fillMaxWidth()
-            .heightIn(min = 56.dp, max = 100.dp),
-    ) {
 
-        Box(modifier = modifier.fillMaxWidth())
-        {
-            Card(
+    Box (
+        modifier = modifier.fillMaxSize()
+    ) {
+        Card(
                 onClick = { /*TODO*/ },
-                modifier = modifier.fillMaxWidth()
+                modifier = modifier.fillMaxSize()
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = modifier.fillMaxWidth()
+                    modifier = modifier.fillMaxSize()
                 ){
                     Box(
                         modifier = Modifier
-                            .weight(3f).fillMaxWidth()
-                            .heightIn(min = 56.dp, max = 80.dp) // Limit the height for scrolling
+                            .weight(3f).fillMaxSize()// Limit the height for scrolling
                             .verticalScroll(scrollState) // Enable scrolling
                     ) {
                         OutlinedTextField(
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxSize()
                                     .padding(dimensionResource(id = R.dimen.padding_small))
                                     .focusRequester(textFieldFocusRequester), // Ensure the text field takes full width
                             value = value,
@@ -271,7 +268,7 @@ fun CommentSectionInput(
 
         }
 
-    }
+
 
 }
 

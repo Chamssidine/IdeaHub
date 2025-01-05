@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
  
 import androidx.compose.foundation.layout.wrapContentSize
@@ -45,7 +46,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
- 
+import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -74,115 +76,90 @@ fun ThreadDetailsScreen(
     val uiState by threadViewModel.comments.collectAsStateWithLifecycle()
     val threadUIState by threadViewModel.threadItemUiState.collectAsStateWithLifecycle()
 
-    //Log.d("UserThreadScreen", "Thread items size: ${threadUIState.threadItems.size} + $counter")
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        Column(modifier = modifier
+    val paddingMedium = dimensionResource(id = R.dimen.padding_medium)
+    val paddingSmall = dimensionResource(id = R.dimen.padding_small)
+
+        Column(
+            modifier = modifier
+                .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .animateContentSize(
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
                     stiffness = Spring.StiffnessLow
                 )
-            )
+            ),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = modifier
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.primary)
-
             ) {
-                ElevatedCard(
-                    modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
-                    shape = MaterialTheme.shapes.small
-                ){
-                    UserThreadItem(
-                        modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
-                        threadItem = threadUIState.selectedThread
-                    )
-                }
-            }
-            Column(
-                modifier = modifier
-                    .fillMaxWidth()
-
-            ){
-                LazyColumn(
-                    modifier = Modifier
-                        .height(400.dp)
-                        .fillMaxWidth()
-                ) {
-                    items(threadUIState.selectedThread.comments){ comment ->
-                        CommentItem(
-                            modifier = modifier
-                                .padding(
-                                    start = dimensionResource(id = R.dimen.padding_medium),
-                                    end = dimensionResource(id = R.dimen.padding_medium),
-                                    top = dimensionResource(id = R.dimen.padding_small),
-                                    bottom = dimensionResource(id = R.dimen.padding_small)
-                                )
-                                .animateContentSize(
-                                    animationSpec = spring(
-                                        dampingRatio = Spring.DampingRatioNoBouncy,
-                                        stiffness = Spring.StiffnessLow
-                                    )
-                                ),
-                            showImage = false,
-                            comment = comment
-
-                        )
-
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.primary)
+                    ) {
+                        ElevatedCard(
+                            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+                            shape = MaterialTheme.shapes.small
+                        ) {
+                            UserThreadItem(
+                                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
+                                threadItem = threadUIState.selectedThread
+                            )
+                        }
                     }
                 }
-//                threadUIState.selectedThread.comments.forEachIndexed { index, comment ->
-//                    CommentItem(
-//                        modifier = modifier
-//                            .padding(
-//                                start = dimensionResource(id = R.dimen.padding_medium),
-//                                end = dimensionResource(id = R.dimen.padding_medium),
-//                                top = dimensionResource(id = R.dimen.padding_small)
-//                            )
-//                            .animateContentSize(
-//                                animationSpec = spring(
-//                                    dampingRatio = Spring.DampingRatioNoBouncy,
-//                                    stiffness = Spring.StiffnessLow
-//                                )
-//                            ),
-//                        showImage = false,
-//                        comment = comment
-//
-//                    )
-//                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-//                }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
-                 CommentSectionInput(
-                        modifier = modifier
-                            .fillMaxWidth()
+
+                items(
+                    items = threadUIState.selectedThread.comments,
+                    key = { it.commentId},
+                    contentType = { "comment" } // Specify the type of item
+                ) { comment ->
+                    CommentItem(
+                        modifier = Modifier
+                            .padding(
+                                start = paddingMedium,
+                                end = paddingMedium,
+                                top = paddingSmall,
+                                bottom = paddingSmall
+                            )
                             .animateContentSize(
                                 animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    dampingRatio = Spring.DampingRatioNoBouncy,
                                     stiffness = Spring.StiffnessLow
                                 )
                             ),
-                        value = uiState.commentText,
-                        onValueChange = {
-                            threadViewModel.onCommentTyping(it)
-                        },
-                        onSendClick = {threadViewModel.publishComment(threadUIState.selectedThread, uiState.commentText)}
-
+                        showImage = false,
+                        comment = comment
                     )
                 }
 
+            }
 
+            CommentSectionInput(
+                modifier = modifier
+                    .fillMaxWidth().padding(2.dp).heightIn(min = 50.dp, max = 60.dp)
+                    .animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessLow
+                        )
+                    ),
+                value = uiState.commentText,
+                onValueChange = {
+                    threadViewModel.onCommentTyping(it)
+                },
+                onSendClick = {threadViewModel.publishComment(threadUIState.selectedThread, uiState.commentText)}
 
+            )
         }
 
 
-
-
-    }
 
 }
 
