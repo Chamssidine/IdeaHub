@@ -190,10 +190,13 @@ fun CommentSectionInput(
     LaunchedEffect(value) {
         // This will scroll the text field when the cursor moves
         scrollState.animateScrollTo(scrollState.maxValue)
+
     }
 
+
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth()
+            .heightIn(min = 56.dp, max = 100.dp),
     ) {
 
         Box(modifier = modifier.fillMaxWidth())
@@ -209,7 +212,7 @@ fun CommentSectionInput(
                 ){
                     Box(
                         modifier = Modifier
-                            .weight(3f)
+                            .weight(3f).fillMaxWidth()
                             .heightIn(min = 56.dp, max = 80.dp) // Limit the height for scrolling
                             .verticalScroll(scrollState) // Enable scrolling
                     ) {
@@ -243,15 +246,16 @@ fun CommentSectionInput(
                         )
                     }
 
-                        if(isTyping) {
+                    if(isTyping) {
 
-                            IconButton(onClick = {
-                                onValueChange("")
-                                isTyping = false
-                                isCleared = true
-                                focusManager.clearFocus()
-                                onSendClick()
-                            } ) {
+                        IconButton (
+                            onClick = {
+                            onValueChange("")
+                            isTyping = false
+                            isCleared = true
+                            focusManager.clearFocus()
+                            onSendClick()
+                        } ) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.send_24px),
                                     contentDescription = "ico_post_comment",

@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
  
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -107,55 +109,76 @@ fun ThreadDetailsScreen(
                     .fillMaxWidth()
 
             ){
-                threadUIState.selectedThread.comments.forEachIndexed { index, comment ->
-                    CommentItem(
+                LazyColumn(
+                    modifier = Modifier
+                        .height(400.dp)
+                        .fillMaxWidth()
+                ) {
+                    items(threadUIState.selectedThread.comments){ comment ->
+                        CommentItem(
+                            modifier = modifier
+                                .padding(
+                                    start = dimensionResource(id = R.dimen.padding_medium),
+                                    end = dimensionResource(id = R.dimen.padding_medium),
+                                    top = dimensionResource(id = R.dimen.padding_small),
+                                    bottom = dimensionResource(id = R.dimen.padding_small)
+                                )
+                                .animateContentSize(
+                                    animationSpec = spring(
+                                        dampingRatio = Spring.DampingRatioNoBouncy,
+                                        stiffness = Spring.StiffnessLow
+                                    )
+                                ),
+                            showImage = false,
+                            comment = comment
+
+                        )
+
+                    }
+                }
+//                threadUIState.selectedThread.comments.forEachIndexed { index, comment ->
+//                    CommentItem(
+//                        modifier = modifier
+//                            .padding(
+//                                start = dimensionResource(id = R.dimen.padding_medium),
+//                                end = dimensionResource(id = R.dimen.padding_medium),
+//                                top = dimensionResource(id = R.dimen.padding_small)
+//                            )
+//                            .animateContentSize(
+//                                animationSpec = spring(
+//                                    dampingRatio = Spring.DampingRatioNoBouncy,
+//                                    stiffness = Spring.StiffnessLow
+//                                )
+//                            ),
+//                        showImage = false,
+//                        comment = comment
+//
+//                    )
+//                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+//                }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
+                 CommentSectionInput(
                         modifier = modifier
-                            .padding(
-                                start = dimensionResource(id = R.dimen.padding_medium),
-                                end = dimensionResource(id = R.dimen.padding_medium),
-                                top = dimensionResource(id = R.dimen.padding_small)
-                            )
+                            .fillMaxWidth()
                             .animateContentSize(
                                 animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioNoBouncy,
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
                                     stiffness = Spring.StiffnessLow
                                 )
                             ),
-                        showImage = false,
-                        comment = comment
+                        value = uiState.commentText,
+                        onValueChange = {
+                            threadViewModel.onCommentTyping(it)
+                        },
+                        onSendClick = {threadViewModel.publishComment(threadUIState.selectedThread, uiState.commentText)}
 
                     )
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.padding_small)))
                 }
 
-            }
 
 
         }
-        Box(
-            contentAlignment = Alignment.BottomCenter,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .height(50.dp)
 
-        ){
-            CommentSectionInput(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .animateContentSize(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
-                        )
-                    ),
-                value = uiState.commentText,
-                onValueChange = {
-                    threadViewModel.onCommentTyping(it)
-                },
-                onSendClick = {threadViewModel.publishComment(threadUIState.selectedThread, uiState.commentText)}
-
-            )
-        }
 
 
 
