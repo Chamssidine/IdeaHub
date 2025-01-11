@@ -79,7 +79,7 @@ fun ThreadDetailsScreen(
     val paddingMedium = dimensionResource(id = R.dimen.padding_medium)
     val paddingSmall = dimensionResource(id = R.dimen.padding_small)
 
-        Column(
+    Column(
             modifier = modifier
                 .fillMaxSize()
             .verticalScroll(rememberScrollState())
