@@ -69,7 +69,8 @@ data class Comment(
     val commentId: String = UUID.randomUUID().toString(),
     val commentText: String = "",
     val commentDate: String = "",
-    val userProfile: UserProfile = UserProfile()
+    val userProfile: UserProfile = UserProfile(),
+    val responses: List<Comment> = mutableListOf()
 ){
     constructor(): this("", "", "", UserProfile())
 }

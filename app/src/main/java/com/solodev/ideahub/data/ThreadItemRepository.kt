@@ -2,6 +2,7 @@ package com.solodev.ideahub.data
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import com.solodev.ideahub.model.Comment
 import com.solodev.ideahub.model.ThreadItem
 import com.solodev.ideahub.model.threadItems
@@ -24,6 +25,10 @@ interface ThreadItemRepository {
     fun getSelectedItem(): ThreadItem?
     fun setSelectedItem(threadItem: ThreadItem)
     suspend fun addNewComment(comment: Comment, threadId: String ):Result<Unit>
+    fun listenForComments(
+        postId: ThreadItem,
+        onCommentsChanged: (Result<ThreadItem>) -> Unit
+    )
 
 }
 
@@ -102,11 +107,9 @@ class ThreadItemRepositoryImpl @Inject constructor(
             firestore.runTransaction { transaction ->
                 val threadSnapshot = transaction.get(threadRef)
                 val currentThread = threadSnapshot.toObject(ThreadItem::class.java)
+                    ?: throw Exception("Thread not found in the transaction")
 
                 // If currentThread is null, return failure
-                if (currentThread == null) {
-                    throw Exception("Thread not found in the transaction")
-                }
 
                 // Replace the entire thread document with the new ThreadItem object
                 transaction.set(threadRef, threadItem)  // Overwrite the entire document with the new data
@@ -141,24 +144,60 @@ class ThreadItemRepositoryImpl @Inject constructor(
 
     override fun getAllThreadItems(): Flow<List<ThreadItem>> {
         return flow {
-            // Emit an empty list initially
+
             emit(emptyList())
 
-            // Fetch data from Firestore
+
             val snapshot = firestore.collection("threads").get().await()
 
-            // Map Firestore documents to ThreadItem objects
+
             val threadItems = snapshot.documents.mapNotNull { document ->
                 document.toObject(ThreadItem::class.java)
             }
             Log.d(TAG, "Thread items fetched from Firestore: $threadItems")
-            // Emit the fetched list
+
             emit(threadItems)
         }.catch { e ->
-            // Handle any exceptions and emit an empty list if needed
+
             emit(emptyList())
             Log.d(TAG,"Error fetching threads: ${e.message}")
         }
     }
+
+
+    override fun listenForComments(
+        postId: ThreadItem,
+        onCommentsChanged: (Result<ThreadItem>) -> Unit
+    ) {
+        val query = firestore.collection("threads")
+            .whereEqualTo("threadId", postId.threadId)
+
+        query.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                Log.e("Firestore", "Error fetching thread: ${error.message}")
+                onCommentsChanged(Result.failure(error))
+                return@addSnapshotListener
+            }
+
+            if (snapshot == null || snapshot.isEmpty) {
+                Log.e("Firestore", "No matching thread found.")
+                onCommentsChanged(Result.success(ThreadItem()))
+                return@addSnapshotListener
+            }
+
+
+            val thread = snapshot.documents.firstOrNull()
+            val threadObject =  thread?.toObject<ThreadItem>()
+         
+
+            Log.d("Firestore", "Fetched comments: $threadObject")
+            onCommentsChanged(Result.success(threadObject!!))
+
+
+
+        }
+    }
+
+
 
 }

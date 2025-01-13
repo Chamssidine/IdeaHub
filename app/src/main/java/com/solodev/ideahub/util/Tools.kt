@@ -43,7 +43,7 @@ class UserHandler {
 
             val userProfile = UserProfile(
                 id = Locale.getDefault().toString(),
-                name = "CHRISTOPHER",
+                name =  Locale.getDefault().displayLanguage,
                 biography = "Biographie",
                 publicationTime = 20,
                 profileImage = "https://example.com/path/to/profile_image.png",

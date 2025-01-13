@@ -177,5 +177,11 @@
     <string name="general_thread">General</string>
     <string name="comment_placeholder">write a comment</string>
     <string name="button_write_comment">comment</string>
+    <string name="edit_comment">Edit Comment</string>
+    <string name="pin">pins</string>
+    <string name="report">report comment</string>
+    <string name="respond">respond</string>
+    <string name="like">Like</string>
+    <string name="star">star</string>
 
 </resources>

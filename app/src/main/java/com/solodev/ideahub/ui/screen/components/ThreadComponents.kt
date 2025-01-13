@@ -2,6 +2,7 @@ package com.solodev.ideahub.ui.screen.components
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 
 import androidx.compose.material3.Card
@@ -32,6 +34,7 @@ import androidx.compose.material3.Text
 
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,8 +53,15 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,8 +77,13 @@ fun UserProfileUI(
     publicationTime: String? = "",
 ){
     Row(
+        modifier = Modifier
+            .clickable {
+
+            }
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Start,
     )
     {
        Log.d("UserProfileUI", name!!)
@@ -84,14 +99,16 @@ fun UserProfileUI(
 
         )
 
-        Column() {
+        Column(
+            modifier = modifier.padding(end = dimensionResource(id = R.dimen.padding_small))
+        ) {
             Text(
                 text = name!!,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Text(
-                text = "$publicationTime min ago",
+                text = "$publicationTime",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
             )
@@ -179,101 +196,102 @@ fun CommentSectionInput(
     modifier: Modifier = Modifier,
     value: String = "",
     onValueChange: (String) -> Unit = {},
-    onSendClick: ()-> Unit = {}
+    onSendClick: () -> Unit = {},
+    focusRequester: FocusRequester
 ) {
-    var isTyping by  rememberSaveable{ mutableStateOf(false) }
-    var isCleared by  rememberSaveable{ mutableStateOf(false) }
-    val scrollState = rememberScrollState()
-
-    // Create a reference to the OutlinedTextField for observing the position of the cursor
-    val textFieldFocusRequester = remember { FocusRequester() }
+    var isTyping by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-    LaunchedEffect(value) {
-        // This will scroll the text field when the cursor moves
-        scrollState.animateScrollTo(scrollState.maxValue)
-
-    }
-
-
-
-    Box (
-        modifier = modifier.fillMaxSize()
-    ) {
+    val textFieldValueState = remember { mutableStateOf(TextFieldValue(value))}
+    Box(modifier = modifier.fillMaxWidth()) {
         Card(
-                onClick = { /*TODO*/ },
-                modifier = modifier.fillMaxSize()
+            onClick = { /* TODO: Implement card click */ },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = modifier.fillMaxSize()
-                ){
-                    Box(
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp) // Add spacing
+                ) {
+
+                    BasicTextField(
+                        value = textFieldValueState.value,
+                        onValueChange = {
+                            textFieldValueState.value  = it
+                            onValueChange(it.text)
+                            isTyping = true
+                        },
+                        textStyle = TextStyle(
+                            color =  Color.Transparent,
+                            fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                            lineHeight = 20.sp
+                        ),
                         modifier = Modifier
-                            .weight(3f).fillMaxSize()// Limit the height for scrolling
-                            .verticalScroll(scrollState) // Enable scrolling
-                    ) {
-                        OutlinedTextField(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(dimensionResource(id = R.dimen.padding_small))
-                                    .focusRequester(textFieldFocusRequester), // Ensure the text field takes full width
-                            value = value,
-                            textStyle = TextStyle(
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                                letterSpacing = MaterialTheme.typography.bodyMedium.letterSpacing,
-                                lineHeight = 20.sp
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
+                        decorationBox = { innerTextField ->
+                            Box {
+                                if (value.isEmpty()) {
 
-                            ),
-                            onValueChange = {
-                                onValueChange(it)
-                                isTyping = true
-                            },
-                            placeholder = {
-                                Text(text = stringResource(id = R.string.comment_placeholder))
-                            },
-                            colors = TextFieldDefaults.colors(
-                                focusedPlaceholderColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent,
-                            )
-                        )
-                    }
-
-                    if(isTyping) {
-
-                        IconButton (
-                            onClick = {
-                            onValueChange("")
-                            isTyping = false
-                            isCleared = true
-                            focusManager.clearFocus()
-                            onSendClick()
-                        } ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.send_24px),
-                                    contentDescription = "ico_post_comment",
-                                    modifier = Modifier.size(28.dp)
+                                    Text(
+                                        text = stringResource(id = R.string.comment_placeholder),
+                                        style = TextStyle(
+                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                        )
+                                    )
+                                }
+        
+                                Text(
+                                    buildAnnotatedString {
+                                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                            append(value)
+                                        }
+                                    },
+                                    style = TextStyle(
+                                        fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                                    )
                                 )
+                                innerTextField() // Champ de texte réel
                             }
                         }
-
+                    )
                 }
 
+                // Bouton d'envoi
+                if (isTyping) {
+                    IconButton(
+                        onClick = {
+                            onValueChange("")
+                            isTyping = false
+                            focusManager.clearFocus()
+                            onSendClick()
+
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.send_24px),
+                            contentDescription = "ico_post_comment",
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
             }
-
-
         }
-
-
-
+    }
+    DisposableEffect(Unit) {
+        textFieldValueState.value = textFieldValueState.value.copy(
+            selection = TextRange(textFieldValueState.value.text.length)
+        )
+        onDispose { }
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun UserProfilePreview() {
-    CommentSectionInput()
+   CommentSectionInput(focusRequester = FocusRequester())
 }
