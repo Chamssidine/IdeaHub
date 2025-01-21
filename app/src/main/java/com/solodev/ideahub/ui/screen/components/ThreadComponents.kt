@@ -248,7 +248,7 @@ fun CommentSectionInput(
                                 Text(
                                     buildAnnotatedString {
                                         withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                            append(value)
+                                            append(textFieldValueState.value.text)
                                         }
                                     },
                                     style = TextStyle(

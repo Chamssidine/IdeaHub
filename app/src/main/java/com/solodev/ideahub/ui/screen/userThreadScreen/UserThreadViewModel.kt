@@ -107,11 +107,9 @@ class UserThreadViewModel @Inject constructor (
         }.toAnnotatedString().toString())
         }
     }
-    fun onCommentTyping(commentText: String){
+    fun onCommentTyping(commentText: String, isResponding: Boolean = true){
 
-        _comments.update {
-            state -> state.copy(commentText = commentText)
-        }
+
     }
     @RequiresApi(Build.VERSION_CODES.O)
     fun publishComment(threadItem: ThreadItem, commentText: String ) {
