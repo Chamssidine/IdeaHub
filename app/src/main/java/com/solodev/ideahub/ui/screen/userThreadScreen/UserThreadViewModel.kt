@@ -100,19 +100,24 @@ class UserThreadViewModel @Inject constructor (
     fun onRespond(userName: String){
         _comments.update {
             state -> state.copy(commentText = AnnotatedString.Builder().apply {
-            append("Réponse à ") // Texte normal
+            append("Réponse à ")
             pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
-            append("@$userName") // Texte en gras
+            append("@$userName")
             pop()
         }.toAnnotatedString().toString())
         }
+       Log.d("onRespond", _comments.value.commentText)
     }
     fun onCommentTyping(commentText: String, isResponding: Boolean = true){
 
+        _comments.update {
+            state -> state.copy(commentText = commentText)
+        }
 
     }
     @RequiresApi(Build.VERSION_CODES.O)
     fun publishComment(threadItem: ThreadItem, commentText: String ) {
+
         val index = _threadItemUiState.value.threadItems.indexOf(threadItem)
         if (index == -1) {
             Log.e("PublishComment", "ThreadItem not found!")

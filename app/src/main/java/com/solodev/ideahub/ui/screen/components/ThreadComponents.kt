@@ -244,17 +244,21 @@ fun CommentSectionInput(
                                         )
                                     )
                                 }
-        
-                                Text(
-                                    buildAnnotatedString {
-                                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                            append(textFieldValueState.value.text)
-                                        }
-                                    },
-                                    style = TextStyle(
-                                        fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                                Row(){
+
+                                    Text(
+                                        buildAnnotatedString {
+                                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                append(textFieldValueState.value.text)
+                                            }
+                                        },
+                                        style = TextStyle(
+                                            fontSize = MaterialTheme.typography.bodyMedium.fontSize
+                                        )
                                     )
-                                )
+                                }
+        
+
                                 innerTextField() // Champ de texte réel
                             }
                         }
@@ -265,6 +269,9 @@ fun CommentSectionInput(
                 if (isTyping) {
                     IconButton(
                         onClick = {
+                            textFieldValueState.value = textFieldValueState.value.copy(
+                                text =""
+                            )
                             onValueChange("")
                             isTyping = false
                             focusManager.clearFocus()
@@ -282,12 +289,8 @@ fun CommentSectionInput(
             }
         }
     }
-    DisposableEffect(Unit) {
-        textFieldValueState.value = textFieldValueState.value.copy(
-            selection = TextRange(textFieldValueState.value.text.length)
-        )
-        onDispose { }
-    }
+
+
 }
 
 @Preview(showBackground = true, showSystemUi = true)
